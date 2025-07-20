@@ -1,8 +1,8 @@
-// components/Bookmarks/BookmarkFilters.jsx
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Toggle } from "@/components/ui/toggle"
-import { Star, LayoutGrid, List } from "lucide-react"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Toggle } from "@/components/ui/toggle";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Star, LayoutGrid, List, Filter } from "lucide-react";
 
 export default function BookmarkFilters({
   search,
@@ -13,10 +13,9 @@ export default function BookmarkFilters({
   setShowFavorites,
   viewMode,
   setViewMode,
-  bookmarks,
 }) {
-const categories = Array.from(new Set((bookmarks || []).map((b) => b.category)))
-
+  // Hardcoded categories
+  const categories = ["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"];
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -28,18 +27,21 @@ const categories = Array.from(new Set((bookmarks || []).map((b) => b.category)))
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <select
-          className="border rounded-md px-3 py-2 text-sm"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {categories.map((cat, i) => (
-            <option key={i} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-[160px]">
+            <Filter className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="Select Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+
+            {categories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Right: Toggle Favorite + View Mode */}
@@ -67,5 +69,5 @@ const categories = Array.from(new Set((bookmarks || []).map((b) => b.category)))
         </Button>
       </div>
     </div>
-  )
+  );
 }
