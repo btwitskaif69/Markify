@@ -16,10 +16,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { useTheme } from "./theme-provider"
+import { Sun, Moon } from "lucide-react"
 // ... other imports
 
 export default function Dashboard() {
   // 🔼 State moved from Bookmarks.jsx
+  const {theme, setTheme} = useTheme();
+  const isDark = theme === "dark";
+
+
   const [bookmarks, setBookmarks] = useState([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingBookmark, setEditingBookmark] = useState(null)
@@ -70,16 +76,20 @@ export default function Dashboard() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Building Your Application</BreadcrumbLink>
+                  <BreadcrumbLink href="#">Username</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  <BreadcrumbPage>Bookmarks</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-
+          {/* Add Theme Toggle with sun and moon icons here */}
+          <div onClick={()=> setTheme(isDark ? "light" : "dark")}
+            className={`flex items-end cursor-pointer transition-transform duration-500 ${isDark ? "rotate-180" : "ratate-0"}`}>
+            {isDark ? <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" /> : <Moon className="h-6 w-6 text-gray-500" />}
+          </div>
           {/* ✅ Add Button + Dialog */}
           <BookmarkFormDialog
             open={isAddDialogOpen}

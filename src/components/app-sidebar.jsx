@@ -5,7 +5,7 @@ import {
   Bot,
   Command,
   Frame,
-  GalleryVerticalEnd,
+  Bookmark,
   Map,
   PieChart,
   Settings2,
@@ -33,12 +33,12 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
+      name: "Markify",
+      logo: Bookmark,
       plan: "Enterprise",
     },
     {
-      name: "Acme Corp.",
+      name: "Markify",
       logo: AudioWaveform,
       plan: "Startup",
     },
