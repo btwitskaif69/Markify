@@ -85,11 +85,14 @@ export default function Dashboard() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
+          
+          <div className="flex items-center gap-5">
           {/* Add Theme Toggle with sun and moon icons here */}
           <div onClick={()=> setTheme(isDark ? "light" : "dark")}
             className={`flex items-end cursor-pointer transition-transform duration-500 ${isDark ? "rotate-180" : "ratate-0"}`}>
             {isDark ? <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" /> : <Moon className="h-6 w-6 text-gray-500" />}
           </div>
+
           {/* ✅ Add Button + Dialog */}
           <BookmarkFormDialog
             open={isAddDialogOpen}
@@ -100,6 +103,7 @@ export default function Dashboard() {
             editingBookmark={editingBookmark}
             setEditingBookmark={setEditingBookmark}
           />
+          </div>
         </header>
 
         {/* ✅ Main Content */}
