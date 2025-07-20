@@ -1,15 +1,10 @@
 // pages/Bookmarks.jsx
-import { useState, useEffect } from "react"
-import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog"
+import { useState} from "react"
 import BookmarkCard from "@/components/Bookmarks/BookmarkCard"
 import BookmarkListItem from "@/components/Bookmarks/BookmarkListItem"
 import BookmarkFilters from "@/components/Bookmarks/BookmarkFilters"
 import BookmarkStats from "@/components/Bookmarks/BookmarkStats"
 import { Card } from "@/components/ui/card"
-import { Search, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-
-const categories = ["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]
 
 export default function Bookmarks({ bookmarks, setBookmarks, onEditBookmark }) {
   const [searchTerm, setSearchTerm] = useState("")
