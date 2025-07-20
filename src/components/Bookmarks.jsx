@@ -20,7 +20,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 
-
 const categories = ["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]
 
 export default function MarkifyApp() {
@@ -155,110 +154,7 @@ export default function MarkifyApp() {
     return matchesSearch && matchesCategory && matchesFavorites
   })
 
-  const BookmarkCard = ({ bookmark }) => (
-    <Card className="group hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <img
-              src={bookmark.favicon || "/placeholder.svg"}
-              alt=""
-              className="w-4 h-4 flex-shrink-0"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg?height=16&width=16"
-              }}
-            />
-            <CardTitle className="text-sm truncate">{bookmark.title}</CardTitle>
-          </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toggleFavorite(bookmark.id)}>
-              <Star className={`h-4 w-4 ${bookmark.isFavorite ? "fill-yellow-400 text-yellow-400" : ""}`} />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(bookmark)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(bookmark.id)}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-        <CardDescription className="text-xs line-clamp-2">{bookmark.description}</CardDescription>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-wrap gap-1">
-            <Badge variant="secondary" className="text-xs">
-              {bookmark.category}
-            </Badge>
-            {bookmark.tags.slice(0, 2).map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {bookmark.tags.length > 2 && (
-              <Badge variant="outline" className="text-xs">
-                +{bookmark.tags.length - 2}
-              </Badge>
-            )}
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => window.open(bookmark.url, "_blank")}>
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-          <Calendar className="h-3 w-3" />
-          {new Date(bookmark.createdAt).toLocaleDateString()}
-        </div>
-      </CardContent>
-    </Card>
-  )
 
-  const BookmarkListItem = ({ bookmark }) => (
-    <Card className="group hover:shadow-sm transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <img
-              src={bookmark.favicon || "/placeholder.svg"}
-              alt=""
-              className="w-4 h-4 flex-shrink-0"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg?height=16&width=16"
-              }}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium text-sm truncate">{bookmark.title}</h3>
-                {bookmark.isFavorite && <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />}
-              </div>
-              <p className="text-xs text-muted-foreground line-clamp-1 mt-1">{bookmark.description}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Badge variant="secondary" className="text-xs">
-                  {bookmark.category}
-                </Badge>
-                {bookmark.tags.slice(0, 3).map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => window.open(bookmark.url, "_blank")}>
-              <ExternalLink className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(bookmark)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDelete(bookmark.id)}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -495,9 +391,20 @@ export default function MarkifyApp() {
           >
             {filteredBookmarks.map((bookmark) =>
               viewMode === "grid" ? (
-                <BookmarkCard key={bookmark.id} bookmark={bookmark} />
+                <BookmarkCard
+                  key={bookmark.id}
+                  bookmark={bookmark}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onToggleFavorite={toggleFavorite}
+                />
               ) : (
-                <BookmarkListItem key={bookmark.id} bookmark={bookmark} />
+                <BookmarkListItem
+                  key={bookmark.id}
+                  bookmark={bookmark}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
               ),
             )}
           </div>
