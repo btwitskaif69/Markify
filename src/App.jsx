@@ -1,8 +1,15 @@
 import React from 'react'
+import { Routes, Route } from 'react-router-dom';
+import Dashboard from './components/Dashboard'
+import { ThemeProvider } from "@/components/theme-provider"
 
 const App = () => {
   return (
-    <div>App</div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Routes>
+          <Route path="/dashboard" element={<Dashboard/>} />
+      </Routes>
+    </ThemeProvider>
   )
 }
 
