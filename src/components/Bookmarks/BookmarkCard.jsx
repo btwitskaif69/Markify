@@ -3,12 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Edit, Trash2, Star } from "lucide-react"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { MoreHorizontal, Heart} from "lucide-react"
+import placeholder from "@/assets/placeholder.svg"
 
 export default function BookmarkCard({ bookmark, onEdit, onDelete, onToggleFavorite }) {
   return (
     <Card className="relative group">
+                        <img
+          src={placeholder}
+          alt={title}
+          className="w-full h-full object-cover"
+        />
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
+
           <div className="flex items-center gap-2">
             <img
               src={bookmark.favicon}
@@ -16,6 +25,27 @@ export default function BookmarkCard({ bookmark, onEdit, onDelete, onToggleFavor
               className="w-4 h-4 object-contain"
               onError={(e) => (e.target.style.display = "none")}
             />
+                  <div className="aspect-video relative overflow-hidden bg-slate-700">
+
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="secondary" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
+              <DropdownMenuItem
+                className="text-slate-300 hover:text-white hover:bg-slate-700"
+                onClick={() => onToggleFavorite(bookmark.id)}
+              >
+                <Heart className="mr-2 h-4 w-4" />
+                {bookmark.isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
             <CardTitle className="text-base font-semibold truncate">{bookmark.title}</CardTitle>
           </div>
           <Button variant="ghost" size="icon" onClick={() => onToggleFavorite(bookmark.id)}>
