@@ -1,4 +1,4 @@
-import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-react";
+import { Folder, Forward, MoreHorizontal, Trash2 } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -17,16 +17,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavProjects({
-  projects
-}) {
+export function NavCollections({ collections = [] }) {
   const { isMobile } = useSidebar()
 
   return (
-    (<SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel>Collections</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {collections.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <a href={item.url}>
@@ -44,19 +42,20 @@ export function NavProjects({
               <DropdownMenuContent
                 className="w-48 rounded-lg"
                 side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}>
+                align={isMobile ? "end" : "start"}
+              >
                 <DropdownMenuItem>
                   <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
+                  <span>View</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
+                  <span>Share</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                  <span>Delete</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -69,6 +68,7 @@ export function NavProjects({
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
-    </SidebarGroup>)
-  );
+    </SidebarGroup>
+  )
 }
+
