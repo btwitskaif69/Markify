@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/sidebar"
 import { useTheme } from "./theme-provider"
 import { Sun, Moon } from "lucide-react"
-// ... other imports
 
 export default function Dashboard() {
   // 🔼 State moved from Bookmarks.jsx
