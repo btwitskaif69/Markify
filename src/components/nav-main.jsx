@@ -12,6 +12,7 @@ export function NavMain({ items }) {
             <SidebarMenuButton
               tooltip={item.title}
               isActive={item.isActive}
+              className="data-[active=true]:bg-primary data-[active=true]:text-white"
             >
               <item.icon className="h-4 w-4" />
               <span>{item.title}</span>
