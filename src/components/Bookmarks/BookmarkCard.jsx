@@ -27,7 +27,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
 
       {/* Description & Url */}
       <div className="">
-        <p className="text-md text-muted-foreground">{bookmark.description}</p>
+        <p className="text-md">{bookmark.description}</p>
         <span className="text-sm text-muted-foreground truncate">{bookmark.url}</span>
 
         {bookmark.tags?.length > 0 && (
