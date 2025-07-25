@@ -118,6 +118,17 @@ export default function Bookmarks() {
       isFavorite: false,
       createdAt: "2024-03-01T10:00:00Z",
       favicon: "/blog.ico"
+    },
+        {
+      id: "11",
+      title: "Personal Blog",
+      url: "https://btwitskaif.vercel.app/",
+      description: "My personal thoughts and projects",
+      tags: ["personal", "writing", "journal"],
+      category: "Personal",
+      isFavorite: false,
+      createdAt: "2024-03-01T10:00:00Z",
+      favicon: "/blog.ico"
     }
   ]);
   

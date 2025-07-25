@@ -2,15 +2,24 @@ import React, { useState } from "react"
 import {Card, CardContent, CardHeader, CardTitle, CardDescription} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey} from "lucide-react"
+import {ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical} from "lucide-react"
 import placeholder from "@/assets/placeholder.svg"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavorite}) {
 
   const [showActions, setShowActions] = useState(false)
 
   return (
-    <Card className="p-4 gap-3 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out">
+    <Card className="p-4 gap-3 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group">
 
       {/* Image/Preview */}
       <div className="" id="link-preview">
@@ -54,6 +63,41 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
         <span>{bookmark.category}</span>
           <span>{new Date(bookmark.createdAt).toLocaleDateString()}</span>
       </div>
+
+      {/* Actions */}
+<div className="absolute top-5 right-5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <button className="text-xl font-bold text-white rounded-lg w-8 h-8 flex items-center justify-center shadow-md bg-accent hover:bg-accent/90">
+      <MoreVertical className="w-4 h-4" />
+      </button>
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent
+      align="end"
+      sideOffset={8}
+      className=" text-white p-2 rounded-md shadow-lg w-40"
+    >
+      <DropdownMenuLabel className="text-white opacity-80">Settings</DropdownMenuLabel>
+      <DropdownMenuSeparator className="bg-white/20" />
+      
+      <DropdownMenuItem onClick={(e) => {e.stopPropagation();onEdit(bookmark);}} className="hover:bg-white/10 cursor-pointer">
+        <Edit className="w-4 h-4 mr-2"/>
+        Edit
+      </DropdownMenuItem>
+
+      <DropdownMenuItem onClick={(e) => {e.stopPropagation();onDelete(bookmark.id);}} className="hover:bg-white/10 cursor-pointer">
+        <Trash2 className="w-4 h-4 mr-2"/>
+        Delete
+      </DropdownMenuItem>
+
+      <DropdownMenuItem onClick={(e) => {e.stopPropagation();window.open(bookmark.url, "_blank");}} className="hover:bg-white/10 cursor-pointer">
+        <ExternalLink className="w-4 h-4 mr-2"/>
+        Visit
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</div>
     </Card>
   )
 }
