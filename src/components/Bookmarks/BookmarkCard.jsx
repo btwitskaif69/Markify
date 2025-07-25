@@ -28,12 +28,20 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
       {/* Description & Url */}
       <div className="">
         <p className="text-md">{bookmark.description}</p>
-        <span className="text-sm text-muted-foreground truncate">{bookmark.url}</span>
+                <a
+          href={bookmark.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-primary dark:text-primary hover:underline truncate mb-3 flex items-center mt-2"
+        >
+          <ExternalLink className="h-3 w-3 mr-1 flex-shrink-0" />
+          <span className="truncate">{bookmark.url}</span>
+        </a>
 
         {bookmark.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {bookmark.tags.map((tag, i) => (
-              <Badge key={i} variant="primary" className="text-xs text-primary">
+              <Badge key={i} variant="primary" className="text-xs">
                 {tag}
               </Badge>
             ))}
