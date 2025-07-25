@@ -186,7 +186,7 @@
 
 /* Text selection color */
 ::selection {
-  background: var(--color-background);
+  background: var(--color-primary);
   color: var(--color-foreground);
 }
 
