@@ -65,39 +65,43 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
       </div>
 
       {/* Actions */}
-<div className="absolute top-5 right-5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <button className="text-xl font-bold text-white rounded-lg w-8 h-8 flex items-center justify-center shadow-md bg-accent hover:bg-accent/90">
-      <MoreVertical className="w-4 h-4" />
-      </button>
-    </DropdownMenuTrigger>
+      <div className="absolute top-5 right-5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+            className="text-xl font-bold text-black dark:text-white rounded-lg w-8 h-8 flex items-center justify-center shadow-md bg-accent hover:bg-accent/90 cursor-pointer">
+              <MoreVertical className="w-4 h-4" />
+            </button>
+          </DropdownMenuTrigger>
 
-    <DropdownMenuContent
-      align="end"
-      sideOffset={8}
-      className=" text-white p-2 rounded-md shadow-lg w-40"
-    >
-      <DropdownMenuLabel className="text-white opacity-80">Settings</DropdownMenuLabel>
-      <DropdownMenuSeparator className="bg-white/20" />
-      
-      <DropdownMenuItem onClick={(e) => {e.stopPropagation();onEdit(bookmark);}} className="hover:bg-white/10 cursor-pointer">
-        <Edit className="w-4 h-4 mr-2"/>
-        Edit
-      </DropdownMenuItem>
+          <DropdownMenuContent align="end" sideOffset={8}
+            className="p-2 rounded-md shadow-lg w-40 bg-white text-black dark:bg-neutral-800 dark:text-white">
+              
+            <DropdownMenuLabel className="text-gray-500 dark:text-white/80">
+              Settings
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-gray-200 dark:bg-white/20" />
 
-      <DropdownMenuItem onClick={(e) => {e.stopPropagation();onDelete(bookmark.id);}} className="hover:bg-white/10 cursor-pointer">
-        <Trash2 className="w-4 h-4 mr-2"/>
-        Delete
-      </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {e.stopPropagation();onEdit(bookmark);}}
+              className="hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+              <Edit className="w-4 h-4 mr-2" />
+                Edit
+            </DropdownMenuItem>
 
-      <DropdownMenuItem onClick={(e) => {e.stopPropagation();window.open(bookmark.url, "_blank");}} className="hover:bg-white/10 cursor-pointer">
-        <ExternalLink className="w-4 h-4 mr-2"/>
-        Visit
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
-</div>
+            <DropdownMenuItem onClick={(e) => {e.stopPropagation();onDelete(bookmark.id);}}
+              className="hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+              <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={(e) => {e.stopPropagation();window.open(bookmark.url, "_blank");}}
+              className="hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+              <ExternalLink className="w-4 h-4 mr-2" />
+                Visit
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </Card>
   )
 }
