@@ -10,7 +10,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
   const [showActions, setShowActions] = useState(false)
 
   return (
-    <Card className="p-4 gap-4">
+    <Card className="p-4 gap-3 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out">
 
       {/* Image/Preview */}
       <div className="" id="link-preview">
@@ -28,7 +28,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
       {/* Description & Url */}
       <div className="">
         <p className="text-md">{bookmark.description}</p>
-                <a
+        <a
           href={bookmark.url}
           target="_blank"
           rel="noopener noreferrer"
