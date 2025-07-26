@@ -69,33 +69,33 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-            className="text-xl font-bold text-black dark:text-white rounded-lg w-8 h-8 flex items-center justify-center shadow-md bg-accent hover:bg-accent/90 cursor-pointer">
+            className="text-xl font-bold  rounded-lg w-8 h-8 flex items-center justify-center shadow-md cursor-pointer bg-accent">
               <MoreVertical className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" sideOffset={8}
-            className="p-2 rounded-md shadow-lg w-40 bg-white text-black dark:bg-neutral-800 dark:text-white">
+            className="p-2 rounded-md shadow-lg w-40">
               
-            <DropdownMenuLabel className="text-gray-500 dark:text-white/80">
+            <DropdownMenuLabel className="">
               Settings
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-gray-200 dark:bg-white/20" />
+            <DropdownMenuSeparator className="text-accent-foreground" />
 
             <DropdownMenuItem onClick={(e) => {e.stopPropagation();onEdit(bookmark);}}
-              className="hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+              className="cursor-pointer">
               <Edit className="w-4 h-4 mr-2" />
                 Edit
             </DropdownMenuItem>
 
             <DropdownMenuItem onClick={(e) => {e.stopPropagation();onDelete(bookmark.id);}}
-              className="hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+              className="cursor-pointer">
               <Trash2 className="w-4 h-4 mr-2" />
                 Delete
             </DropdownMenuItem>
 
             <DropdownMenuItem onClick={(e) => {e.stopPropagation();window.open(bookmark.url, "_blank");}}
-              className="hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer">
+              className="cursor-pointer">
               <ExternalLink className="w-4 h-4 mr-2" />
                 Visit
             </DropdownMenuItem>
