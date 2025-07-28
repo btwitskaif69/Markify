@@ -1,8 +1,9 @@
-const express = require("express")
-const router = express.Router()
-const bookmarkController = require("../controllers/bookmark.controller")
+// src/routes/bookmark.routes.js
+const express = require('express');
+const router = express.Router();
+const bookmarkController = require('../controllers/bookmark.controller');
 
-router.get("/", bookmarkController.getBookmarks)
-router.post("/", bookmarkController.createBookmark)
+// This name must match the export: bookmarkController.addBookmark
+router.post('/users/:userId/bookmarks', bookmarkController.addBookmark);
 
-module.exports = router
+module.exports = router;
