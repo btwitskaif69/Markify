@@ -1,18 +1,23 @@
-const express = require("express")
-const app = express()
-const bookmarkRoutes = require("./routes/bookmark.routes")
+// src/app.js
+const express = require("express");
+const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
-const errorHandler = require("./middlewares/error.middleware")
+const bookmarkRoutes = require('./routes/bookmark.routes');
+const errorHandler = require("./middlewares/error.middleware");
 
-app.use(express.json())
-const cors = require("cors")
-app.use(cors())
+// Create the app instance
+const app = express();
 
-// Routes
-app.use('/api', bookmarkRoutes); // <-- Use '/api' as the base pat
+// Apply middleware
+app.use(cors());
+app.use(express.json());
+
+// Apply routes
 app.use('/api/users', userRoutes);
+app.use('/api/bookmarks', bookmarkRoutes);
 
-// Error Handler
-app.use(errorHandler)
+// Apply error handler
+app.use(errorHandler);
 
-module.exports = app
+// Export the configured app
+module.exports = app;

@@ -1,4 +1,3 @@
-// components/Bookmarks/BookmarkFormDialog.jsx
 import {
   Dialog,
   DialogContent,
@@ -12,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus } from "lucide-react"
+import { Plus, Edit, Trash2, ExternalLink, MoreVertical } from "lucide-react"
 
 const categories = ["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]
 
@@ -26,33 +25,31 @@ export default function BookmarkFormDialog({
   setEditingBookmark,
 }) {
   const handleFormSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const bookmark = {
-      id: editingBookmark?.id || Date.now().toString(),
+    // This object contains only the data needed for the API.
+    // `tags` is kept as a string to match the database schema.
+    const bookmarkDataForApi = {
+      id: editingBookmark?.id, // Pass the ID for edits
       title: formData.title,
       url: formData.url.startsWith("http") ? formData.url : `https://${formData.url}`,
       description: formData.description,
-      tags: formData.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
       category: formData.category,
-      isFavorite: editingBookmark?.isFavorite || false,
-      createdAt: editingBookmark?.createdAt || new Date().toISOString(),
-      favicon: `/placeholder.svg?height=16&width=16&query=${formData.title.toLowerCase()}+favicon`,
-    }
+      tags: formData.tags, // Keep tags as a string
+    };
 
-    onSubmit(bookmark)
-  }
+    // The parent component's onSubmit (e.g., handleEditBookmark or handleAddBookmark)
+    // will receive this clean data object.
+    onSubmit(bookmarkDataForApi);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           onClick={() => {
-            setEditingBookmark(null)
-            setFormData({ title: "", url: "", description: "", tags: "", category: "Other" })
+            setEditingBookmark(null);
+            setFormData({ title: "", url: "", description: "", tags: "", category: "Other" });
           }}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -135,5 +132,5 @@ export default function BookmarkFormDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

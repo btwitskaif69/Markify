@@ -9,7 +9,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Star, LayoutGrid, List, Filter } from "lucide-react";
-import BookmarkCard from "./BookmarkCard"; // adjust path as needed
 
 export default function BookmarkFilters({
   searchTerm,
@@ -93,20 +92,7 @@ export default function BookmarkFilters({
         </div>
       </div>
 
-      {/* Render filtered bookmarks */}
-      <div
-        className={`grid gap-4 ${
-          viewMode === "grid" ? "sm:grid-cols-2 lg:grid-cols-3" : ""
-        }`}
-      >
-        {filteredBookmarks.length > 0 ? (
-          filteredBookmarks.map((bookmark) => (
-            <BookmarkCard key={bookmark.id} bookmark={bookmark} />
-          ))
-        ) : (
-          <p className="text-gray-500 col-span-full">No bookmarks found.</p>
-        )}
-      </div>
+
     </>
   );
 }

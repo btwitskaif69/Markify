@@ -49,9 +49,9 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
 
         {bookmark.tags?.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
-            {bookmark.tags.map((tag, i) => (
+            {bookmark.tags.split(',').map((tag, i) => (
               <Badge key={i} variant="primary" className="text-xs flex items-center justify-center py-1">
-                {tag}
+                {tag.trim()}
               </Badge>
             ))}
             </div>
