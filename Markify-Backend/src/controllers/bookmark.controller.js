@@ -6,7 +6,8 @@ const prisma = require('../db/prismaClient');
 exports.addBookmark = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { title, url, description, category, tags, isFavorite } = req.body;
+    // Destructure the new `previewImage` field from the body
+    const { title, url, description, category, tags, isFavorite, previewImage } = req.body;
 
     if (!title || !url) {
       return res.status(400).json({ message: 'Title and URL are required.' });
@@ -21,16 +22,13 @@ exports.addBookmark = async (req, res) => {
         tags,
         isFavorite,
         userId: userId,
+        previewImage, // <-- Save the previewImage to the database
       },
     });
 
     res.status(201).json({ message: 'Bookmark added successfully', bookmark: newBookmark });
   } catch (error) {
-    if (error.code === 'P2002') {
-      return res.status(409).json({ message: 'Conflict: A bookmark with this title already exists.' });
-    }
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    // ... (error handling)
   }
 };
 
@@ -57,18 +55,17 @@ exports.getBookmarksForUser = async (req, res) => {
 exports.updateBookmark = async (req, res) => {
   try {
     const { bookmarkId } = req.params;
+    // The `updates` object will automatically include `previewImage` if it's sent
     const updates = req.body;
 
     const updatedBookmark = await prisma.bookmark.update({
       where: { id: bookmarkId },
       data: updates,
     });
-
-    // This response format is crucial for the frontend to work
+    
     res.status(200).json({ message: 'Bookmark updated', bookmark: updatedBookmark });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    // ... (error handling)
   }
 };
 

@@ -16,7 +16,13 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "metascraper": "^5.49.1",
+    "metascraper-description": "^5.49.1",
+    "metascraper-image": "^5.49.1",
+    "metascraper-title": "^5.49.1",
+    "metascraper-url": "^5.49.1",
+    "node-fetch": "^2.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",

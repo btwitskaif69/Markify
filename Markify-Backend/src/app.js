@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
 const bookmarkRoutes = require('./routes/bookmark.routes');
+const previewRoutes = require('./routes/preview.routes');
 const errorHandler = require("./middlewares/error.middleware");
 
 // Create the app instance
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // Apply routes
+app.use('/api', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 

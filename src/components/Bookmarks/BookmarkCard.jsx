@@ -17,13 +17,28 @@ import {
 export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavorite}) {
 
   const [showActions, setShowActions] = useState(false)
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
 
   return (
     <Card className="p-4 gap-3 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group">
 
       {/* Image/Preview */}
-      <div className="" id="link-preview">
-        <img src={placeholder} alt="bookmark.title" className="object-cover rounded-lg"/>
+      <div id="link-preview" className="w-full h-40 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-4">
+        {bookmark.previewImage ? (
+          <img 
+            src={bookmark.previewImage}
+            alt={bookmark.title} 
+            className="object-cover w-full h-full" 
+          />
+        ) : (
+          <img
+            src={faviconUrl}
+            alt={`${bookmark.title} favicon`}
+            className="w-16 h-16 object-contain"
+            // Fallback to a generic icon if the favicon fails to load
+            onError={(e) => e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'}
+          />
+        )}
       </div>
 
       {/* Title & Favorite Icon */}

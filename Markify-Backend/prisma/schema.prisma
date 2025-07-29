@@ -36,6 +36,7 @@ model Bookmark {
   category    String
   tags        String   // Consider changing to String[] if using PostgreSQL
   isFavorite  Boolean  @default(false)
+  previewImage  String?    // <-- ADD THIS LINE
   favicon     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
