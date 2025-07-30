@@ -26,7 +26,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
       <div id="link-preview" className="w-full h-40 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-4">
         {bookmark.previewImage ? (
           <img 
-            src={bookmark.previewImage}
+            src={bookmark.previewImage || placeholder}
             alt={bookmark.title} 
             className="object-cover w-full h-full" 
           />
