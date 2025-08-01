@@ -21,14 +21,19 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
 
   return (
     <Card className="p-4 gap-3 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group">
-
+       <a
+        href={bookmark.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block"
+      >
       {/* Image/Preview */}
-      <div id="link-preview" className="w-full h-40 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-4">
+      <div id="link-preview" className="w-full h-45 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-4">
         {bookmark.previewImage ? (
           <img 
             src={bookmark.previewImage || placeholder}
             alt={bookmark.title} 
-            className="object-cover w-full h-full" 
+            className="object-cover h-full w-full" 
           />
         ) : (
           <img
@@ -40,6 +45,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
           />
         )}
       </div>
+      </a>
 
       {/* Title & Favorite Icon */}
       <div className="flex justify-between items-center" id="card-content">
@@ -51,7 +57,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
 
       {/* Description & Url */}
       <div className="">
-        <p className="text-md">{bookmark.description}</p>
+        <p className="text-md line-clamp-2">{bookmark.description}</p>
         <a
           href={bookmark.url}
           target="_blank"
@@ -62,15 +68,25 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
           <span className="truncate">{bookmark.url}</span>
         </a>
 
-        {bookmark.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {bookmark.tags.split(',').map((tag, i) => (
-              <Badge key={i} variant="primary" className="text-xs flex items-center justify-center py-1">
-                {tag.trim()}
-              </Badge>
-            ))}
-            </div>
-          )}
+{(() => {
+  // Safely create an array of tags from the string
+  const tagsArray = typeof bookmark.tags === 'string' 
+    ? bookmark.tags.split(',').map(tag => tag.trim()).filter(Boolean) 
+    : [];
+
+  if (tagsArray.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-2">
+      {/* Limit the array to a maximum of 4 tags before mapping */}
+      {tagsArray.slice(0, 5).map((tag, index) => (
+        <Badge key={index} variant="primary" className="text-xs flex items-center justify-center py-1">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+  );
+})()}
       </div>
 
 

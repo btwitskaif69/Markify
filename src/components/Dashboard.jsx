@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Bookmarks from "./Bookmarks";
 import { AppSidebar } from "@/components/app-sidebar";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
+import { toast } from "sonner";
+import { debounce } from 'lodash';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,7 +18,7 @@ import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 
 // --- CONSTANTS ---
-const USER_ID = "cmdnen4iy0001dgoocud2bvj1"; // In a real app, this comes from auth
+const USER_ID = "cmdnen4iy0001dgoocud2bvj1";
 const API_URL = "http://localhost:5000/api";
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
@@ -25,13 +27,18 @@ export default function Dashboard() {
   const [bookmarks, setBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+  const [previewData, setPreviewData] = useState(null);
+  const [isFetchingPreview, setIsFetchingPreview] = useState(false);
+  const [previewError, setPreviewError] = useState(null);
+
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
 
-  // --- DATA FETCHING ---
+  // --- DATA & PREVIEW FETCHING ---
   useEffect(() => {
     const fetchBookmarks = async () => {
       setIsLoading(true);
@@ -42,6 +49,7 @@ export default function Dashboard() {
         setBookmarks(data);
       } catch (err) {
         setError(err.message);
+        toast.error(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -49,75 +57,116 @@ export default function Dashboard() {
     fetchBookmarks();
   }, []);
 
-  // --- THIS IS THE CORRECTED SUBMIT HANDLER ---
-  const handleSubmit = async (bookmarkData) => {
-    const isEditing = !!editingBookmark;
-    const url = isEditing ? `${API_URL}/bookmarks/${bookmarkData.id}` : `${API_URL}/users/${USER_ID}/bookmarks`;
-    const method = isEditing ? 'PATCH' : 'POST';
-
+  const fetchPreview = async (url) => {
+    if (!url || !url.startsWith("http")) {
+      setPreviewData(null);
+      return;
+    }
+    setIsFetchingPreview(true);
+    setPreviewData(null);
+    setPreviewError(null);
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookmarkData),
-      });
-
-      if (!response.ok) {
-        // Log the server error for more details
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'add'} bookmark.`);
-      }
-
-      const { bookmark: returnedBookmark } = await response.json();
-
-      if (isEditing) {
-        // Replace the old bookmark with the updated one
-        setBookmarks(prev => prev.map(b => b.id === returnedBookmark.id ? returnedBookmark : b));
-      } else {
-        // Add the new bookmark to the top of the list
-        setBookmarks(prev => [returnedBookmark, ...prev]);
-      }
-
-      setIsDialogOpen(false); // Close the dialog on success
-      setEditingBookmark(null); // Reset editing state
-    } catch (err) {
-      console.error("Submit error:", err);
-      // You can add state here to show an error message to the user in the dialog
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const response = await fetch(`${API_URL}/preview?url=${encodeURIComponent(url)}`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) throw new Error('No preview available');
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, title: data.title || prev.title, description: data.description || prev.description,  tags: Array.isArray(data.tags) ? data.tags.join(', ') : (prev.tags || '') }));
+      setPreviewData(data);
+    } catch (error) {
+      if (error.name === 'AbortError') setPreviewError("Can't fetch preview (timed out).");
+      else setPreviewError("Can't fetch preview.");
+      setPreviewData(null);
+    } finally {
+      setIsFetchingPreview(false);
     }
   };
 
-  const handleDelete = async (id) => {
+  const debouncedFetch = useCallback(debounce(fetchPreview, 600), []);
+
+  const handleUrlChange = (e) => {
+    const newUrl = e.target.value;
+    setFormData((prev) => ({ ...prev, url: newUrl }));
+    debouncedFetch(newUrl);
+  };
+  
+  // --- API HANDLERS ---
+  const handleSubmit = async (bookmarkData) => {
+    const isEditing = !!editingBookmark;
+    const bookmarkId = isEditing ? editingBookmark.id : null; 
+    const url = isEditing ? `${API_URL}/bookmarks/${bookmarkId}` : `${API_URL}/users/${USER_ID}/bookmarks`;
+    const method = isEditing ? 'PATCH' : 'POST';
+    const dataToSubmit = { ...bookmarkData, previewImage: previewData?.image || null };
+
     try {
-      await fetch(`${API_URL}/bookmarks/${id}`, { method: 'DELETE' });
-      setBookmarks(prev => prev.filter(b => b.id !== id));
+      const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSubmit) });
+      if (response.status === 409) {
+        const errorData = await response.json();
+        toast.error(errorData.message);
+        return;
+      }
+      if (!response.ok) throw new Error(`Failed to submit bookmark.`);
+      const { bookmark: returnedBookmark } = await response.json();
+
+      if (isEditing) {
+        setBookmarks(prev => prev.map(b => b.id === returnedBookmark.id ? returnedBookmark : b));
+        toast.success("Bookmark updated!");
+      } else {
+        setBookmarks(prev => [returnedBookmark, ...prev]);
+        toast.success("Bookmark added!");
+      }
+      setIsDialogOpen(false);
     } catch (err) {
-      console.error("Delete error:", err);
+      toast.error(err.message);
+    }
+  };
+  
+  const handleDelete = async (id) => {
+    const originalBookmarks = bookmarks;
+    setBookmarks(prev => prev.filter(b => b.id !== id));
+    toast.success("Bookmark deleted.");
+    try {
+      const response = await fetch(`${API_URL}/bookmarks/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error("Failed to delete on the server.");
+    } catch (err) {
+      toast.error("Failed to delete. Restoring bookmark.");
+      setBookmarks(originalBookmarks);
     }
   };
 
   const handleToggleFavorite = async (id, currentIsFavorite) => {
+    const originalBookmarks = [...bookmarks];
+    setBookmarks(prev => prev.map(b => (b.id === id ? { ...b, isFavorite: !b.isFavorite } : b)));
     try {
       const response = await fetch(`${API_URL}/bookmarks/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFavorite: !currentIsFavorite }),
       });
+      if (!response.ok) throw new Error("Failed to update favorite status.");
       const { bookmark: returnedBookmark } = await response.json();
-      setBookmarks(prev => prev.map(b => b.id === id ? returnedBookmark : b));
+      setBookmarks(prev => prev.map(b => (b.id === id ? returnedBookmark : b)));
     } catch (err) {
-      console.error("Toggle favorite error:", err);
+      toast.error("Could not update favorite status.");
+      setBookmarks(originalBookmarks);
     }
+  };
+
+  // --- UI HANDLERS ---
+  const handleAddClick = () => {
+    setEditingBookmark(null);
+    setFormData(INITIAL_FORM_STATE);
+    setPreviewData(null);
+    setPreviewError(null);
+    setIsDialogOpen(true);
   };
 
   const handleEditClick = (bookmark) => {
     setEditingBookmark(bookmark);
-    setFormData({
-      title: bookmark.title,
-      url: bookmark.url,
-      description: bookmark.description,
-      tags: bookmark.tags || "",
-      category: bookmark.category,
-    });
+    setFormData({ title: bookmark.title, url: bookmark.url, description: bookmark.description, tags: bookmark.tags || "", category: bookmark.category });
+    setPreviewData(bookmark.previewImage ? { image: bookmark.previewImage, title: bookmark.title, description: bookmark.description } : null);
+    setPreviewError(null);
     setIsDialogOpen(true);
   };
 
@@ -127,13 +176,24 @@ export default function Dashboard() {
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
           <div className="flex items-center gap-2">
-            {/* ... Header content */}
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">Username</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Bookmarks</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
-          
-          {/* ... Theme toggle */}
+
           <div className="flex items-center gap-5">
-            <div onClick={() => setTheme(isDark ? "light" : "dark")} className={`flex items-end cursor-pointer transition-transform duration-500 ${isDark ? "rotate-180" : "ratate-0"}`}>
-            {isDark ? <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" /> : <Moon className="h-6 w-6 text-gray-500" />}
+            <div onClick={() => setTheme(isDark ? "light" : "dark")} className="cursor-pointer">
+              {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
             </div>
             
             <BookmarkFormDialog
@@ -141,12 +201,17 @@ export default function Dashboard() {
               setOpen={setIsDialogOpen}
               formData={formData}
               setFormData={setFormData}
-              onSubmit={handleSubmit} // <-- Pass the correct handler here
+              onSubmit={handleSubmit}
               editingBookmark={editingBookmark}
-              setEditingBookmark={setEditingBookmark}
+              previewData={previewData}
+              isFetchingPreview={isFetchingPreview}
+              previewError={previewError}
+              onUrlChange={handleUrlChange}
+              onAddClick={handleAddClick}
             />
           </div>
         </header>
+
         <Bookmarks
           bookmarks={bookmarks}
           isLoading={isLoading}

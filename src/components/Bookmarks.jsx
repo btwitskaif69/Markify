@@ -73,6 +73,7 @@ if (isLoading) return <div className="flex justify-center items-center h-screen"
                 bookmark={bookmark}
                 onEdit={onEdit} // Also for the list item
                 onDelete={onDelete}
+                 onToggleFavorite={onToggleFavorite}
               />
             )
           )}

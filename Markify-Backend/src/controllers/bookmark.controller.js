@@ -6,12 +6,28 @@ const prisma = require('../db/prismaClient');
 exports.addBookmark = async (req, res) => {
   try {
     const { userId } = req.params;
-    // Destructure the new `previewImage` field from the body
     const { title, url, description, category, tags, isFavorite, previewImage } = req.body;
 
     if (!title || !url) {
       return res.status(400).json({ message: 'Title and URL are required.' });
     }
+
+    // --- ADD THIS DUPLICATE CHECK ---
+    const existingBookmark = await prisma.bookmark.findFirst({
+      where: {
+        userId: userId,
+        OR: [
+          { title: { equals: title, mode: 'insensitive' } },
+          { url: url }
+        ],
+      },
+    });
+
+    if (existingBookmark) {
+      // If a bookmark with the same title or URL exists, send a 409 Conflict error
+      return res.status(409).json({ message: `A bookmark with this ${existingBookmark.title.toLowerCase() === title.toLowerCase() ? 'title' : 'URL'} already exists.` });
+    }
+    // ------------------------------------
 
     const newBookmark = await prisma.bookmark.create({
       data: {
@@ -22,13 +38,17 @@ exports.addBookmark = async (req, res) => {
         tags,
         isFavorite,
         userId: userId,
-        previewImage, // <-- Save the previewImage to the database
+        previewImage,
       },
     });
 
     res.status(201).json({ message: 'Bookmark added successfully', bookmark: newBookmark });
   } catch (error) {
-    // ... (error handling)
+    if (error.code === 'P2002') { // This handles cases the above check might miss
+      return res.status(409).json({ message: 'A bookmark with this title already exists.' });
+    }
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
