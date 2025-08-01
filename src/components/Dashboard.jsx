@@ -123,9 +123,9 @@ export default function Dashboard() {
             <Breadcrumb>{/* ...breadcrumb items */}</Breadcrumb>
           </div>
 
-          <div className="flex items-center gap-5">
-            <div onClick={() => setTheme(isDark ? "light" : "dark")} className="cursor-pointer">
-              {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
+            <div className="flex items-center gap-5">
+            <div onClick={() => setTheme(isDark ? "light" : "dark")} className={`flex items-end cursor-pointer transition-transform duration-500 ${isDark ? "rotate-180" : "ratate-0"}`}>
+            {isDark ? <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" /> : <Moon className="h-6 w-6 text-gray-500" />}
             </div>
             
             <BookmarkFormDialog
