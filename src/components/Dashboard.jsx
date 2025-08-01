@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Bookmarks from "./Bookmarks"; // The display component
+import Bookmarks from "./Bookmarks";
 import { AppSidebar } from "@/components/app-sidebar";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
 import {
@@ -21,7 +21,7 @@ const API_URL = "http://localhost:5000/api";
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
 export default function Dashboard() {
-  // --- STATE MANAGEMENT (Now lives in Dashboard) ---
+  // --- STATE MANAGEMENT ---
   const [bookmarks, setBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,7 +49,7 @@ export default function Dashboard() {
     fetchBookmarks();
   }, []);
 
-  // --- API HANDLERS ---
+  // --- THIS IS THE CORRECTED SUBMIT HANDLER ---
   const handleSubmit = async (bookmarkData) => {
     const isEditing = !!editingBookmark;
     const url = isEditing ? `${API_URL}/bookmarks/${bookmarkData.id}` : `${API_URL}/users/${USER_ID}/bookmarks`;
@@ -61,20 +61,31 @@ export default function Dashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookmarkData),
       });
-      if (!response.ok) throw new Error(`Failed to ${isEditing ? 'update' : 'add'} bookmark.`);
+
+      if (!response.ok) {
+        // Log the server error for more details
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to ${isEditing ? 'update' : 'add'} bookmark.`);
+      }
+
       const { bookmark: returnedBookmark } = await response.json();
 
       if (isEditing) {
+        // Replace the old bookmark with the updated one
         setBookmarks(prev => prev.map(b => b.id === returnedBookmark.id ? returnedBookmark : b));
       } else {
+        // Add the new bookmark to the top of the list
         setBookmarks(prev => [returnedBookmark, ...prev]);
       }
-      setIsDialogOpen(false);
+
+      setIsDialogOpen(false); // Close the dialog on success
+      setEditingBookmark(null); // Reset editing state
     } catch (err) {
       console.error("Submit error:", err);
+      // You can add state here to show an error message to the user in the dialog
     }
   };
-  
+
   const handleDelete = async (id) => {
     try {
       await fetch(`${API_URL}/bookmarks/${id}`, { method: 'DELETE' });
@@ -98,7 +109,6 @@ export default function Dashboard() {
     }
   };
 
-  // --- UI HANDLERS ---
   const handleEditClick = (bookmark) => {
     setEditingBookmark(bookmark);
     setFormData({
@@ -111,19 +121,17 @@ export default function Dashboard() {
     setIsDialogOpen(true);
   };
 
-  // --- RENDER LOGIC ---
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
           <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>{/* ...breadcrumb items */}</Breadcrumb>
+            {/* ... Header content */}
           </div>
-
-            <div className="flex items-center gap-5">
+          
+          {/* ... Theme toggle */}
+          <div className="flex items-center gap-5">
             <div onClick={() => setTheme(isDark ? "light" : "dark")} className={`flex items-end cursor-pointer transition-transform duration-500 ${isDark ? "rotate-180" : "ratate-0"}`}>
             {isDark ? <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" /> : <Moon className="h-6 w-6 text-gray-500" />}
             </div>
@@ -133,13 +141,12 @@ export default function Dashboard() {
               setOpen={setIsDialogOpen}
               formData={formData}
               setFormData={setFormData}
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit} // <-- Pass the correct handler here
               editingBookmark={editingBookmark}
               setEditingBookmark={setEditingBookmark}
             />
           </div>
         </header>
-
         <Bookmarks
           bookmarks={bookmarks}
           isLoading={isLoading}

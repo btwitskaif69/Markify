@@ -44,9 +44,9 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
       {/* Title & Favorite Icon */}
       <div className="flex justify-between items-center" id="card-content">
         <h1 className="text-xl font-semibold truncate text-primary">{bookmark.title}</h1>
-        <Button variant="ghost" size="icon" onClick={() => onToggleFavorite(bookmark.id)}>
-            <Star className={`h-4 w-4 ${bookmark.isFavorite? "text-yellow-500 fill-yellow-500": "text-muted-foreground"}`}/>
-        </Button>
+       <Button variant="ghost" size="icon" className="flex-shrink-0 h-8 w-8 -mt-1 -mr-1" onClick={() => onToggleFavorite(bookmark.id, bookmark.isFavorite)}>
+            <Star className={`h-4 w-4 ${bookmark.isFavorite ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"}`} />
+          </Button>
       </div>
 
       {/* Description & Url */}
