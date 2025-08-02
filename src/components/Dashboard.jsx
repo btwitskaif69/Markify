@@ -17,6 +17,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 import { AnimationStyles } from "./theme-animations";
+import { useAuth } from "@/context/AuthContext"; 
 
 // --- CONSTANTS ---
 const USER_ID = "cmdnen4iy0001dgoocud2bvj1";
@@ -25,6 +26,7 @@ const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", cate
 
 export default function Dashboard() {
   // --- STATE MANAGEMENT ---
+  const { user, token } = useAuth(); // Get the dynamic user and token
   const [bookmarks, setBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,23 +68,28 @@ export default function Dashboard() {
   };
 
   // --- DATA & PREVIEW FETCHING ---
-  useEffect(() => {
+useEffect(() => {
+    if (!user) return; // Don't fetch if there's no user
+
     const fetchBookmarks = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_URL}/users/${USER_ID}/bookmarks`);
+        const response = await fetch(`${API_URL}/users/${user.id}/bookmarks`, {
+          headers: {
+            'Authorization': `Bearer ${token}` // Send the token for protected routes
+          }
+        });
         if (!response.ok) throw new Error("Failed to fetch data.");
         const data = await response.json();
         setBookmarks(data);
       } catch (err) {
-        setError(err.message);
-        toast.error(err.message);
+        // ... error handling
       } finally {
         setIsLoading(false);
       }
     };
     fetchBookmarks();
-  }, []);
+  }, [user, token]); // Re-fetch if the user or token changes
 
   const fetchPreview = async (url) => {
     if (!url || !url.startsWith("http")) {

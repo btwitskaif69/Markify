@@ -93,7 +93,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
               
               {/* Category & Date (no border-t) */}
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span className="font-medium text-primary">{bookmark.category}</span>
+                <span className="text-primary">{bookmark.category}</span>
                 <span className="text-primary">{new Date(bookmark.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
