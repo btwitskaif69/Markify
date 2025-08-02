@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
+import { AnimationStyles } from "./theme-animations";
 
 // --- CONSTANTS ---
 const USER_ID = "cmdnen4iy0001dgoocud2bvj1";
@@ -37,6 +38,32 @@ export default function Dashboard() {
 
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
+
+  const [animationConfig, setAnimationConfig] = useState({
+    variant: 'circle',
+    start: 'top-left', // Initial value
+  });
+
+  const handleThemeToggle = () => {
+    const newTheme = isDark ? 'light' : 'dark';
+    // This can be based on click position for more advanced effects,
+    // but for now, we'll keep it simple.
+    const nextAnimation = newTheme === 'dark' ? 'top-right' : 'top-left';
+
+    setAnimationConfig({ variant: 'circle-blur', start: nextAnimation });
+
+    if (!document.startViewTransition) {
+      // Fallback for unsupported browsers
+      setTheme(newTheme);
+      return;
+    }
+
+    // Use the View Transitions API
+    document.startViewTransition(() => {
+      // The DOM update that causes the theme change MUST go here
+      setTheme(newTheme); 
+    });
+  };
 
   // --- DATA & PREVIEW FETCHING ---
   useEffect(() => {
@@ -191,10 +218,26 @@ export default function Dashboard() {
             </Breadcrumb>
           </div>
 
-          <div className="flex items-center gap-5">
-            <div onClick={() => setTheme(isDark ? "light" : "dark")} className="cursor-pointer">
-              {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
-            </div>
+            {/* theme toggle */}
+ <AnimationStyles 
+        variant={animationConfig.variant} 
+        start={animationConfig.start} 
+      />
+
+      {/* Your theme toggle button, now using the handler */}
+      <div className="flex items-center gap-5">
+        <div 
+          onClick={handleThemeToggle} 
+          // Corrected `ratate-0` to `rotate-0`
+          className={`flex items-end cursor-pointer transition-transform duration-1000 ${isDark ? "rotate-180" : "rotate-0"}`}
+        >
+          {isDark ? (
+            <Sun className="h-6 w-6 text-yellow-500 transition-all" />
+          ) : (
+            <Moon className="h-6 w-6 text-gray-500" />
+          )}
+        </div>
+
             
             <BookmarkFormDialog
               open={isDialogOpen}

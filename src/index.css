@@ -194,3 +194,10 @@
   background: var(--color-primary);
   color: var(--color-foreground);
 }
+
+@layer base {
+  :root {
+    /* This makes the animation start and end gently, which feels much smoother. */
+    --expo-out: ease-in-out;
+  }
+}
