@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 
 const AuthContext = createContext(null);
 
@@ -6,19 +7,17 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate(); // 2. Initialize the hook
 
   useEffect(() => {
-    // This effect runs on initial load to verify the token
     const verifyUser = async () => {
       if (token) {
         try {
-          // You would typically have a backend endpoint to verify the token
-          // For now, we'll decode it on the client (less secure, but good for this example)
           const payload = JSON.parse(atob(token.split('.')[1]));
-          // In a real app, fetch the full user object from `/api/users/${payload.id}`
+          // In a real app, you would fetch the full user object here
           setUser({ id: payload.id });
         } catch (error) {
-          // Token is invalid
+          console.error("Token verification failed:", error);
           localStorage.removeItem('token');
           setToken(null);
           setUser(null);
@@ -39,6 +38,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
+    navigate('/login'); // 3. Redirect to login page
   };
 
   const authValue = {

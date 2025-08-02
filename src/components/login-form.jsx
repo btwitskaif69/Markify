@@ -48,10 +48,7 @@ export function LoginForm({ className, ...props }) {
     login(data.user, data.token);
 
     // Redirect to the dashboard
-    navigate('/dashboard');
-      
-      // 3. Redirect the user to the dashboard on success
-      navigate('/dashboard'); // Use the path to your dashboard page
+    navigate(`/dashboard/${data.user.id}`);
 
     } catch (error) {
       console.error("Login error:", error);

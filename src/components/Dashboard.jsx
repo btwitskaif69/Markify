@@ -18,14 +18,15 @@ import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 import { AnimationStyles } from "./theme-animations";
 import { useAuth } from "@/context/AuthContext"; 
+import { useParams } from "react-router-dom";
 
 // --- CONSTANTS ---
-const USER_ID = "cmdnen4iy0001dgoocud2bvj1";
 const API_URL = "http://localhost:5000/api";
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
 export default function Dashboard() {
   // --- STATE MANAGEMENT ---
+  const { userId } = useParams(); // 2. Get the userId from the URL
   const { user, token } = useAuth(); // Get the dynamic user and token
   const [bookmarks, setBookmarks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,14 +70,16 @@ export default function Dashboard() {
 
   // --- DATA & PREVIEW FETCHING ---
 useEffect(() => {
-    if (!user) return; // Don't fetch if there's no user
+    // Ensure the user from context matches the one in the URL before fetching
+    if (!user || user.id !== userId) return;
 
     const fetchBookmarks = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_URL}/users/${user.id}/bookmarks`, {
+        // 3. Use the userId from the URL in your API call
+        const response = await fetch(`${API_URL}/users/${userId}/bookmarks`, {
           headers: {
-            'Authorization': `Bearer ${token}` // Send the token for protected routes
+            'Authorization': `Bearer ${token}`
           }
         });
         if (!response.ok) throw new Error("Failed to fetch data.");
@@ -89,7 +92,7 @@ useEffect(() => {
       }
     };
     fetchBookmarks();
-  }, [user, token]); // Re-fetch if the user or token changes
+  }, [userId, user, token]);
 
   const fetchPreview = async (url) => {
     if (!url || !url.startsWith("http")) {
@@ -117,7 +120,7 @@ useEffect(() => {
     }
   };
 
-  const debouncedFetch = useCallback(debounce(fetchPreview, 600), []);
+   const debouncedFetch = useCallback(debounce(fetchPreview, 600), []);
 
   const handleUrlChange = (e) => {
     const newUrl = e.target.value;
@@ -125,16 +128,25 @@ useEffect(() => {
     debouncedFetch(newUrl);
   };
   
-  // --- API HANDLERS ---
   const handleSubmit = async (bookmarkData) => {
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null; 
-    const url = isEditing ? `${API_URL}/bookmarks/${bookmarkId}` : `${API_URL}/users/${USER_ID}/bookmarks`;
+    
+    // --- THIS IS THE CORRECTED LINE ---
+    const url = isEditing ? `${API_URL}/bookmarks/${bookmarkId}` : `${API_URL}/users/${user.id}/bookmarks`;
+    
     const method = isEditing ? 'PATCH' : 'POST';
     const dataToSubmit = { ...bookmarkData, previewImage: previewData?.image || null };
 
     try {
-      const response = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSubmit) });
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Make sure token is sent for both add and edit
+        },
+        body: JSON.stringify(dataToSubmit)
+      });
       if (response.status === 409) {
         const errorData = await response.json();
         toast.error(errorData.message);

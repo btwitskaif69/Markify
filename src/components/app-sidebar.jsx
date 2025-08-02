@@ -1,12 +1,21 @@
 import * as React from "react"
-import { Frame, Bookmark, Map, PieChart, BookMarked} from "lucide-react"
+import { Bookmark, BookMarked } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
 import { NavCollections } from "@/components/nav-collections"
 import { NavUser } from "@/components/nav-user"
+import { useAuth } from "@/context/AuthContext" // 1. Import useAuth
+import {Sidebar, SidebarContent, SidebarFooter, SidebarHeader} from "@/components/ui/sidebar"
 import { TeamSwitcher } from "@/components/team-switcher"
-import {Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail} from "@/components/ui/sidebar"
 
-// This is sample data.
+const navMainData = [
+  {
+    title: "All Bookmarks",
+    url: "/dashboard",
+    icon: Bookmark,
+    isActive: true,
+  },
+];
+
 const data = {
   user: {
     name: "shadcn",
@@ -29,22 +38,22 @@ const data = {
   ],
 }
 
-export function AppSidebar({
-  ...props
-}) {
+export function AppSidebar({ ...props }) {
+  const { user, logout } = useAuth(); // 2. Get the user and logout function
+
   return (
-    (<Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavCollections collections={data.collections} />
+        {/* 3. Pass the logout function as a prop */}
+        <NavMain items={navMainData} logout={logout} />
+        <NavCollections collections={[]} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+       <NavUser user={user} />
       </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>)
+    </Sidebar>
   );
 }

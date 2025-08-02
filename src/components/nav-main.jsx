@@ -1,9 +1,9 @@
-// 'use client' – only relevant in Next.js App Router setups
-
 import * as React from "react"
-import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
+import { Button } from "./ui/button"
 
-export function NavMain({ items }) {
+// 1. Accept the logout prop
+export function NavMain({ items, logout }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -12,7 +12,7 @@ export function NavMain({ items }) {
             <SidebarMenuButton
               tooltip={item.title}
               isActive={item.isActive}
-              className="data-[active=true]:bg-primary data-[active=true]:text-white"
+              className="data-[active=true]:bg-primary data-[active=true]:text-white mb-2"
             >
               <item.icon className="h-4 w-4" />
               <span>{item.title}</span>
@@ -24,6 +24,10 @@ export function NavMain({ items }) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
+        {/* 2. Attach the logout function to the onClick handler */}
+        <div className="">
+            <Button className='w-full' variant="secondary" onClick={logout}>Logout</Button>
+        </div>
       </SidebarMenu>
     </SidebarGroup>
   )

@@ -30,7 +30,7 @@ model Bookmark {
   id          String   @id @default(cuid())
   user        User     @relation(fields: [userId], references: [id])
   userId      String
-  title       String   @unique
+  title       String   
   url         String
   description String
   category    String
