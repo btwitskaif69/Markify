@@ -35,7 +35,7 @@ export default function BookmarkListItem({ bookmark, onEdit, onDelete, onToggleF
           </a>
           {tagsArray.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
-              {tagsArray.map((tag, index) => (
+              {tagsArray.slice(0, 4).map((tag, index) => (
                 <Badge key={index} variant="secondary" className="text-xs">
                   {tag}
                 </Badge>

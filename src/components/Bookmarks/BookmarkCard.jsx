@@ -20,7 +20,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
 
   return (
-    <Card className="p-4 gap-3 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group">
+    <Card className="p-2 pb-0 gap-0 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group">
        <a
         href={bookmark.url}
         target="_blank"
@@ -28,7 +28,7 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
         className="block"
       >
       {/* Image/Preview */}
-      <div id="link-preview" className="w-full h-45 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-4">
+      <div id="link-preview" className="w-full h-50 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-2">
         {bookmark.previewImage ? (
           <img 
             src={bookmark.previewImage || placeholder}
@@ -48,55 +48,59 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
       </a>
 
       {/* Title & Favorite Icon */}
-      <div className="flex justify-between items-center" id="card-content">
-        <h1 className="text-xl font-semibold truncate text-primary">{bookmark.title}</h1>
-       <Button variant="ghost" size="icon" className="flex-shrink-0 h-8 w-8 -mt-1 -mr-1" onClick={() => onToggleFavorite(bookmark.id, bookmark.isFavorite)}>
-            <Star className={`h-4 w-4 ${bookmark.isFavorite ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"}`} />
-          </Button>
-      </div>
+          <div className="flex flex-col flex-grow p-2">
+            {/* Title & Favorite Icon */}
+            <div className="flex justify-between items-start mb-2" id="card-content">
+              <h3 className="text-xl font-semibold text-primary pr-2 truncate">{bookmark.title}</h3>
+              <Button variant="ghost" size="icon" className="flex-shrink-0 h-8 w-8 -mt-1 -mr-1" onClick={() => onToggleFavorite(bookmark.id, bookmark.isFavorite)}>
+                <Star className={`h-4 w-4 ${bookmark.isFavorite ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"}`} />
+              </Button>
+            </div>
 
-      {/* Description & Url */}
-      <div className="">
-        <p className="text-md line-clamp-2">{bookmark.description}</p>
-        <a
-          href={bookmark.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-primary dark:text-primary hover:underline truncate mb-3 flex items-center mt-2"
-        >
-          <ExternalLink className="h-3 w-3 mr-1 flex-shrink-0" />
-          <span className="truncate">{bookmark.url}</span>
-        </a>
+            {/* Description & URL (this part grows to fill space) */}
+            <div className="flex-grow">
+              <p className="text-sm text-muted-foreground line-clamp-3 text-ellipsis mb-2">{bookmark.description}</p>
+              <a
+                href={bookmark.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[0.8rem] text-primary hover:underline truncate flex items-center mb-2"
+              >
+                <ExternalLink className="h-[0.8rem] w-[0.8rem] mr-1 flex-shrink-0" />
+                <span className="truncate">{bookmark.url}</span>
+              </a>
+            </div>
 
-{(() => {
-  // Safely create an array of tags from the string
-  const tagsArray = typeof bookmark.tags === 'string' 
-    ? bookmark.tags.split(',').map(tag => tag.trim()).filter(Boolean) 
-    : [];
+            {/* This footer is pushed to the bottom of the card */}
+            <div className="mb-2">
+              {(() => {
+                const tagsArray = typeof bookmark.tags === 'string' 
+                  ? bookmark.tags.split(',').map(tag => tag.trim()).filter(Boolean) 
+                  : [];
 
-  if (tagsArray.length === 0) return null;
+                if (tagsArray.length === 0) return null;
 
-  return (
-    <div className="flex flex-wrap gap-1 mt-2">
-      {/* Limit the array to a maximum of 4 tags before mapping */}
-      {tagsArray.slice(0, 5).map((tag, index) => (
-        <Badge key={index} variant="primary" className="text-xs flex items-center justify-center py-1">
-          {tag}
-        </Badge>
-      ))}
-    </div>
-  );
-})()}
-      </div>
-
-
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{bookmark.category}</span>
-          <span>{new Date(bookmark.createdAt).toLocaleDateString()}</span>
-      </div>
+                return (
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {tagsArray.slice(0, 5).map((tag, index) => (
+                      <Badge key={index} variant="primary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                );
+              })()}
+              
+              {/* Category & Date (no border-t) */}
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span className="font-medium text-primary">{bookmark.category}</span>
+                <span className="text-primary">{new Date(bookmark.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
 
       {/* Actions */}
-      <div className="absolute top-5 right-5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
