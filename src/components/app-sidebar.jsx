@@ -48,7 +48,7 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
       <SidebarContent>
         {/* 3. Pass the logout function as a prop */}
-        <NavMain items={navMainData} logout={logout} />
+        <NavMain items={navMainData}/>
         <NavCollections collections={[]} />
       </SidebarContent>
       <SidebarFooter>

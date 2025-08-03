@@ -15,36 +15,35 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "./theme-provider";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, BookA } from "lucide-react";
 import { AnimationStyles } from "./theme-animations";
 import { useAuth } from "@/context/AuthContext"; 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // --- CONSTANTS ---
 const API_URL = "http://localhost:5000/api";
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
 export default function Dashboard() {
-  // --- STATE MANAGEMENT ---
-  const { userId } = useParams(); // 2. Get the userId from the URL
-  const { user, token } = useAuth(); // Get the dynamic user and token
-  const [bookmarks, setBookmarks] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { userId } = useParams();
+  const navigate = useNavigate();
+  const { user, authFetch, isLoading: isAuthLoading } = useAuth(); // Get authFetch
   
+  const [bookmarks, setBookmarks] = useState([]);
+  const [bookmarksLoading, setBookmarksLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [previewData, setPreviewData] = useState(null);
   const [isFetchingPreview, setIsFetchingPreview] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [previewError, setPreviewError] = useState(null);
-
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
-
   const [animationConfig, setAnimationConfig] = useState({
     variant: 'circle',
-    start: 'top-left', // Initial value
+    start: 'top-left',
   });
 
   const handleThemeToggle = () => {
@@ -69,30 +68,31 @@ export default function Dashboard() {
   };
 
   // --- DATA & PREVIEW FETCHING ---
-useEffect(() => {
-    // Ensure the user from context matches the one in the URL before fetching
-    if (!user || user.id !== userId) return;
-
-    const fetchBookmarks = async () => {
-      setIsLoading(true);
-      try {
-        // 3. Use the userId from the URL in your API call
-        const response = await fetch(`${API_URL}/users/${userId}/bookmarks`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
+ useEffect(() => {
+    if (!isAuthLoading && !user) {
+      navigate('/login');
+    }
+    if (user && user.id === userId) {
+      const fetchBookmarks = async () => {
+        setBookmarksLoading(true);
+        try {
+          // Use authFetch for authenticated requests
+          const response = await authFetch(`${API_URL}/users/${userId}/bookmarks`);
+          if (!response.ok) throw new Error("Failed to fetch bookmarks.");
+          const data = await response.json();
+          setBookmarks(data);
+        } catch (err) {
+          if (err.message !== 'Session expired') {
+            setError(err.message);
+            toast.error(err.message);
           }
-        });
-        if (!response.ok) throw new Error("Failed to fetch data.");
-        const data = await response.json();
-        setBookmarks(data);
-      } catch (err) {
-        // ... error handling
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchBookmarks();
-  }, [userId, user, token]);
+        } finally {
+          setBookmarksLoading(false);
+        }
+      };
+      fetchBookmarks();
+    }
+  }, [userId, user, authFetch, isAuthLoading, navigate]);
 
   const fetchPreview = async (url) => {
     if (!url || !url.startsWith("http")) {
@@ -131,22 +131,13 @@ useEffect(() => {
   const handleSubmit = async (bookmarkData) => {
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null; 
-    
-    // --- THIS IS THE CORRECTED LINE ---
     const url = isEditing ? `${API_URL}/bookmarks/${bookmarkId}` : `${API_URL}/users/${user.id}/bookmarks`;
-    
     const method = isEditing ? 'PATCH' : 'POST';
     const dataToSubmit = { ...bookmarkData, previewImage: previewData?.image || null };
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Make sure token is sent for both add and edit
-        },
-        body: JSON.stringify(dataToSubmit)
-      });
+      // Use authFetch for authenticated requests
+      const response = await authFetch(url, { method, body: JSON.stringify(dataToSubmit) });
       if (response.status === 409) {
         const errorData = await response.json();
         toast.error(errorData.message);
@@ -164,20 +155,25 @@ useEffect(() => {
       }
       setIsDialogOpen(false);
     } catch (err) {
-      toast.error(err.message);
+      if (err.message !== 'Session expired') {
+        toast.error(err.message);
+      }
     }
   };
   
-  const handleDelete = async (id) => {
+const handleDelete = async (id) => {
     const originalBookmarks = bookmarks;
     setBookmarks(prev => prev.filter(b => b.id !== id));
     toast.success("Bookmark deleted.");
     try {
-      const response = await fetch(`${API_URL}/bookmarks/${id}`, { method: 'DELETE' });
+      // Use authFetch for authenticated requests
+      const response = await authFetch(`${API_URL}/bookmarks/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error("Failed to delete on the server.");
     } catch (err) {
-      toast.error("Failed to delete. Restoring bookmark.");
-      setBookmarks(originalBookmarks);
+      if (err.message !== 'Session expired') {
+        toast.error("Failed to delete. Restoring bookmark.");
+        setBookmarks(originalBookmarks);
+      }
     }
   };
 
@@ -185,19 +181,22 @@ useEffect(() => {
     const originalBookmarks = [...bookmarks];
     setBookmarks(prev => prev.map(b => (b.id === id ? { ...b, isFavorite: !b.isFavorite } : b)));
     try {
-      const response = await fetch(`${API_URL}/bookmarks/${id}`, {
+      // Use authFetch for authenticated requests
+      const response = await authFetch(`${API_URL}/bookmarks/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFavorite: !currentIsFavorite }),
       });
       if (!response.ok) throw new Error("Failed to update favorite status.");
       const { bookmark: returnedBookmark } = await response.json();
       setBookmarks(prev => prev.map(b => (b.id === id ? returnedBookmark : b)));
     } catch (err) {
-      toast.error("Could not update favorite status.");
-      setBookmarks(originalBookmarks);
+      if (err.message !== 'Session expired') {
+        toast.error("Could not update favorite status.");
+        setBookmarks(originalBookmarks);
+      }
     }
   };
+
 
   // --- UI HANDLERS ---
   const handleAddClick = () => {
@@ -227,12 +226,10 @@ useEffect(() => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Username</BreadcrumbLink>
+                  <BreadcrumbLink href="#">{user.name}'s Bookamarks</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Bookmarks</BreadcrumbPage>
-                </BreadcrumbItem>
+ 
               </BreadcrumbList>
             </Breadcrumb>
           </div>

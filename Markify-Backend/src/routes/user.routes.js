@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const bookmarkController = require('../controllers/bookmark.controller');
+const { protect } = require('../middleware/auth.middleware'); // 1. Import the middleware
 
-// Routes for creating users
+// --- Public Routes (No token needed) ---
 router.post('/', userController.createUser);
-router.post('/batch', userController.createManyUsers);
-
-// --- ADD THIS LOGIN ROUTE ---
 router.post('/login', userController.loginUser);
 
-// Routes for a specific user's bookmarks
-router.get('/:userId/bookmarks', bookmarkController.getBookmarksForUser);
-router.post('/:userId/bookmarks', bookmarkController.addBookmark);
+// --- Protected Routes (Token is required) ---
+router.get('/profile', protect, userController.getUserProfile);
+router.get('/:userId/bookmarks', protect, bookmarkController.getBookmarksForUser);
+router.post('/:userId/bookmarks', protect, bookmarkController.addBookmark);
+
+// This route can probably be removed or protected as well
+router.post('/batch', userController.createManyUsers);
 
 module.exports = router;

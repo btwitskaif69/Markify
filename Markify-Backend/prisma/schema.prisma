@@ -19,6 +19,7 @@ model User {
   name              String     
   email             String     @unique
   password          String     
+  avatar            String?
   isSubscribed      Boolean    @default(false)
   subscriptionEnds  DateTime?
   bookmarks         Bookmark[]

@@ -3,7 +3,7 @@ import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/
 import { Button } from "./ui/button"
 
 // 1. Accept the logout prop
-export function NavMain({ items, logout }) {
+export function NavMain({ items}) {
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -24,10 +24,6 @@ export function NavMain({ items, logout }) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
-        {/* 2. Attach the logout function to the onClick handler */}
-        <div className="">
-            <Button className='w-full' variant="secondary" onClick={logout}>Logout</Button>
-        </div>
       </SidebarMenu>
     </SidebarGroup>
   )

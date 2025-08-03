@@ -54,7 +54,7 @@ export function SignupForm({ className, ...props }) {
       login(data.user, data.token);
       
       // 4. Redirect to the main dashboard instead of the login page
-      navigate('/dashboard');
+      navigate('/login');
 
     } catch (error) {
       console.error("Signup error:", error);

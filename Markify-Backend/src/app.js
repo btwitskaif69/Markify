@@ -4,7 +4,7 @@ const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
 const bookmarkRoutes = require('./routes/bookmark.routes');
 const previewRoutes = require('./routes/preview.routes');
-const errorHandler = require("./middlewares/error.middleware");
+const errorHandler = require("./middleware/error.middleware");
 
 // Create the app instance
 const app = express();

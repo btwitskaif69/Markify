@@ -2,10 +2,10 @@ const prisma = require('../db/prismaClient');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // 1. Import jsonwebtoken
 
-// Helper function to generate a token
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: '30d', // The token will expire in 30 days
+    // You can change this value to '7d', '24h', '365d', etc.
+    expiresIn: '30d', 
   });
 };
 
@@ -14,7 +14,7 @@ const generateToken = (userId) => {
  */
 exports.createUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body; // Removed unused subscription fields for simplicity
+    const { name, email, password } = req.body;
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -27,11 +27,10 @@ exports.createUser = async (req, res) => {
       },
     });
 
-    // 2. Generate a token for the new user
     const token = generateToken(user.id);
 
     delete user.password;
-    res.status(201).json({ message: 'User created successfully', user, token }); // 3. Send token back
+    res.status(201).json({ message: 'User created successfully', user, token });
   } catch (error) {
     if (error.code === 'P2002') {
       return res.status(409).json({ message: 'Conflict: Email already exists.' });
@@ -62,11 +61,10 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    // 4. Generate a token for the logged-in user
     const token = generateToken(user.id);
 
     delete user.password;
-    res.status(200).json({ message: "Login successful", user, token }); // 5. Send token back
+    res.status(200).json({ message: "Login successful", user, token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -99,4 +97,12 @@ exports.createManyUsers = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
+};
+
+/**
+ * Gets the profile of the currently logged-in user.
+ */
+exports.getUserProfile = async (req, res) => {
+  // The user object is attached to the request by the `protect` middleware
+  res.status(200).json(req.user);
 };

@@ -13,7 +13,6 @@ const App = () => {
         <Route path="/" element={<Home/>} />
         <Route path="/login" element={<LoginForm/>} />
         <Route path="/signup" element={<SignupForm/>} />
-        {/* Change the dashboard route to be dynamic */}
         <Route path="/dashboard/:userId" element={<Dashboard/>} />
       </Routes>
     </ThemeProvider>
