@@ -30,7 +30,7 @@ export default function Dashboard() {
   const { user, authFetch, isLoading: isAuthLoading } = useAuth(); // Get authFetch
   
   const [bookmarks, setBookmarks] = useState([]);
-  const [bookmarksLoading, setBookmarksLoading] = useState(false);
+  const [bookmarksLoading, setBookmarksLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState(null);
@@ -50,7 +50,7 @@ export default function Dashboard() {
     const newTheme = isDark ? 'light' : 'dark';
     // This can be based on click position for more advanced effects,
     // but for now, we'll keep it simple.
-    const nextAnimation = newTheme === 'dark' ? 'top-right' : 'top-left';
+    const nextAnimation = newTheme === 'dark' ? 'bottom-right' : 'top-left';
 
     setAnimationConfig({ variant: 'circle-blur', start: nextAnimation });
 
@@ -273,7 +273,7 @@ const handleDelete = async (id) => {
 
         <Bookmarks
           bookmarks={bookmarks}
-          isLoading={isLoading}
+          isLoading={bookmarksLoading}
           error={error}
           onEdit={handleEditClick}
           onDelete={handleDelete}

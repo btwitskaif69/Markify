@@ -4,6 +4,7 @@ import BookmarkListItem from "@/components/Bookmarks/BookmarkListItem";
 import BookmarkFilters from "@/components/Bookmarks/BookmarkFilters";
 import BookmarkStats from "@/components/Bookmarks/BookmarkStats";
 import { Card } from "@/components/ui/card";
+import BookmarkCardSkeleton from "@/components/Bookmarks/BookmarkCardSkeleton";
 
 export default function Bookmarks({ bookmarks, isLoading, error, onEdit, onDelete, onToggleFavorite }) {
   // --- LOCAL UI STATE & FILTERING ---
@@ -24,8 +25,10 @@ export default function Bookmarks({ bookmarks, isLoading, error, onEdit, onDelet
   });
 
   // --- RENDER LOGIC ---
-if (isLoading) return <div className="flex justify-center items-center h-screen">Loading bookmarks...</div>;
+  // This early return for error is correct
   if (error) return <div className="container mx-auto p-6 text-center text-red-500">Error: {error}</div>;
+
+  // REMOVED the extra 'isLoading' check from here
 
   return (
     <main className="container mx-auto px-4 py-6">
@@ -43,7 +46,14 @@ if (isLoading) return <div className="flex justify-center items-center h-screen"
 
       <BookmarkStats bookmarks={bookmarks} />
 
-      {filteredBookmarks.length === 0 ? (
+      {isLoading ? (
+        // This part will now be reached, showing the skeletons while loading
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <BookmarkCardSkeleton key={index} />
+          ))}
+        </div>
+      ) : filteredBookmarks.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="text-muted-foreground">
             <p className="text-lg font-medium">No bookmarks found</p>
@@ -63,17 +73,17 @@ if (isLoading) return <div className="flex justify-center items-center h-screen"
               <BookmarkCard
                 key={bookmark.id}
                 bookmark={bookmark}
-                onEdit={onEdit} // Pass down the handler from props
-                onDelete={onDelete} // Pass down the handler from props
-                onToggleFavorite={onToggleFavorite} // Pass down the handler from props
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onToggleFavorite={onToggleFavorite}
               />
             ) : (
               <BookmarkListItem
                 key={bookmark.id}
                 bookmark={bookmark}
-                onEdit={onEdit} // Also for the list item
+                onEdit={onEdit}
                 onDelete={onDelete}
-                 onToggleFavorite={onToggleFavorite}
+                onToggleFavorite={onToggleFavorite}
               />
             )
           )}

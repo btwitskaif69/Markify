@@ -323,7 +323,7 @@ function SidebarFooter({
     (<div
       data-slot="sidebar-footer"
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2 justify-center items-center", className)}
+      className={cn("flex flex-col gap-2 p-2", className)}
       {...props} />)
   );
 }

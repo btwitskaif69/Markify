@@ -36,10 +36,10 @@ export function NavUser({ user }) {
     <div>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger className="w-full group">
-          <div className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm font-medium hover:bg-accent group-data-[collapsible=icon]:hover:bg-transparent">
+          <div className="flex w-full justify-center items-center gap-3 rounded-md px-2 py-2 text-sm font-medium hover:bg-accent  group-data-[collapsible=icon]:hover:bg-transparent">
             <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-lg bg-primary">
+              <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
                 {user.name
                   ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
                   : "U"}
@@ -64,7 +64,7 @@ export function NavUser({ user }) {
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg bg-primary">
+                <AvatarFallback className="rounded-lg bg-primary text-primary-foreground">
                   {user.name
                     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
                     : "U"}

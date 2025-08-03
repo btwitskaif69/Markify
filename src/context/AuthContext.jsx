@@ -12,13 +12,13 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const logout = useCallback(() => {
+    toast.success("You have been logged out."); // <-- Alert added here
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
     navigate('/login');
   }, [navigate]);
 
-  // This function will now be used for all authenticated API calls
   const authFetch = useCallback(async (url, options = {}) => {
     if (!token) {
       logout();
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
     const response = await fetch(url, { ...options, headers });
 
-    // If token is expired or invalid, backend will send a 401
+    // The "session expired" alert is already correctly handled here
     if (response.status === 401) {
       toast.error("Session expired. Please log in again.");
       logout();
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
           const userData = await response.json();
           setUser(userData);
         } catch (error) {
-          // authFetch already handles the logout
+          // authFetch already handles the logout and alert
           console.error(error);
         }
       }
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
     token,
     login,
     logout,
-    authFetch, // Expose the new function
+    authFetch,
     isAuthenticated: !!user,
     isLoading,
   };
