@@ -6,6 +6,7 @@ import { NavUser } from "@/components/nav-user"
 import { useAuth } from "@/context/AuthContext" // 1. Import useAuth
 import {Sidebar, SidebarContent, SidebarFooter, SidebarHeader} from "@/components/ui/sidebar"
 import { TeamSwitcher } from "@/components/team-switcher"
+import CollectionFormDialog from "@/components/Collections/CollectionFormDialog"; // <-- ADD THIS IMPORT
 
 const navMainData = [
   {
@@ -38,7 +39,13 @@ const data = {
   ],
 }
 
-export function AppSidebar({ collections, ...props }) {
+export function AppSidebar({ 
+  collections, 
+  onCreateCollection, 
+  onRenameCollection, 
+  onDeleteCollection, 
+  ...props 
+}) {
   const { user, logout } = useAuth(); // 2. Get the user and logout function
 
   return (
@@ -49,7 +56,12 @@ export function AppSidebar({ collections, ...props }) {
       <SidebarContent>
         {/* 3. Pass the logout function as a prop */}
         <NavMain items={navMainData}/>
-        <NavCollections collections={collections} />
+         <NavCollections 
+          collections={collections}
+          onCreate={onCreateCollection}
+          onRename={onRenameCollection}
+          onDelete={onDeleteCollection}
+        />
       </SidebarContent>
       <SidebarFooter>
        <NavUser user={user} />

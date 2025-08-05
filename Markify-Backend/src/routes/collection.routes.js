@@ -6,6 +6,7 @@ const { protect } = require('../middleware/auth.middleware');
 // All collection routes are protected
 router.get('/', protect, collectionController.getCollections);
 router.post('/', protect, collectionController.createCollection);
-// We can add rename and delete routes here later
+router.delete('/:collectionId', protect, collectionController.deleteCollection);
+router.patch('/:collectionId', protect, collectionController.renameCollection);
 
 module.exports = router;

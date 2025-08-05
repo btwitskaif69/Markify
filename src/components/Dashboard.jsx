@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import Bookmarks from "./Bookmarks";
 import { AppSidebar } from "@/components/app-sidebar";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
+import CollectionFormDialog from "@/components/Collections/CollectionFormDialog"; // <-- ADD THIS IMPORT
+import ConfirmationDialog from "./ConfirmationDialog";
 import { toast } from "sonner";
 import { debounce } from 'lodash';
 import {
@@ -42,6 +44,15 @@ export default function Dashboard() {
   const [previewData, setPreviewData] = useState(null);
   const [isFetchingPreview, setIsFetchingPreview] = useState(false);
   const [previewError, setPreviewError] = useState(null);
+
+  // --- NEW STATE FOR COLLECTION FORM DIALOG ---
+  const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
+  const [editingCollection, setEditingCollection] = useState(null);
+  const [collectionName, setCollectionName] = useState("");
+
+    // --- NEW STATE for Delete Confirmation ---
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
    // Theme state
   const { theme, setTheme } = useTheme();
@@ -228,6 +239,87 @@ const handleDelete = async (id) => {
     setPreviewError(null);
     setIsDialogOpen(true);
   };
+
+    // --- NEW HANDLERS FOR COLLECTIONS ---
+
+  // Handles both creating and renaming a collection
+   const handleCollectionSubmit = async (collectionData) => {
+    const isEditing = !!editingCollection;
+    const url = isEditing ? `${API_URL}/collections/${collectionData.id}` : `${API_URL}/collections`;
+    const method = isEditing ? 'PATCH' : 'POST';
+
+    try {
+      const response = await authFetch(url, {
+        method,
+        body: JSON.stringify({ name: collectionData.name }),
+      });
+      if (response.status === 409) {
+        const err = await response.json();
+        throw new Error(err.message);
+      }
+      if (!response.ok) throw new Error(`Failed to ${isEditing ? 'rename' : 'create'} collection.`);
+      
+      const { collection: returnedCollection } = await response.json();
+
+      if (isEditing) {
+        setCollections(prev => prev.map(c => c.id === returnedCollection.id ? returnedCollection : c));
+        toast.success("Collection renamed!");
+      } else {
+        setCollections(prev => [...prev, returnedCollection].sort((a, b) => a.name.localeCompare(b.name)));
+        toast.success("Collection created!");
+      }
+      setIsCollectionDialogOpen(false);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleDeleteCollection = async (collectionId) => {
+    const originalCollections = [...collections];
+    setCollections(prev => prev.filter(c => c.id !== collectionId));
+    toast.success("Collection deleted.");
+    try {
+      const response = await authFetch(`${API_URL}/collections/${collectionId}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error("Failed to delete on server.");
+    } catch (err) {
+      toast.error("Failed to delete. Restoring collection.");
+      setCollections(originalCollections);
+    }
+  };
+  
+  // --- NEW UI HANDLERS for Delete Flow ---
+
+  // Called when the user clicks the "Delete" menu item
+  const openDeleteConfirm = (collectionId) => {
+    setItemToDelete(collectionId);
+    setIsConfirmOpen(true);
+  };
+  
+  // Called when the user clicks "Continue" in the confirmation dialog
+  const confirmDelete = () => {
+    if (itemToDelete) {
+      handleDeleteCollection(itemToDelete);
+      setItemToDelete(null);
+    }
+    setIsConfirmOpen(false);
+  };
+
+  // --- UI HANDLERS FOR OPENING THE DIALOG ---
+
+  // Called when the '+' button in NavCollections is clicked
+  const handleCreateCollectionClick = () => {
+    setEditingCollection(null);
+    setCollectionName("");
+    setIsCollectionDialogOpen(true);
+  };
+
+  // Called when the 'Rename' option is clicked for a collection
+  const handleRenameCollectionClick = (collection) => {
+    setEditingCollection(collection);
+    setCollectionName(collection.name);
+    setIsCollectionDialogOpen(true);
+  };
+
   // --- RENDER LOGIC ---
   // The main auth loading screen can be simplified or removed
   if (isAuthLoading) {
@@ -235,7 +327,12 @@ const handleDelete = async (id) => {
   }
   return (
     <SidebarProvider>
-       <AppSidebar collections={collections} />
+       <AppSidebar 
+        collections={collections} 
+        onCreateCollection={handleCreateCollectionClick}
+        onRenameCollection={handleRenameCollectionClick}
+        onDeleteCollection={openDeleteConfirm}
+      />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
           <div className="flex items-center gap-2">
@@ -272,7 +369,6 @@ const handleDelete = async (id) => {
           )}
         </div>
 
-            
             <BookmarkFormDialog
               open={isDialogOpen}
               setOpen={setIsDialogOpen}
@@ -288,6 +384,24 @@ const handleDelete = async (id) => {
             />
           </div>
         </header>
+
+          <ConfirmationDialog
+          open={isConfirmOpen}
+          onOpenChange={setIsConfirmOpen}
+          onConfirm={confirmDelete}
+          title="Delete Collection?"
+          description="Are you sure you want to delete this collection? Bookmarks within it will not be deleted."
+        />
+
+          {/* 3. Render the CollectionFormDialog */}
+        <CollectionFormDialog
+          open={isCollectionDialogOpen}
+          setOpen={setIsCollectionDialogOpen}
+          onSubmit={handleCollectionSubmit}
+          editingCollection={editingCollection}
+          collectionName={collectionName}
+          setCollectionName={setCollectionName}
+        />
 
         <Bookmarks
           bookmarks={bookmarks}
