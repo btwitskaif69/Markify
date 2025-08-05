@@ -15,30 +15,47 @@ datasource db {
 }
 
 model User {
-  id                String     @id @default(cuid())
-  name              String     
-  email             String     @unique
-  password          String     
-  avatar            String?
-  isSubscribed      Boolean    @default(false)
-  subscriptionEnds  DateTime?
-  bookmarks         Bookmark[]
+  id               String       @id @default(cuid())
+  name             String
+  email            String       @unique
+  password         String
+  avatar           String?
+  isSubscribed     Boolean      @default(false)
+  subscriptionEnds DateTime?
+  bookmarks        Bookmark[]
+  collections      Collection[] // Add relation to collections
 }
 
+// Add this new model for Collections
+model Collection {
+  id        String     @id @default(cuid())
+  name      String
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  bookmarks Bookmark[]
 
+  @@unique([userId, name]) // A user cannot have two collections with the same name
+}
 
 model Bookmark {
-  id          String   @id @default(cuid())
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  title       String   
-  url         String
-  description String
-  category    String
-  tags        String   // Consider changing to String[] if using PostgreSQL
-  isFavorite  Boolean  @default(false)
-  previewImage  String?    // <-- ADD THIS LINE
-  favicon     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String      @id @default(cuid())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  title         String
+  url           String
+  description   String
+  category      String
+  tags          String?
+  isFavorite    Boolean     @default(false)
+  previewImage  String?
+  favicon       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Add these two lines to connect a bookmark to a collection
+  collection    Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  collectionId  String?
+
+  // A user cannot have two bookmarks with the same title
+  @@unique([userId, title])
 }

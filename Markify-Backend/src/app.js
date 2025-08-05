@@ -5,6 +5,7 @@ const userRoutes = require('./routes/user.routes');
 const bookmarkRoutes = require('./routes/bookmark.routes');
 const previewRoutes = require('./routes/preview.routes');
 const errorHandler = require("./middleware/error.middleware");
+const collectionRoutes = require('./routes/collection.routes');
 
 // Create the app instance
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
+app.use('/api/collections', collectionRoutes);
 
 // Apply error handler
 app.use(errorHandler);

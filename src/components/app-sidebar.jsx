@@ -38,7 +38,7 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }) {
+export function AppSidebar({ collections, ...props }) {
   const { user, logout } = useAuth(); // 2. Get the user and logout function
 
   return (
@@ -49,7 +49,7 @@ export function AppSidebar({ ...props }) {
       <SidebarContent>
         {/* 3. Pass the logout function as a prop */}
         <NavMain items={navMainData}/>
-        <NavCollections collections={[]} />
+        <NavCollections collections={collections} />
       </SidebarContent>
       <SidebarFooter>
        <NavUser user={user} />

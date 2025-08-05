@@ -27,24 +27,27 @@ const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", cate
 export default function Dashboard() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { user, authFetch, isLoading: isAuthLoading } = useAuth(); // Get authFetch
+  const { user, authFetch, isLoading: isAuthLoading } = useAuth();
   
+  // --- SIMPLIFIED STATE MANAGEMENT ---
   const [bookmarks, setBookmarks] = useState([]);
-  const [bookmarksLoading, setBookmarksLoading] = useState(true);
+  const [collections, setCollections] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Single loading state for data
   const [error, setError] = useState(null);
+  
+  // Dialog and form state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [previewData, setPreviewData] = useState(null);
   const [isFetchingPreview, setIsFetchingPreview] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [previewError, setPreviewError] = useState(null);
+
+   // Theme state
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
-  const [animationConfig, setAnimationConfig] = useState({
-    variant: 'circle',
-    start: 'top-left',
-  });
+  const [animationConfig, setAnimationConfig] = useState({ variant: 'circle', start: 'top-left' });
+
 
   const handleThemeToggle = () => {
     const newTheme = isDark ? 'light' : 'dark';
@@ -69,28 +72,39 @@ export default function Dashboard() {
 
   // --- DATA & PREVIEW FETCHING ---
  useEffect(() => {
-    if (!isAuthLoading && !user) {
+    if (isAuthLoading) return; // Wait for auth check to complete
+
+    if (!user) {
       navigate('/login');
+      return;
     }
-    if (user && user.id === userId) {
-      const fetchBookmarks = async () => {
-        setBookmarksLoading(true);
+    
+    if (user.id === userId) {
+      const fetchData = async () => {
+        setIsLoading(true); // Use the single loading state
         try {
-          // Use authFetch for authenticated requests
-          const response = await authFetch(`${API_URL}/users/${userId}/bookmarks`);
-          if (!response.ok) throw new Error("Failed to fetch bookmarks.");
-          const data = await response.json();
-          setBookmarks(data);
+          const [bookmarksRes, collectionsRes] = await Promise.all([
+            authFetch(`${API_URL}/users/${userId}/bookmarks`),
+            authFetch(`${API_URL}/collections`),
+          ]);
+
+          if (!bookmarksRes.ok || !collectionsRes.ok) throw new Error("Failed to fetch data.");
+          
+          const bookmarksData = await bookmarksRes.json();
+          const collectionsData = await collectionsRes.json();
+
+          setBookmarks(bookmarksData);
+          setCollections(collectionsData);
         } catch (err) {
           if (err.message !== 'Session expired') {
             setError(err.message);
             toast.error(err.message);
           }
         } finally {
-          setBookmarksLoading(false);
+          setIsLoading(false); // Correctly turn off loading state
         }
       };
-      fetchBookmarks();
+      fetchData();
     }
   }, [userId, user, authFetch, isAuthLoading, navigate]);
 
@@ -214,10 +228,14 @@ const handleDelete = async (id) => {
     setPreviewError(null);
     setIsDialogOpen(true);
   };
-
+  // --- RENDER LOGIC ---
+  // The main auth loading screen can be simplified or removed
+  if (isAuthLoading) {
+    return <div className="flex justify-center items-center h-screen">Authenticating...</div>;
+  }
   return (
     <SidebarProvider>
-      <AppSidebar />
+       <AppSidebar collections={collections} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
           <div className="flex items-center gap-2">
@@ -226,7 +244,7 @@ const handleDelete = async (id) => {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="!#">{user.name}'s Bookamarks</BreadcrumbLink>
+                   <BreadcrumbLink href="#">{user ? `${user.name}'s Bookmarks` : 'Bookmarks'}</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
  
@@ -273,7 +291,7 @@ const handleDelete = async (id) => {
 
         <Bookmarks
           bookmarks={bookmarks}
-          isLoading={bookmarksLoading}
+          isLoading={isLoading} // Pass the single loading state
           error={error}
           onEdit={handleEditClick}
           onDelete={handleDelete}
