@@ -61,7 +61,7 @@ export default function BookmarkFormDialog({
         </DialogHeader>
         <form onSubmit={handleFormSubmit} className={`space-y-4 ${previewData ? 'overflow-y-auto pr-6' : ''}`}>
           <div>
-            <Label htmlFor="url">URL</Label>
+            <Label htmlFor="url" className="mb-2">URL</Label>
             <Input
               id="url"
               type="url"
@@ -87,7 +87,7 @@ export default function BookmarkFormDialog({
             </div>
           )}
           <div>
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="mb-2">Title</Label>
             <Input
               id="title"
               value={formData.title}
@@ -97,7 +97,7 @@ export default function BookmarkFormDialog({
             />
           </div>
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="mb-2">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -108,7 +108,7 @@ export default function BookmarkFormDialog({
           </div>
           {/* --- THIS IS THE CORRECTED COLLECTION SELECT --- */}
           <div>
-            <Label htmlFor="collection">Collection (Optional)</Label>
+            <Label htmlFor="collection" className="mb-2">Collection (Optional)</Label>
             <Select
               value={formData.collectionId || ""}
               onValueChange={(value) => setFormData((prev) => ({ ...prev, collectionId: value }))}
@@ -128,7 +128,7 @@ export default function BookmarkFormDialog({
           </div>
           {/* ------------------------------------------- */}
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category" className="mb-2">Category</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}>
               <SelectTrigger><SelectValue placeholder="Select a category"/></SelectTrigger>
               <SelectContent>
@@ -137,7 +137,7 @@ export default function BookmarkFormDialog({
             </Select>
           </div>
           <div>
-            <Label htmlFor="tags">Tags</Label>
+            <Label htmlFor="tags" className="mb-2">Tags</Label>
             <Input
               id="tags"
               value={formData.tags}

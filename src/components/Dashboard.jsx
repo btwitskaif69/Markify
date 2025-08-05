@@ -343,6 +343,45 @@ const handleDelete = async (id) => {
   if (isAuthLoading) {
     return <div className="flex justify-center items-center h-screen">Authenticating...</div>;
   }
+
+
+   // --- NEW HANDLER for moving a bookmark ---
+// src/components/Dashboard.jsx
+
+const handleMoveBookmark = async (bookmarkId, collectionId) => {
+  try {
+    const response = await authFetch(`${API_URL}/bookmarks/${bookmarkId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ collectionId }),
+    });
+
+    if (!response.ok) throw new Error("Failed to move bookmark.");
+    
+    const { bookmark: returnedBookmark } = await response.json();
+    
+    // Update the bookmark in the main list
+    setAllBookmarks(prev => prev.map(b => b.id === returnedBookmark.id ? returnedBookmark : b));
+
+    // --- THIS IS THE UPDATED PART ---
+    // Find the collection name to display in the toast
+    let toastMessage = "Bookmark moved successfully!";
+    if (collectionId) {
+      const collection = collections.find(c => c.id === collectionId);
+      if (collection) {
+        toastMessage = `Bookmark moved to "${collection.name}"!`;
+      }
+    } else {
+      toastMessage = "Bookmark removed from collection.";
+    }
+    
+    toast.success(toastMessage);
+    // --------------------------------
+
+  } catch (err) {
+    toast.error("Failed to move bookmark.");
+  }
+};
+
   return (
     <SidebarProvider>
        <AppSidebar 
@@ -424,11 +463,13 @@ const handleDelete = async (id) => {
 
         <Bookmarks
            bookmarks={bookmarks}
+           collections={collections}
           isLoading={isLoading} // Pass the single loading state
           error={error}
           onEdit={handleEditClick}
           onDelete={handleDelete}
           onToggleFavorite={handleToggleFavorite}
+          onMove={handleMoveBookmark}
         />
       </SidebarInset>
     </SidebarProvider>

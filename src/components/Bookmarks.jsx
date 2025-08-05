@@ -6,7 +6,7 @@ import BookmarkStats from "@/components/Bookmarks/BookmarkStats";
 import { Card } from "@/components/ui/card";
 import BookmarkCardSkeleton from "@/components/Bookmarks/BookmarkCardSkeleton";
 
-export default function Bookmarks({ bookmarks, isLoading, error, onEdit, onDelete, onToggleFavorite }) {
+export default function Bookmarks({ bookmarks, collections, isLoading, error, onEdit, onDelete, onToggleFavorite, onMove }) {
   // --- LOCAL UI STATE & FILTERING ---
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -76,6 +76,8 @@ export default function Bookmarks({ bookmarks, isLoading, error, onEdit, onDelet
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onToggleFavorite={onToggleFavorite}
+                collections={collections}
+                 onMove={onMove}
               />
             ) : (
               <BookmarkListItem

@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import {Card, CardContent, CardHeader, CardTitle, CardDescription} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical} from "lucide-react"
+import {ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical, FolderSymlink} from "lucide-react"
 import placeholder from "@/assets/placeholder.svg"
 
 import {
@@ -12,9 +12,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSubTrigger,
+  DropdownMenuSub,
+  DropdownMenuPortal,
+  DropdownMenuSubContent
 } from "@/components/ui/dropdown-menu"
 
-export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavorite}) {
+export default function BookmarkCard({bookmark, collections, onMove, onEdit, onDelete, onToggleFavorite}) {
 
   const [showActions, setShowActions] = useState(false)
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
@@ -117,6 +121,30 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="text-accent-foreground" />
 
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="cursor-pointer">
+                <FolderSymlink className="w-4 h-4 mr-2" />
+                <span>Move to...</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {/* Option to remove from collection */}
+                  <DropdownMenuItem onSelect={() => onMove(bookmark.id, null)}>
+                    Collections
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {collections.map(collection => (
+                    <DropdownMenuItem 
+                      key={collection.id} 
+                      onSelect={() => onMove(bookmark.id, collection.id)}
+                    >
+                      {collection.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+
             <DropdownMenuItem onClick={(e) => {e.stopPropagation();onEdit(bookmark);}}
               className="cursor-pointer">
               <Edit className="w-4 h-4 mr-2" />
@@ -124,8 +152,8 @@ export default function BookmarkCard({bookmark, onEdit, onDelete, onToggleFavori
             </DropdownMenuItem>
 
             <DropdownMenuItem onClick={(e) => {e.stopPropagation();onDelete(bookmark.id);}}
-              className="cursor-pointer">
-              <Trash2 className="w-4 h-4 mr-2" />
+              className="cursor-pointer text-red-500 focus:text-red-500">
+              <Trash2 className="w-4 h-4 mr-2 text-red-500 focus:text-red-500" />
                 Delete
             </DropdownMenuItem>
 

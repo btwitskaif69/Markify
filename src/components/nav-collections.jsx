@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
@@ -45,6 +46,7 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
             {/* This dropdown will be hidden when collapsed */}
             <div className="group-data-[collapsible=icon]:hidden">
               <DropdownMenu modal={false}>
+                
                 <DropdownMenuTrigger>
                   <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100">
                     <MoreHorizontal className="h-4 w-4" />
@@ -56,6 +58,10 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
                   align="start"
                   sideOffset={8}
                 >
+             <DropdownMenuLabel className="">
+              Settings
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="text-accent-foreground" />
                   <DropdownMenuItem onSelect={() => onRename(collection)} className="cursor-pointer">
                     <Edit className="mr-2 h-4 w-4" />
                     <span>Rename</span>
