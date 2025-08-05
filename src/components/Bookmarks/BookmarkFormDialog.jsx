@@ -28,12 +28,16 @@ export default function BookmarkFormDialog({
   previewError,
   onUrlChange,
   onAddClick,
+  collections,
 }) {
-
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    // Directly submit the formData, which is managed by the parent
-    onSubmit(formData);
+    const dataToSubmit = {
+        ...formData,
+        // Ensure we send null if the collectionId is an empty string
+        collectionId: formData.collectionId || null,
+    };
+    onSubmit(dataToSubmit);
   };
 
   const handleOpenChange = (isOpen) => {
@@ -43,7 +47,6 @@ export default function BookmarkFormDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        {/* The onClick now just calls the handler from the parent */}
         <Button onClick={onAddClick}>
           <Plus className="h-4 w-4 mr-2" />
           Add Bookmark
@@ -63,7 +66,7 @@ export default function BookmarkFormDialog({
               id="url"
               type="url"
               value={formData.url}
-              onChange={onUrlChange} // Use handler from parent
+              onChange={onUrlChange}
               placeholder="https://example.com"
               required
             />
@@ -103,10 +106,31 @@ export default function BookmarkFormDialog({
               rows={3}
             />
           </div>
+          {/* --- THIS IS THE CORRECTED COLLECTION SELECT --- */}
+          <div>
+            <Label htmlFor="collection">Collection (Optional)</Label>
+            <Select
+              value={formData.collectionId || ""}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, collectionId: value }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="No collection" />
+              </SelectTrigger>
+              <SelectContent>
+                {/* The placeholder is shown when value is "", no <SelectItem> needed for "None" */}
+                {collections.map((collection) => (
+                  <SelectItem key={collection.id} value={collection.id}>
+                    {collection.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* ------------------------------------------- */}
           <div>
             <Label htmlFor="category">Category</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Select a category"/></SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (<SelectItem key={category} value={category}>{category}</SelectItem>))}
               </SelectContent>

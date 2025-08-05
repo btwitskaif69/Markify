@@ -27,12 +27,13 @@ const API_URL = "http://localhost:5000/api";
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
 export default function Dashboard() {
-  const { userId } = useParams();
+  const { userId, collectionId: activeCollectionId } = useParams();
   const navigate = useNavigate();
   const { user, authFetch, isLoading: isAuthLoading } = useAuth();
   
   // --- SIMPLIFIED STATE MANAGEMENT ---
-  const [bookmarks, setBookmarks] = useState([]);
+  const [allBookmarks, setAllBookmarks] = useState([]); // New state to hold all bookmarks
+  const [bookmarks, setBookmarks] = useState([]); // State for a filtered view
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Single loading state for data
   const [error, setError] = useState(null);
@@ -44,6 +45,7 @@ export default function Dashboard() {
   const [previewData, setPreviewData] = useState(null);
   const [isFetchingPreview, setIsFetchingPreview] = useState(false);
   const [previewError, setPreviewError] = useState(null);
+  const [isBookmarkDialogOpen, setIsBookmarkDialogOpen] = useState(false);
 
   // --- NEW STATE FOR COLLECTION FORM DIALOG ---
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
@@ -104,7 +106,7 @@ export default function Dashboard() {
           const bookmarksData = await bookmarksRes.json();
           const collectionsData = await collectionsRes.json();
 
-          setBookmarks(bookmarksData);
+          setAllBookmarks(bookmarksData); // Store all bookmarks here
           setCollections(collectionsData);
         } catch (err) {
           if (err.message !== 'Session expired') {
@@ -118,6 +120,15 @@ export default function Dashboard() {
       fetchData();
     }
   }, [userId, user, authFetch, isAuthLoading, navigate]);
+
+useEffect(() => {
+    if (activeCollectionId) {
+      const filtered = allBookmarks.filter(bm => bm.collectionId === activeCollectionId);
+      setBookmarks(filtered);
+    } else {
+      setBookmarks(allBookmarks);
+    }
+  }, [activeCollectionId, allBookmarks]);
 
   const fetchPreview = async (url) => {
     if (!url || !url.startsWith("http")) {
@@ -178,7 +189,7 @@ export default function Dashboard() {
         setBookmarks(prev => [returnedBookmark, ...prev]);
         toast.success("Bookmark added!");
       }
-      setIsDialogOpen(false);
+      setIsBookmarkDialogOpen(false);
     } catch (err) {
       if (err.message !== 'Session expired') {
         toast.error(err.message);
@@ -224,20 +235,27 @@ const handleDelete = async (id) => {
 
 
   // --- UI HANDLERS ---
-  const handleAddClick = () => {
+ const handleAddClick = () => {
     setEditingBookmark(null);
-    setFormData(INITIAL_FORM_STATE);
+    setFormData({ ...INITIAL_FORM_STATE, collectionId: activeCollectionId || "" });
     setPreviewData(null);
     setPreviewError(null);
-    setIsDialogOpen(true);
+    setIsBookmarkDialogOpen(true); // This will now work
   };
 
   const handleEditClick = (bookmark) => {
     setEditingBookmark(bookmark);
-    setFormData({ title: bookmark.title, url: bookmark.url, description: bookmark.description, tags: bookmark.tags || "", category: bookmark.category });
+    setFormData({ 
+      title: bookmark.title, 
+      url: bookmark.url, 
+      description: bookmark.description, 
+      tags: bookmark.tags || "", 
+      category: bookmark.category,
+      collectionId: bookmark.collectionId || "" 
+    });
     setPreviewData(bookmark.previewImage ? { image: bookmark.previewImage, title: bookmark.title, description: bookmark.description } : null);
     setPreviewError(null);
-    setIsDialogOpen(true);
+    setIsBookmarkDialogOpen(true); // This will now work
   };
 
     // --- NEW HANDLERS FOR COLLECTIONS ---
@@ -370,8 +388,8 @@ const handleDelete = async (id) => {
         </div>
 
             <BookmarkFormDialog
-              open={isDialogOpen}
-              setOpen={setIsDialogOpen}
+              open={isBookmarkDialogOpen}
+              setOpen={setIsBookmarkDialogOpen}
               formData={formData}
               setFormData={setFormData}
               onSubmit={handleSubmit}
@@ -381,6 +399,7 @@ const handleDelete = async (id) => {
               previewError={previewError}
               onUrlChange={handleUrlChange}
               onAddClick={handleAddClick}
+              collections={collections} 
             />
           </div>
         </header>
@@ -404,7 +423,7 @@ const handleDelete = async (id) => {
         />
 
         <Bookmarks
-          bookmarks={bookmarks}
+           bookmarks={bookmarks}
           isLoading={isLoading} // Pass the single loading state
           error={error}
           onEdit={handleEditClick}
