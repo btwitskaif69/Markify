@@ -5,5 +5,7 @@ const { protect } = require('../middleware/auth.middleware');
 
 router.patch('/:bookmarkId', protect, bookmarkController.updateBookmark);
 router.delete('/:bookmarkId', protect, bookmarkController.deleteBookmark);
+router.get('/export', protect, bookmarkController.exportBookmarks);
+router.post('/import', protect, bookmarkController.importBookmarks);
 
 module.exports = router;

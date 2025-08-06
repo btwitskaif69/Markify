@@ -12,6 +12,7 @@ import {
   SidebarHeader,
   SidebarMenuButton
 } from "@/components/ui/sidebar"
+import ImportExport from "./ImportExport";
 
 export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, ...props }) {
   const { user, logout } = useAuth();
@@ -42,6 +43,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
           onRename={onRenameCollection}
           onDelete={onDeleteCollection}
         />
+         <ImportExport />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} logout={logout} />

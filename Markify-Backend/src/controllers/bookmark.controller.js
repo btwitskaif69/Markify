@@ -102,3 +102,79 @@ exports.deleteBookmark = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+exports.exportBookmarks = async (req, res) => {
+  try {
+    const bookmarks = await prisma.bookmark.findMany({
+      where: { userId: req.user.id },
+      // Exclude user-specific IDs to make the file shareable
+      select: {
+        title: true,
+        previewImage : true,
+        url: true,
+        description: true,
+        category: true,
+        tags: true,
+        isFavorite: true,
+      }
+    });
+    res.status(200).json(bookmarks);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to export bookmarks." });
+  }
+};
+
+exports.importBookmarks = async (req, res) => {
+  try {
+    const bookmarksToImport = req.body;
+
+    if (!Array.isArray(bookmarksToImport)) {
+      return res.status(400).json({ message: "Invalid file format. An array of bookmarks is expected." });
+    }
+
+    // 1. Get all existing bookmark titles and URLs for the current user to check for duplicates
+    const existingBookmarks = await prisma.bookmark.findMany({
+      where: { userId: req.user.id },
+      select: { title: true, url: true },
+    });
+    const existingTitles = new Set(existingBookmarks.map(b => b.title.toLowerCase()));
+    const existingUrls = new Set(existingBookmarks.map(b => b.url));
+
+    // 2. Filter out bookmarks that are duplicates based on title or URL
+    const newBookmarks = bookmarksToImport.filter(bookmark => 
+      bookmark.title && bookmark.url && // Ensure the bookmark has a title and url
+      !existingTitles.has(bookmark.title.toLowerCase()) && 
+      !existingUrls.has(bookmark.url)
+    );
+
+    const skippedCount = bookmarksToImport.length - newBookmarks.length;
+
+    // 3. Only try to create bookmarks if there are new ones to add
+    if (newBookmarks.length > 0) {
+      const dataToCreate = newBookmarks.map(bookmark => ({
+        title: bookmark.title,
+        url: bookmark.url,
+        description: bookmark.description || "",
+        category: bookmark.category || "Other",
+        tags: bookmark.tags || "",
+        isFavorite: bookmark.isFavorite || false,
+        userId: req.user.id,
+      }));
+
+      await prisma.bookmark.createMany({
+        data: dataToCreate,
+      });
+    }
+
+    // 4. Send a detailed response back to the frontend
+    res.status(201).json({ 
+      message: `Import complete.`,
+      createdCount: newBookmarks.length,
+      skippedCount: skippedCount,
+    });
+
+  } catch (error) {
+    console.error("Import error:", error);
+    res.status(500).json({ message: "Failed to import bookmarks." });
+  }
+};
