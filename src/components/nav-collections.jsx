@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen } from "lucide-react";
+import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,12 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
   return (
     <SidebarGroup>
       <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>Collections</SidebarGroupLabel>
+<SidebarGroupLabel className="text-sm text-foreground">
+  <div className="flex items-center gap-2">
+    <Folders className="h-4 w-4" />
+    <span className="font-semibold">Collections</span>
+  </div>
+</SidebarGroupLabel>
         <Button onClick={onCreate} variant="ghost" size="icon" className="h-8 w-8">
           <Plus className="h-4 w-4" />
           <span className="sr-only">Create Collection</span>
@@ -32,20 +37,20 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
         {collections.map((collection) => (
           <div key={collection.id} className="flex items-center group">
             <Link to={`/dashboard/${userId}/collections/${collection.id}`} className="flex-1">
-<SidebarMenuButton 
-  className="w-full data-[active=true]:bg-primary"
-  tooltip={collection.name}
-  isActive={collection.id === activeCollectionId}
->
-  {/* Conditionally render the icon based on the active state */}
-  {collection.id === activeCollectionId ? (
-    <FolderOpen className="h-4 w-4" />
-  ) : (
-    <Folder className="h-4 w-4" />
-  )}
-  
-  <span className="group-data-[collapsible=icon]:hidden">{collection.name}</span>
-</SidebarMenuButton>
+              <SidebarMenuButton 
+                className="w-full data-[active=true]:bg-primary"
+                tooltip={collection.name}
+                isActive={collection.id === activeCollectionId}
+              >
+                {/* Conditionally render the icon based on the active state */}
+                {collection.id === activeCollectionId ? (
+                  <FolderOpen className="h-4 w-4" />
+                ) : (
+                  <Folder className="h-4 w-4" />
+                )}
+                
+                <span className="group-data-[collapsible=icon]:hidden">{collection.name}</span>
+              </SidebarMenuButton>
             </Link>
 
             {/* This dropdown will be hidden when collapsed */}
