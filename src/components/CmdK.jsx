@@ -74,7 +74,7 @@ export default function CmdK({ bookmarks = [] }) {
               </CommandList>
             </div>
 
-<div className="hidden md:flex items-center justify-center p-4 overflow-y-auto">
+<div className="hidden md:flex items-center justify-center p-5 overflow-y-auto">
   {previewBookmark ? (
     <div className="w-full">
       <h3 className="font-semibold text-lg mb-4 truncate">{previewBookmark.title}</h3>
