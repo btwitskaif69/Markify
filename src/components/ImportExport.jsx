@@ -1,12 +1,18 @@
 import React, { useRef } from 'react';
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, Settings } from "lucide-react";
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 
 const API_URL = "http://localhost:5000/api";
 
-export default function ImportExport() {
+export default function ImportExport({ onRefetch }) {
   const { authFetch, user } = useAuth();
   const fileInputRef = useRef(null);
 
@@ -49,17 +55,18 @@ export default function ImportExport() {
         const data = await response.json();
         if (!response.ok) throw new Error(data.message);
         
-        // --- THIS IS THE UPDATED PART ---
-        // Create a detailed success message
         let message = `${data.createdCount} new bookmarks imported.`;
         if (data.skippedCount > 0) {
           message += ` ${data.skippedCount} were skipped as duplicates.`;
         }
         
         toast.success(message);
-        // ---------------------------------
         
-        window.location.reload();
+        if (onRefetch) {
+          onRefetch();
+        } else {
+          window.location.reload();
+        }
       } catch (error) {
         toast.error(error.message || "Invalid JSON file.");
         console.error("Import error:", error);
@@ -74,30 +81,36 @@ export default function ImportExport() {
   };
 
   return (
-    <div className="p-2 space-y-2 group-data-[collapsible=icon]:hidden">
-    <Button
-    variant="outline"
-    className="w-full justify-center hover:bg-primary! hover:text-primary-foreground!"
-    onClick={handleImportClick}
-  >
-    <Upload className="h-4 w-4 mr-2" />
-    Import Bookmarks
-  </Button>
-  <Button
-    variant="outline"
-    className="w-full justify-center hover:bg-primary! hover:text-primary-foreground!"
-    onClick={handleExport}
-  >
-    <Download className="h-4 w-4 mr-2" />
-    Export Bookmarks
-  </Button>
-  <input
-    type="file"
-    ref={fileInputRef}
-    onChange={handleFileChange}
-    style={{ display: 'none' }}
-    accept=".json"
-  />
-</div>
+    <SidebarGroup>
+      <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
+<SidebarGroupLabel className="text-sm text-foreground">
+  <div className="flex items-center gap-2">
+    <Settings className="h-4 w-4" />
+    <span className="font-semibold">Settings</span>
+  </div>
+</SidebarGroupLabel>
+      </div>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton className="w-full hover:bg-primary! hover:text-primary-foreground!" onClick={handleImportClick} tooltip="Import Data">
+            <Upload className="h-4 w-4" />
+            <span className="group-data-[collapsible=icon]:hidden">Import Data</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton className="w-full hover:bg-primary! hover:text-primary-foreground!" onClick={handleExport} tooltip="Export Data">
+            <Download className="h-4 w-4" />
+            <span className="group-data-[collapsible=icon]:hidden">Export Data</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+        accept=".json"
+      />
+    </SidebarGroup>
   );
 }

@@ -21,6 +21,7 @@ import { Sun, Moon, BookA } from "lucide-react";
 import { AnimationStyles } from "./theme-animations";
 import { useAuth } from "@/context/AuthContext"; 
 import { useParams, useNavigate } from "react-router-dom";
+import CmdK from "./cmdK";
 
 // --- CONSTANTS ---
 const API_URL = "http://localhost:5000/api";
@@ -471,6 +472,7 @@ const handleMoveBookmark = async (bookmarkId, collectionId) => {
           onToggleFavorite={handleToggleFavorite}
           onMove={handleMoveBookmark}
         />
+        <CmdK bookmarks={allBookmarks}/>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Home from './components/Home';
 import { LoginForm } from './components/login-form';
 import { SignupForm } from './components/signup-form';
+import cmdK from './components/CmdK';
 
 const App = () => {
   return (
@@ -14,7 +15,8 @@ const App = () => {
         <Route path="/login" element={<LoginForm/>} />
         <Route path="/signup" element={<SignupForm/>} />
         <Route path="/dashboard/:userId" element={<Dashboard/>} />
-         <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
+        <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
+        <Route path="/cmd" element={<cmdK/>} />
       </Routes>
     </ThemeProvider>
   );
