@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 
 const AuthContext = createContext(null);
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000/api";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const logout = useCallback(() => {
-    toast.success("You have been logged out."); // <-- Alert added here
+    toast.success("You have been logged out.");
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
@@ -20,47 +20,45 @@ export const AuthProvider = ({ children }) => {
   }, [navigate]);
 
   const authFetch = useCallback(async (url, options = {}) => {
-    if (!token) {
+    const currentToken = localStorage.getItem('token');
+    if (!currentToken) {
       logout();
       throw new Error("No token found, user logged out.");
     }
 
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${currentToken}`,
       ...options.headers,
     };
 
     const response = await fetch(url, { ...options, headers });
 
-    // The "session expired" alert is already correctly handled here
     if (response.status === 401) {
       toast.error("Session expired. Please log in again.");
       logout();
       throw new Error('Session expired');
     }
-
     return response;
-  }, [token, logout]);
-
+  }, [logout]);
 
   useEffect(() => {
     const verifyUser = async () => {
-      if (token) {
+      const currentToken = localStorage.getItem('token');
+      if (currentToken) {
         try {
           const response = await authFetch(`${API_URL}/users/profile`);
           if (!response.ok) throw new Error('Token verification failed');
           const userData = await response.json();
           setUser(userData);
         } catch (error) {
-          // authFetch already handles the logout and alert
-          console.error(error);
+          console.error(error.message);
         }
       }
       setIsLoading(false);
     };
     verifyUser();
-  }, [token, authFetch]);
+  }, []); // <-- THE FIX: Empty dependency array ensures this runs only once on initial load
 
   const login = (userData, authToken) => {
     localStorage.setItem('token', authToken);
