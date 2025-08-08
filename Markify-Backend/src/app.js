@@ -1,4 +1,4 @@
-require('dotenv').config(); // Ensure this is at the top of your server.js, not here
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const userRoutes = require('./routes/user.routes');
@@ -9,23 +9,25 @@ const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 
-// --- Middleware Setup ---
-// 1. Configure CORS once with the correct origin
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173" // Default for Vite React apps
+  origin: process.env.FRONTEND_URL || "http://localhost:5173"
 }));
 
-// 2. Body parser
 app.use(express.json());
 
-// --- Routes ---
+// --- ADD THIS ROOT ROUTE ---
+// This handles requests to the base URL (e.g., https://markify-api.vercel.app/)
+app.get('/', (req, res) => {
+  res.status(200).json({ message: 'Markify API is running successfully.' });
+});
+// ----------------------------
+
+// --- API Routes ---
 app.use('/api/preview', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/collections', collectionRoutes);
 
-// --- Error Handler ---
-// This should typically be the last middleware
 app.use(errorHandler);
 
 module.exports = app;
