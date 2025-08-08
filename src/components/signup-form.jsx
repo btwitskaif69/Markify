@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext"; // 1. Import the useAuth hook
 
-const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000/api";
+const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api/users/login`;
 
 export function SignupForm({ className, ...props }) {
   const [formData, setFormData] = useState({
