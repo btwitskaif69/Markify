@@ -21,6 +21,7 @@ import { Sun, Moon, BookA } from "lucide-react";
 import { AnimationStyles } from "./theme-animations";
 import { useAuth } from "@/context/AuthContext"; 
 import { useParams, useNavigate } from "react-router-dom";
+import CmdK from "./CmdK";
 
 // --- CONSTANTS ---
 const API_URL = "http://localhost:5000/api";
