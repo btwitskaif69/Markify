@@ -1,4 +1,3 @@
-// /index.js
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
@@ -7,9 +6,9 @@ const bookmarkRoutes = require('./routes/bookmark.routes');
 const previewRoutes = require('./routes/preview.routes');
 const collectionRoutes = require('./routes/collection.routes');
 const errorHandler = require("./middleware/error.middleware");
-const { port } = require("./config")
 
 const app = express();
+const port = process.env.PORT || 5000;
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173"
@@ -17,10 +16,14 @@ app.use(cors({
 
 app.use(express.json());
 
+// --- THIS IS THE FIX ---
+// Add a route to handle requests to the base URL
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Markify API is running successfully.' });
 });
+// ----------------------------
 
+// --- API Routes ---
 app.use('/api/preview', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
@@ -28,10 +31,12 @@ app.use('/api/collections', collectionRoutes);
 
 app.use(errorHandler);
 
-// This is the crucial part for Vercel
-// It tells Vercel to handle the requests with this app
-app.listen(port, () => {
-  console.log(`🚀 Server is running on http://localhost:${port}`)
-})
+// This line is for local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`🚀 Server is running on http://localhost:${port}`)
+  })
+}
 
+// Export the app for Vercel
 module.exports = app;
