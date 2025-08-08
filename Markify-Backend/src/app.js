@@ -10,6 +10,10 @@ const collectionRoutes = require('./routes/collection.routes');
 // Create the app instance
 const app = express();
 
+app.use(cors({
+  origin: process.env.FRONTEND_URL
+}));
+
 // Apply middleware
 app.use(cors());
 app.use(express.json());
