@@ -1,9 +1,5 @@
-// Change this line:
-// const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require("@prisma/client"); // Use the standard import path
 
-// To this:
-const { PrismaClient } = require("../../generated/prisma");
-
-// ... rest of your file
 const prisma = new PrismaClient();
+
 module.exports = prisma;
