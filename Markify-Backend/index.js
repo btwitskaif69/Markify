@@ -1,11 +1,11 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
-const userRoutes = require('./routes/user.routes');
-const bookmarkRoutes = require('./routes/bookmark.routes');
-const previewRoutes = require('./routes/preview.routes');
-const collectionRoutes = require('./routes/collection.routes');
-const errorHandler = require("./middleware/error.middleware");
+const userRoutes = require('./src/routes/user.routes');
+const bookmarkRoutes = require('./src/routes/bookmark.routes');
+const previewRoutes = require('./src/routes/preview.routes');
+const collectionRoutes = require('./src/routes/collection.routes');
+const errorHandler = require("./src/middleware/error.middleware");
 
 const app = express();
 const port = process.env.PORT || 5000;
