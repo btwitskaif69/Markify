@@ -142,7 +142,7 @@ useEffect(() => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      const response = await fetch(`${API_URL}/api/preview?url=${encodeURIComponent(url)}`, { signal: controller.signal });
+      const response = await fetch(`${API_URL}/preview?url=${encodeURIComponent(url)}`, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (!response.ok) throw new Error('No preview available');
       const data = await response.json();
