@@ -3,6 +3,6 @@ const router = express.Router();
 const previewController = require('../controllers/preview.controller');
 
 // GET /api/preview?url=https://example.com
-router.get('/preview', previewController.fetchLinkPreview);
+router.get('/', previewController.fetchLinkPreview);
 
 module.exports = router;
