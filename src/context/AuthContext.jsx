@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 
 const AuthContext = createContext(null);
-const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -25,15 +25,12 @@ export const AuthProvider = ({ children }) => {
       logout();
       throw new Error("No token found, user logged out.");
     }
-
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${currentToken}`,
       ...options.headers,
     };
-
     const response = await fetch(url, { ...options, headers });
-
     if (response.status === 401) {
       toast.error("Session expired. Please log in again.");
       logout();
@@ -42,12 +39,15 @@ export const AuthProvider = ({ children }) => {
     return response;
   }, [logout]);
 
+
   useEffect(() => {
     const verifyUser = async () => {
       const currentToken = localStorage.getItem('token');
       if (currentToken) {
         try {
-          const response = await authFetch(`${API_URL}/users/profile`);
+          // --- THIS IS THE FIX ---
+          // The URL must include the /api prefix
+          const response = await authFetch(`${API_URL}/api/users/profile`);
           if (!response.ok) throw new Error('Token verification failed');
           const userData = await response.json();
           setUser(userData);
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     };
     verifyUser();
-  }, []); // <-- THE FIX: Empty dependency array ensures this runs only once on initial load
+  }, [authFetch]);
 
   const login = (userData, authToken) => {
     localStorage.setItem('token', authToken);
