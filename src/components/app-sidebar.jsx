@@ -13,6 +13,7 @@ import {
   SidebarMenuButton
 } from "@/components/ui/sidebar"
 import ImportExport from "./ImportExport";
+import logo from "@/assets/logo-light.svg"
 
 export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, ...props }) {
   const { user, logout } = useAuth();
@@ -27,7 +28,8 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
             className="hover:bg-transparent hover:text-inherit"
           >
             <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-              <BookMarked className="size-4" />
+              {/* <BookMarked className="size-4" /> */}
+              <img src={logo} alt="Markify" className="h-5 w-5"/>
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate text-lg font-semibold">Markify</span>
