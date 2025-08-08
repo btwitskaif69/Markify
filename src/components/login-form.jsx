@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // 1. Import the useNavigate hook
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +14,18 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
 
+// --- THIS IS THE FIX ---
+// The URL now includes the full path to the login endpoint
 const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api/users/login`;
 
 export function LoginForm({ className, ...props }) {
-  const { login } = useAuth(); // Get the login function from context
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate(); // 2. Initialize the hook
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -42,13 +44,16 @@ export function LoginForm({ className, ...props }) {
       });
 
       const data = await response.json();
-    toast.success("Login successful!");
-    
-    // Use the login function to store user and token
-    login(data.user, data.token);
 
-    // Redirect to the dashboard
-    navigate(`/dashboard/${data.user.id}`);
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed. Please try again.");
+      }
+      
+      toast.success("Login successful!");
+      
+      login(data.user, data.token);
+
+      navigate(`/dashboard/${data.user.id}`);
 
     } catch (error) {
       console.error("Login error:", error);
