@@ -24,7 +24,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import CmdK from "./CmdK";
 
 // --- CONSTANTS ---
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api`;
+const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
 export default function Dashboard() {
