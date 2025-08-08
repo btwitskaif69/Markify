@@ -16,14 +16,12 @@ app.use(cors({
 
 app.use(express.json());
 
-// --- THIS IS THE FIX ---
-// Add a route to handle requests to the base URL
+// A root route to confirm the API is running
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Markify API is running successfully.' });
 });
-// ----------------------------
 
-// --- API Routes ---
+// Your API routes
 app.use('/api/preview', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
@@ -31,7 +29,7 @@ app.use('/api/collections', collectionRoutes);
 
 app.use(errorHandler);
 
-// This line is for local development
+// This part is for local development only and will be ignored by Vercel
 if (process.env.NODE_ENV !== 'production') {
   app.listen(port, () => {
     console.log(`🚀 Server is running on http://localhost:${port}`)
