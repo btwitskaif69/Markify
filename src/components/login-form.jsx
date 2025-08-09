@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
+import { Eye,  EyeOff } from "lucide-react";
 
 // --- THIS IS THE FIX ---
 // The URL now includes the full path to the login endpoint
@@ -25,6 +26,7 @@ export function LoginForm({ className, ...props }) {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -64,7 +66,7 @@ export function LoginForm({ className, ...props }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black p-4">
+     <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className={cn("w-full max-w-md", className)} {...props}>
         <CardHeader>
           <CardTitle className="text-2xl">Login to your account</CardTitle>
@@ -80,11 +82,12 @@ export function LoginForm({ className, ...props }) {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="name@example.com" // Improved placeholder
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isLoading}
                   required
+                  className="bg-background!"
                 />
               </div>
               <div className="grid gap-2">
@@ -94,20 +97,38 @@ export function LoginForm({ className, ...props }) {
                     Forgot your password?
                   </a>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  required
-                />
+                {/* 3. Wrap Input and Button for positioning */}
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    required
+                    className="bg-background!"
+                  />
+                    {formData.password.length > 0 && (
+                      <div
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute top-0 right-0 h-full px-3 flex items-center cursor-pointer select-none"
+                      >
+                        {showPassword ? (
+                          <Eye className="h-4 w-4" />
+                        ) : (
+                          <EyeOff className="h-4 w-4" />
+                        )}
+                      </div>
+                    )}
+
+                </div>
               </div>
               <div className="flex flex-col gap-3 pt-2">
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
-                <Button variant="outline" className="w-full" disabled={isLoading}>
+                <Button variant="outline" className="w-full bg-background!" disabled={isLoading}>
                   Login with Google
                 </Button>
               </div>
