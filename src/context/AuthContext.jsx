@@ -15,7 +15,12 @@ const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000";
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  // Load from localStorage on first render
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,9 +33,18 @@ export const AuthProvider = ({ children }) => {
     setToken(authToken);
   };
 
+  const saveUser = (userData) => {
+    if (userData) {
+      localStorage.setItem("user", JSON.stringify(userData));
+    } else {
+      localStorage.removeItem("user");
+    }
+    setUser(userData);
+  };
+
   const logout = useCallback(() => {
     saveToken(null);
-    setUser(null);
+    saveUser(null);
     toast.success("You have been logged out.");
     navigate("/login");
   }, [navigate]);
@@ -77,7 +91,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authFetch(`${API_URL}/api/users/profile`);
       if (!response.ok) throw new Error("Token verification failed");
       const userData = await response.json();
-      setUser(userData);
+      saveUser(userData); // update localStorage user
     } catch (error) {
       console.error("User verification failed:", error);
     } finally {
@@ -91,7 +105,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData, authToken) => {
     saveToken(authToken);
-    setUser(userData);
+    saveUser(userData);
   };
 
   const authValue = useMemo(
@@ -104,7 +118,7 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated: !!user,
       isLoading,
     }),
-    [user, token, login, logout, authFetch, isLoading]
+    [user, token, logout, authFetch, isLoading]
   );
 
   return (
