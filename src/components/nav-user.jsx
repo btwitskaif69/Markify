@@ -54,12 +54,12 @@ export function NavUser({ user }) {
           </div>
         </DropdownMenuTrigger>
         
-        <DropdownMenuContent
-          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg z-50"
-          align="end"
-          side="right"
-          sideOffset={8}
-        >
+<DropdownMenuContent
+  className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg z-50"
+  align="start"
+  side={window.innerWidth < 640 ? "bottom" : "right"}
+  sideOffset={8}
+>
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar className="h-8 w-8 rounded-lg">

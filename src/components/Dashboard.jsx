@@ -24,23 +24,23 @@ export default function Dashboard() {
   const { user, authFetch, isLoading: isAuthLoading } = useAuth();
   const { theme, setTheme } = useTheme();
 
-  const {
-    allBookmarks,
-    bookmarks,
-    setBookmarks,
-    collections,
-    setCollections,
-    isLoading,
-    error,
-    setAllBookmarks,
-  } = useDashboardData(user, authFetch, isAuthLoading);
+const {
+  allBookmarks,
+  bookmarks,
+  setAllBookmarks,
+  collections,
+  setCollections, // ← Now available
+  isLoading,
+  error
+} = useDashboardData(user, authFetch, isAuthLoading);
 
-  const {
-    handleSubmit,
-    handleDelete,
-    handleToggleFavorite,
-    handleMoveBookmark,
-  } = useBookmarkActions(authFetch, user, setBookmarks, setAllBookmarks, collections);
+const {
+  handleSubmit,
+  handleDelete,
+  handleToggleFavorite,
+  handleMoveBookmark
+} = useBookmarkActions(authFetch, user, setAllBookmarks, collections);
+
 
   const {
     isCollectionDialogOpen,

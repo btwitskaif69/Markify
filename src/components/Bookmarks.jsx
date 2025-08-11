@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BookmarkCard from "@/components/Bookmarks/BookmarkCard";
 import BookmarkListItem from "@/components/Bookmarks/BookmarkListItem";
 import BookmarkFilters from "@/components/Bookmarks/BookmarkFilters";
@@ -6,7 +6,7 @@ import BookmarkStats from "@/components/Bookmarks/BookmarkStats";
 import { Card } from "@/components/ui/card";
 import BookmarkCardSkeleton from "@/components/Bookmarks/BookmarkCardSkeleton";
 
-export default function Bookmarks({ bookmarks, collections, isLoading, error, onEdit, onDelete, onToggleFavorite, onMove }) {
+export default function Bookmarks({ bookmarks, collections, isLoading, error, onEdit, onDelete, onToggleFavorite, onMove, fetchMoreBookmarks }) {
   // --- LOCAL UI STATE & FILTERING ---
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -23,6 +23,17 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
     const matchesFavorites = !showFavoritesOnly || bookmark.isFavorite;
     return matchesSearch && matchesCategory && matchesFavorites;
   });
+
+  useEffect(() => {
+  const handleScroll = () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+      fetchMoreBookmarks();
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [fetchMoreBookmarks]);
 
   // --- RENDER LOGIC ---
   // This early return for error is correct
@@ -42,6 +53,7 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
         viewMode={viewMode}
         setViewMode={setViewMode}
         categories={["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]}
+        fetchMoreBookmarks={fetchMoreBookmarks}
       />
 
       <BookmarkStats bookmarks={bookmarks} />

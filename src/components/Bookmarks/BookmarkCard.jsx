@@ -32,23 +32,30 @@ export default function BookmarkCard({bookmark, collections, onMove, onEdit, onD
         className="block"
       >
       {/* Image/Preview */}
-      <div id="link-preview" className="w-full h-50 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-2">
-        {bookmark.previewImage ? (
-          <img 
-            src={bookmark.previewImage || placeholder}
-            alt={bookmark.title} 
-            className="object-cover h-full w-full" 
-          />
-        ) : (
-          <img
-            src={faviconUrl}
-            alt={`${bookmark.title} favicon`}
-            className="w-16 h-16 object-contain"
-            // Fallback to a generic icon if the favicon fails to load
-            onError={(e) => e.currentTarget.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'}
-          />
-        )}
-      </div>
+        <div
+          id="link-preview"
+          className="w-full h-50 overflow-hidden rounded-md bg-muted flex items-center justify-center mb-2"
+        >
+          {bookmark.previewImage ? (
+            <img
+              src={bookmark.previewImage || placeholder}
+              alt={bookmark.title}
+              className="object-cover h-full w-full"
+              loading="lazy" // ✅ Lazy load
+            />
+          ) : (
+            <img
+              src={faviconUrl}
+              alt={`${bookmark.title} favicon`}
+              className="w-16 h-16 object-contain"
+              loading="lazy" // ✅ Lazy load
+              onError={(e) =>
+                (e.currentTarget.src =
+                  'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>')
+              }
+            />
+          )}
+        </div>
       </a>
 
       {/* Title & Favorite Icon */}

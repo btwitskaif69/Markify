@@ -1,9 +1,8 @@
-// src/components/Dashboard/useBookmarkActions.js
 import { toast } from "sonner";
 
 const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
 
-export function useBookmarkActions(authFetch, user, setBookmarks, setAllBookmarks, collections) {
+export function useBookmarkActions(authFetch, user, setAllBookmarks, collections) {
   const handleSubmit = async (bookmarkData, editingBookmark, previewData, closeDialog) => {
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null;
@@ -23,8 +22,10 @@ export function useBookmarkActions(authFetch, user, setBookmarks, setAllBookmark
       if (!response.ok) throw new Error(`Failed to submit bookmark.`);
       const { bookmark: returnedBookmark } = await response.json();
 
-      setBookmarks((prev) =>
-        isEditing ? prev.map((b) => (b.id === returnedBookmark.id ? returnedBookmark : b)) : [returnedBookmark, ...prev]
+      setAllBookmarks((prev) =>
+        isEditing
+          ? prev.map((b) => (b.id === returnedBookmark.id ? returnedBookmark : b))
+          : [returnedBookmark, ...prev]
       );
 
       toast.success(isEditing ? "Bookmark updated!" : "Bookmark added!");
@@ -37,9 +38,9 @@ export function useBookmarkActions(authFetch, user, setBookmarks, setAllBookmark
   };
 
   const handleDelete = async (id) => {
-    const originalBookmarks = [];
-    setBookmarks((prev) => {
-      originalBookmarks.push(...prev);
+    let originalBookmarks;
+    setAllBookmarks((prev) => {
+      originalBookmarks = prev;
       return prev.filter((b) => b.id !== id);
     });
     toast.success("Bookmark deleted.");
@@ -49,15 +50,15 @@ export function useBookmarkActions(authFetch, user, setBookmarks, setAllBookmark
     } catch (err) {
       if (err.message !== "Session expired") {
         toast.error("Failed to delete. Restoring bookmark.");
-        setBookmarks(originalBookmarks);
+        setAllBookmarks(originalBookmarks);
       }
     }
   };
 
   const handleToggleFavorite = async (id, currentIsFavorite) => {
-    const originalBookmarks = [];
-    setBookmarks((prev) => {
-      originalBookmarks.push(...prev);
+    let originalBookmarks;
+    setAllBookmarks((prev) => {
+      originalBookmarks = prev;
       return prev.map((b) => (b.id === id ? { ...b, isFavorite: !b.isFavorite } : b));
     });
     try {
@@ -67,11 +68,11 @@ export function useBookmarkActions(authFetch, user, setBookmarks, setAllBookmark
       });
       if (!response.ok) throw new Error("Failed to update favorite status.");
       const { bookmark: returnedBookmark } = await response.json();
-      setBookmarks((prev) => prev.map((b) => (b.id === id ? returnedBookmark : b)));
+      setAllBookmarks((prev) => prev.map((b) => (b.id === id ? returnedBookmark : b)));
     } catch (err) {
       if (err.message !== "Session expired") {
         toast.error("Could not update favorite status.");
-        setBookmarks(originalBookmarks);
+        setAllBookmarks(originalBookmarks);
       }
     }
   };
