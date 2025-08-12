@@ -13,21 +13,20 @@ import {
 } from "@/components/ui/command";
 import { Link as LinkIcon } from 'lucide-react';
 
-export default function CmdK({ bookmarks = [] }) {
-  const [open, setOpen] = useState(false);
+export default function CmdK({bookmarks = [], open, setOpen }) {
   const [search, setSearch] = useState("");
   const [previewBookmark, setPreviewBookmark] = useState(null);
 
-  useEffect(() => {
+useEffect(() => {
     const down = (e) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen(!open);
       }
     };
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
-  }, []);
+  }, [open, setOpen]);
   
   const filteredBookmarks = bookmarks.filter(bookmark => 
     `${bookmark.title} ${bookmark.description} ${bookmark.tags}`

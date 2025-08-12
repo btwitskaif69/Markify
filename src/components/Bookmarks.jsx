@@ -5,6 +5,7 @@ import BookmarkFilters from "@/components/Bookmarks/BookmarkFilters";
 import BookmarkStats from "@/components/Bookmarks/BookmarkStats";
 import { Card } from "@/components/ui/card";
 import BookmarkCardSkeleton from "@/components/Bookmarks/BookmarkCardSkeleton";
+import CmdK from "./CmdK";
 
 export default function Bookmarks({ bookmarks, collections, isLoading, error, onEdit, onDelete, onToggleFavorite, onMove, fetchMoreBookmarks }) {
   // --- LOCAL UI STATE & FILTERING ---
@@ -12,6 +13,7 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [cmdKOpen, setCmdKOpen] = useState(false);
 
   const filteredBookmarks = bookmarks.filter((bookmark) => {
     const searchString = String(bookmark.tags || '');
@@ -54,6 +56,12 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
         setViewMode={setViewMode}
         categories={["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]}
         fetchMoreBookmarks={fetchMoreBookmarks}
+        onOpenCmdK={() => setCmdKOpen(true)} // Pass handler to open CmdK
+      />
+      <CmdK
+        bookmarks={bookmarks}
+        open={cmdKOpen}
+        setOpen={setCmdKOpen}
       />
 
       <BookmarkStats bookmarks={bookmarks} />
