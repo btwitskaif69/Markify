@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Star, LayoutGrid, List, Filter } from "lucide-react";
+import { Star, LayoutGrid, List, Filter, Command } from "lucide-react";
 
 export default function BookmarkFilters({
   searchTerm,
@@ -51,8 +51,9 @@ export default function BookmarkFilters({
             onClick={onOpenCmdK} // open CmdK on click
           >
             <span className="text-sm truncate">Global search...</span>
-            <span className="text-md border px-2 py-0.5 rounded ml-2 flex-shrink-0">
-              ⌘ K
+            <span className=" flex justify-between items-center bg-accent text-md border px-2 py-0.5 rounded ml-2 flex-shrink-0 gap-1">
+            <Command className="h-3 w-3"/>
+              K
             </span>
           </Button>
 
@@ -71,29 +72,6 @@ export default function BookmarkFilters({
             </SelectContent>
           </Select>
         </div>
-        {/* <div className="flex flex-col sm:flex-row gap-2 flex-1">
-          <Input
-            type="text"
-            placeholder="Search bookmarks..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-background!"
-          />
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[160px] bg-background!">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Select Category" />
-            </SelectTrigger>
-            <SelectContent className="bg-background!">
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div> */}
 
         {/* Right: Toggle Favorite + View Mode */}
         <div className="flex gap-2 items-center">
