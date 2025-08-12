@@ -33,11 +33,13 @@ useEffect(() => {
       .toLowerCase()
       .includes(search.toLowerCase())
   );
-  
-  // --- THIS useEffect WAS REMOVED ---
-  // It was overriding the onMouseOver behavior.
-  // By removing it, the hover effect will now work correctly.
 
+   useEffect(() => {
+    if (open && bookmarks.length > 0) {
+      setPreviewBookmark(bookmarks[0]);
+    }
+  }, [open, bookmarks]);
+  
   const handleSelect = (bookmarkUrl) => {
     window.open(bookmarkUrl, '_blank');
     setOpen(false);
