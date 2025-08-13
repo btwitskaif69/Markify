@@ -53,7 +53,7 @@ export default function BookmarkFilters({
             <span className="text-sm truncate">Global search...</span>
             <span className=" flex justify-between items-center bg-accent text-md border px-2 py-0.5 rounded ml-2 flex-shrink-0 gap-1">
             <Command className="h-3 w-3"/>
-              K
+              + K
             </span>
           </Button>
 
@@ -80,7 +80,7 @@ export default function BookmarkFilters({
             onPressedChange={setShowFavoritesOnly}
             aria-label="Toggle favorites"
           >
-            <Star className="w-4 h-4" />
+            <Star className="w-4 h-4"/>
           </Toggle>
           <Button
             variant={viewMode === "grid" ? "default" : "outline"}
