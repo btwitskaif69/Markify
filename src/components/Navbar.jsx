@@ -59,8 +59,8 @@ const Navbar = () => {
             <Moon className="h-6 w-6 text-gray-500" />
           )}
         </div>
-        <NavbarButton as={Link} to="/subscribe">
-          Subscribe
+        <NavbarButton as={Link} to="/signup">
+          Sign Up
         </NavbarButton>
       </NavBody>
 
