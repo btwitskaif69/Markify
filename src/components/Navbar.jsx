@@ -46,6 +46,7 @@ const Navbar = () => {
       <NavBody>
         <NavbarLogo />
         <NavItems items={navItems} onItemClick={closeMobileMenu} />
+        <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
         <div
           onClick={handleThemeToggle}
           className={`flex items-end mr-5 cursor-pointer transition-transform duration-1000 ${
