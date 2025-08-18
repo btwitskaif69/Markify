@@ -49,7 +49,7 @@ const Navbar = () => {
         <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
         <div
           onClick={handleThemeToggle}
-          className={`flex items-end mr-5 cursor-pointer transition-transform duration-1000 ${
+          className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 ${
             isDark ? "rotate-180" : "rotate-0"
           }`}
         >
