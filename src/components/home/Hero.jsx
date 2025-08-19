@@ -10,16 +10,14 @@ const Hero = () => {
       {/* Grid background (behind everything) */}
       <div
         aria-hidden="true"
-        className="fixed inset-0 z-0 pointer-events-none  "
+        className="fixed inset-0 z-0 pointer-events-none
+          [background-image:linear-gradient(to_right,rgba(0,0,0,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.08)_1px,transparent_1px)]
+          dark:[background-image:linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)]"
         style={{
           backgroundSize: "68px 68px",
           backgroundPosition: "0 0", // grid starts at top-left of viewport
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
-          `,
           mixBlendMode: "",
-          opacity: 0.3,               // subtle; tweak 0.06 - 0.18 to taste
+          opacity: 1, // tweak 0.06 - 0.18 to taste
           transform: "translateZ(0)",
         }}
       />
@@ -74,7 +72,6 @@ const Hero = () => {
               Learn More
             </Button>
           </div>
-
         </div>
       </section>
     </div>
