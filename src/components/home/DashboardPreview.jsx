@@ -8,7 +8,7 @@ const DashboardPreview = () => {
 
   return (
     <div className="w-[calc(100vw-32px)] md:w-[1500px]">
-      <div className="bg-primary rounded-2xl p-4 shadow-2xl">
+      <div className="bg-white/50 shadow-amber-300 rounded-2xl p-4 shadow-2xl">
         <img
           src={theme === "dark" ? dark : light}
           alt="Dashboard preview"
