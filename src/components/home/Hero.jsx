@@ -27,7 +27,7 @@ const Hero = () => {
 
       {/* Hero Content */}
       <section className="relative z-10 flex items-center justify-center min-h-[100vh]">
-        <div className="container mx-auto px-6 md:px-12 flex flex-col items-center justify-center text-center space-y-4">
+        <div className="container mx-auto px-6 md:px-12 flex flex-col items-center justify-center text-center">
           {/* Tagline */}
           <Link to="/signup" className="inline-block">
             <Button
@@ -41,12 +41,12 @@ const Hero = () => {
           </Link>
 
           {/* Heading */}
-          <h1 className="text-4xl md:text-8xl font-medium leading-tight tracking-tight text-foreground max-w-6xl">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-medium leading-tight tracking-tight text-foreground max-w-6xl">
             Save, Organize, and Access Your Bookmarks Smarter
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl">
+          <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl mb-5">
             Keep every link organized, searchable, and accessible with Markify’s clean, modern bookmark manager.
           </p>
 

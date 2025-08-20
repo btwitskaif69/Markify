@@ -9,10 +9,15 @@ import Logo5 from "@/assets/5.svg";
 import Logo6 from "@/assets/6.svg";
 import Logo7 from "@/assets/7.svg";
 import Logo8 from "@/assets/8.svg";
+import { useTheme } from "../theme-provider";
+
 
 const logos = [Logo1, Logo2, Logo3, Logo4, Logo5, Logo6, Logo7, Logo8];
 
 const PowerBy = () => {
+    const { theme } = useTheme();
+
+    
   return (
     <section className="w-full py-10 bg-black">
       <div className="max-w-6xl mx-auto flex flex-col items-center">
