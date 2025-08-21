@@ -15,8 +15,7 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useThemeToggle } from "../hooks/useThemeToggle";
 import { AnimationStyles } from "./theme-animations";
-import { useTheme } from "./theme-provider"; // Import the useTheme hook
-
+import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 
 const navItems = [

@@ -60,7 +60,7 @@ const features = [
 
 const Features = () => {
   return (
-    <div className='px-80 py-10'>
+    <div className='p-5'>
        <BentoGrid className="lg:grid-rows-3">
       {features.map((feature) => (
         <BentoCard key={feature.name} {...feature} />
