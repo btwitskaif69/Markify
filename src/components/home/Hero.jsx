@@ -4,6 +4,7 @@ import { Spotlight } from "../ui/spotlight-new";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import DashboardPreview from "./DashboardPreview";
+import ShinyText from "../ShinyText";
 
 const Hero = () => {
   return (
@@ -32,10 +33,16 @@ const Hero = () => {
           <Link to="/signup" className="inline-block">
             <Button
               variant="outline"
-              className="group border px-6 py-3 rounded-full inline-flex items-center gap-1 text-sm font-medium"
+              className="group border px-6 py-3 rounded-full inline-flex items-center gap-1 text-sm font-medium cursor-pointer bg-transparent!"
             >
               <Sparkles className="text-yellow-400 fill-yellow-400 w-5 h-5" />
-              <span className="select-none">Never Lose a Bookmark Again</span>
+                <ShinyText 
+                text="Never Lose a Bookmark Again!" 
+                disabled={false} 
+                speed={4} 
+                className='custom-class'
+              />
+
               <ChevronRight className="w-4 h-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
             </Button>
           </Link>
@@ -52,9 +59,11 @@ const Hero = () => {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
-            <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto">
+            <Link to="/signup">
+            <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto cursor-pointer">
               Get Started
             </Button>
+            </Link>
             <Button
               variant="outline"
               size="lg"

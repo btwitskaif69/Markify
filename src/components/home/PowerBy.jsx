@@ -19,11 +19,11 @@ const PowerBy = () => {
 
     
   return (
-    <section className="w-full py-10 bg-black">
+    <section className="w-full py-10 bg-accent">
       <div className="max-w-6xl mx-auto flex flex-col items-center">
         {/* Heading */}
-        <h2 className="text-white text-lg font-medium mb-6">
-          Powered by the best:
+        <h2 className="text-4xl font-semibold mb-6">
+          Powered by the best
         </h2>
 
         {/* Logos Row */}
@@ -33,7 +33,7 @@ const PowerBy = () => {
               key={index}
               src={logo}
               alt={`Logo ${index + 1}`}
-              className="h-8 opacity-70 hover:opacity-100 transition filter-greyscale"
+              className="h-15 fill-amber-200"
             />
           ))}
         </div>

@@ -211,3 +211,17 @@ input:-webkit-autofill:active {
   border-radius: 0.375rem !important; /* match Tailwind rounded-md */
   transition: background-color 5000s ease-in-out 0s !important; /* prevent flicker */
 }
+
+/* src/index.css or App.css */
+@keyframes shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shine {
+  animation: shine 2s linear infinite;
+}

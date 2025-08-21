@@ -96,8 +96,8 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          <NavbarButton as={Link} to="/subscribe" className="w-full mt-4">
-            Subscribe
+          <NavbarButton as={Link} to="/signup" className="w-full mt-4">
+            Sign Up
           </NavbarButton>
         </MobileNavMenu>
       </MobileNav>
