@@ -161,39 +161,36 @@
   }
 }
 
-/* Style the scrollbar track */
-::-webkit-scrollbar {
-  width: 10px;
+/* Scrollbar always overlays, no layout shift */
+html {
+  scrollbar-gutter: stable; /* fixes layout shift, no left gap */
 }
 
-/* Style the scrollbar thumb */
+/* Customize scrollbar look */
+::-webkit-scrollbar {
+  width: 8px; /* thinner, less intrusive */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* no background shift */
+}
+
 ::-webkit-scrollbar-thumb {
   background-color: var(--color-primary);
-  border-radius: 10px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+  border-radius: 20px;
+  background-clip: padding-box;
 }
 
-/* Optional: hover effect */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 80%, white);
 }
 
-/* Style the scrollbar track */
-::-webkit-scrollbar-track {
-  background-color: var(--color-background);
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
 }
 
-/* Text selection color */
-::selection {
-  background: var(--color-primary);
-  color: var(--color-foreground);
-}
-
-::-moz-selection {
-  background: var(--color-primary);
-  color: var(--color-foreground);
-}
 
 @layer base {
   :root {
@@ -202,15 +199,17 @@
   }
 }
 
+/* Autofill (works for both themes) */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #09090b inset !important; /* match background */
-  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--color-background) inset !important;
+  -webkit-text-fill-color: var(--color-foreground) !important;
   border-radius: 0.375rem !important; /* match Tailwind rounded-md */
-  transition: background-color 5000s ease-in-out 0s !important; /* prevent flicker */
+  transition: background-color 9999s ease-in-out 0s !important; /* suppress flicker */
 }
+
 
 /* src/index.css or App.css */
 @keyframes shine {
@@ -225,3 +224,4 @@ input:-webkit-autofill:active {
 .animate-shine {
   animation: shine 2s linear infinite;
 }
+

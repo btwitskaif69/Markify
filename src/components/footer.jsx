@@ -1,8 +1,6 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import {
   Tooltip,
   TooltipContent,
@@ -13,9 +11,10 @@ import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-
 import { useThemeToggle } from "../hooks/useThemeToggle";
 import { AnimationStyles } from "./theme-animations";
 import { useTheme } from "./theme-provider";
+import logo from "@/assets/logo-light.svg"
+
 
 function Footer() {
-  const [isChatOpen, setIsChatOpen] = React.useState(false)
 
     // 1. Get theme and setTheme from the useTheme() hook
     const { theme, setTheme } = useTheme();
@@ -33,6 +32,14 @@ function Footer() {
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="relative">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="bg-primary text-primary-foreground flex aspect-square size-9 items-center justify-center rounded-lg">
+                <img src={logo} alt="Markify" className="h-6 w-6"/>
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate text-2xl font-semibold">Markify</span>
+              </div>
+            </div>
             <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
             <p className="mb-6 text-muted-foreground">
               Join our newsletter for the latest updates and exclusive offers.
@@ -140,18 +147,18 @@ function Footer() {
             </div>
             <div className="flex items-center space-x-2">
               <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
-        <div
-          onClick={handleThemeToggle}
-          className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 ${
-            isDark ? "rotate-180" : "rotate-0"
-          }`}
-        >
-          {isDark ? (
-            <Sun className="h-6 w-6 text-yellow-500" />
-          ) : (
-            <Moon className="h-6 w-6 text-gray-500" />
-          )}
-        </div>
+              <div
+                onClick={handleThemeToggle}
+                className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 ${
+                  isDark ? "rotate-180" : "rotate-0"
+                }`}
+              >
+                {isDark ? (
+                  <Sun className="h-6 w-6 text-yellow-500" />
+                ) : (
+                  <Moon className="h-6 w-6 text-gray-500" />
+                )}
+              </div>
             </div>
           </div>
         </div>

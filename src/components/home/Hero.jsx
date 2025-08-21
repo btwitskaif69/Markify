@@ -39,7 +39,7 @@ const Hero = () => {
                 <ShinyText 
                 text="Never Lose a Bookmark Again!" 
                 disabled={false} 
-                speed={4} 
+                speed={3} 
                 className='custom-class'
               />
 
