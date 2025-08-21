@@ -23,7 +23,7 @@ const ShinyText = ({ text, disabled = false, speed = 5, className = '' }) => {
   }, []);
 
   // Theme-specific colors
-  const baseColor = isDark ? "#b5b5b5a4" : "#000000";
+  const baseColor = isDark ? "#c6c6b9 " : "#000000";
   const shineColor = isDark ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.8)";
 
   return (
