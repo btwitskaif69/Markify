@@ -72,7 +72,7 @@ Bookmarks, Collections & Lightning Search
 
 
 <p className="mt-6 text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-Powerful features designed to transform your chaotic bookmark collection into an organized, searchable library — AI categorization, keyboard-first search (CMD/CTRL+K), end-to-end privacy, and effortless sharing across devices.
+Powerful features designed to transform your chaotic bookmark collection into an organized, searchable library — AI categorization, keyboard-first search (CMD/CTRL+K), end-to-end privacy, and effortless sharing across devices..
 </p>
 </header>
 
