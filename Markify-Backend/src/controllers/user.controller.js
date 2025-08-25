@@ -1,6 +1,8 @@
 const prisma = require('../db/prismaClient');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // 1. Import jsonwebtoken
+const crypto = require('crypto'); // 1. Import the built-in crypto module
+const { sendPasswordResetEmail } = require('../services/email.service'); // 2. Import your email service
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -115,16 +117,11 @@ exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
 
-    // Always send a success response to prevent email enumeration attacks
     if (user) {
-      // 1. Create a secure, random token
       const resetToken = crypto.randomBytes(32).toString('hex');
       const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-
-      // 2. Set an expiration date (e.g., 1 hour from now)
       const expiresAt = new Date(Date.now() + 3600000); // 1 hour
 
-      // 3. Save the hashed token to the database
       await prisma.passwordResetToken.create({
         data: {
           token: hashedToken,
@@ -133,13 +130,15 @@ exports.forgotPassword = async (req, res) => {
         },
       });
 
-      // 4. In a real app, you would email this link. For now, we log it.
       const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-      console.log('Password Reset Link:', resetUrl);
+      
+      // This will now work correctly
+      await sendPasswordResetEmail(user.email, resetUrl);
     }
 
     res.status(200).json({ message: "If an account with that email exists, a password reset link has been sent." });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

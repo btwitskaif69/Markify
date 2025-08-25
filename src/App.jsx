@@ -8,6 +8,7 @@ import { SignupForm } from './components/Forms/signup-form';
 import NotFoundPage from './components/NotFoundPage';
 import ForgotPassword from './components/Forms/forgot-password';
 import ResetPassword from './components/Forms/reset-password';
+import CmdK from './components/dashboard/CmdK';
 
 const App = () => {
   return (
@@ -20,7 +21,7 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard/:userId" element={<Dashboard/>} />
         <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
-        <Route path="/cmd" element={<cmdK/>} />
+        <Route path="/cmd" element={<CmdK/>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </ThemeProvider>
