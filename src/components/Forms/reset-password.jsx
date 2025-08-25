@@ -67,6 +67,7 @@ export default function ResetPassword() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
                   required
+                  className="bg-background!"
                 />
               </div>
               <div className="grid gap-2">
@@ -78,6 +79,7 @@ export default function ResetPassword() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isLoading}
                   required
+                  className="bg-background!"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>

@@ -60,6 +60,7 @@ export default function ForgotPassword() {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
                   required
+                  className="bg-background!"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
