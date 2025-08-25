@@ -63,7 +63,7 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-48 rounded-lg z-50"
+                  className="w-48 rounded-lg z-50 bg-background"
                   side="right"
                   align="start"
                   sideOffset={8}

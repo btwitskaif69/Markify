@@ -1,9 +1,9 @@
 import * as React from "react"
 import { Link } from "react-router-dom"; // 1. Import the Link component
 import { Bookmark, BookMarked } from "lucide-react"
-import { NavMain } from "@/components/nav-main"
-import { NavCollections } from "@/components/nav-collections"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/dashboard/nav-main"
+import { NavCollections } from "@/components/dashboard/nav-collections"
+import { NavUser } from "@/components/dashboard/nav-user"
 import { useAuth } from "@/context/AuthContext"
 import {
   Sidebar,

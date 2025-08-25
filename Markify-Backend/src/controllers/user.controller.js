@@ -106,3 +106,80 @@ exports.getUserProfile = async (req, res) => {
   // The user object is attached to the request by the `protect` middleware
   res.status(200).json(req.user);
 };
+
+/**
+ * Handles a forgot password request.
+ */
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    // Always send a success response to prevent email enumeration attacks
+    if (user) {
+      // 1. Create a secure, random token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+      // 2. Set an expiration date (e.g., 1 hour from now)
+      const expiresAt = new Date(Date.now() + 3600000); // 1 hour
+
+      // 3. Save the hashed token to the database
+      await prisma.passwordResetToken.create({
+        data: {
+          token: hashedToken,
+          expiresAt,
+          userId: user.id,
+        },
+      });
+
+      // 4. In a real app, you would email this link. For now, we log it.
+      const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      console.log('Password Reset Link:', resetUrl);
+    }
+
+    res.status(200).json({ message: "If an account with that email exists, a password reset link has been sent." });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+/**
+ * Resets a user's password using a token.
+ */
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    // 1. Hash the incoming token to match the one in the database
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // 2. Find the token in the database
+    const passwordResetToken = await prisma.passwordResetToken.findUnique({
+      where: { token: hashedToken },
+    });
+
+    // 3. Check if the token is valid and not expired
+    if (!passwordResetToken || passwordResetToken.expiresAt < new Date()) {
+      return res.status(400).json({ message: "Token is invalid or has expired." });
+    }
+
+    // 4. Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // 5. Update the user's password
+    await prisma.user.update({
+      where: { id: passwordResetToken.userId },
+      data: { password: hashedPassword },
+    });
+
+    // 6. Delete the used token
+    await prisma.passwordResetToken.delete({ where: { id: passwordResetToken.id } });
+
+    res.status(200).json({ message: "Password has been reset successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

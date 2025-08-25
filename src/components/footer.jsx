@@ -7,25 +7,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Facebook, Instagram, Linkedin, Moon, Send, Sun, Twitter } from "lucide-react"
-import { useThemeToggle } from "../hooks/useThemeToggle";
-import { AnimationStyles } from "./theme-animations";
-import { useTheme } from "./theme-provider";
+import { Facebook, Instagram, Linkedin, Send, Twitter } from "lucide-react"
 import logo from "@/assets/logo-light.svg"
 
 
 function Footer() {
-
-    // 1. Get theme and setTheme from the useTheme() hook
-    const { theme, setTheme } = useTheme();
-  
-    // 2. Pass theme and setTheme to useThemeToggle
-    const { isDark, animationConfig, handleThemeToggle } = useThemeToggle(
-      theme,
-      setTheme
-    );
-
-
   return (
     (<footer
       className="relative border-t bg-background text-foreground transition-colors duration-300">
@@ -95,7 +81,7 @@ function Footer() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
+                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
                       <Facebook className="h-4 w-4" />
                       <span className="sr-only">Facebook</span>
                     </Button>
@@ -108,7 +94,7 @@ function Footer() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
+                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
                       <Twitter className="h-4 w-4" />
                       <span className="sr-only">Twitter</span>
                     </Button>
@@ -121,7 +107,7 @@ function Footer() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
+                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
                       <Instagram className="h-4 w-4" />
                       <span className="sr-only">Instagram</span>
                     </Button>
@@ -134,7 +120,7 @@ function Footer() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full">
+                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
                       <Linkedin className="h-4 w-4" />
                       <span className="sr-only">LinkedIn</span>
                     </Button>
@@ -144,21 +130,6 @@ function Footer() {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
-            <div className="flex items-center space-x-2">
-              <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
-              <div
-                onClick={handleThemeToggle}
-                className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 ${
-                  isDark ? "rotate-180" : "rotate-0"
-                }`}
-              >
-                {isDark ? (
-                  <Sun className="h-6 w-6 text-yellow-500" />
-                ) : (
-                  <Moon className="h-6 w-6 text-gray-500" />
-                )}
-              </div>
             </div>
           </div>
         </div>

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 import { ThemeProvider } from "@/components/theme-provider";
-import Home from './components/Home';
-import { LoginForm } from './components/login-form';
-import { SignupForm } from './components/signup-form';
-import cmdK from './components/CmdK';
+import Home from './components/Pages/Home';
+import { LoginForm } from './components/Forms/login-form';
+import { SignupForm } from './components/Forms/signup-form';
+import NotFoundPage from './components/NotFoundPage';
+import ForgotPassword from './components/Forms/forgot-password';
+import ResetPassword from './components/Forms/reset-password';
 
 const App = () => {
   return (
@@ -14,9 +16,12 @@ const App = () => {
         <Route path="/" element={<Home/>} />
         <Route path="/login" element={<LoginForm/>} />
         <Route path="/signup" element={<SignupForm/>} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard/:userId" element={<Dashboard/>} />
         <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
         <Route path="/cmd" element={<cmdK/>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </ThemeProvider>
   );

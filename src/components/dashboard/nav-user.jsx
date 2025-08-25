@@ -55,7 +55,7 @@ export function NavUser({ user }) {
         </DropdownMenuTrigger>
         
 <DropdownMenuContent
-  className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg z-50"
+  className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg z-50 bg-background"
   align="start"
   side={window.innerWidth < 640 ? "bottom" : "right"}
   sideOffset={8}

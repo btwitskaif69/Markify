@@ -121,7 +121,7 @@ export default function BookmarkCard({bookmark, collections, onMove, onEdit, onD
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" sideOffset={8}
-            className="p-2 rounded-md shadow-lg w-40">
+            className="p-2 rounded-md shadow-lg w-40 bg-background">
               
             <DropdownMenuLabel className="">
               Settings
@@ -160,7 +160,7 @@ export default function BookmarkCard({bookmark, collections, onMove, onEdit, onD
 
             <DropdownMenuItem onClick={(e) => {e.stopPropagation();onDelete(bookmark.id);}}
               className="cursor-pointer text-red-500 focus:text-red-500">
-              <Trash2 className="w-4 h-4 mr-2 text-red-500 focus:text-red-500" />
+              <Trash2 className="w-4 h-4 mr-2" />
                 Delete
             </DropdownMenuItem>
 

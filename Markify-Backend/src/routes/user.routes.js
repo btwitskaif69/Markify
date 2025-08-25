@@ -7,6 +7,8 @@ const { protect } = require('../middleware/auth.middleware'); // 1. Import the m
 // --- Public Routes (No token needed) ---
 router.post('/', userController.createUser);
 router.post('/login', userController.loginUser);
+router.post('/forgot-password', userController.forgotPassword);
+router.post('/reset-password/:token', userController.resetPassword);
 
 // --- Protected Routes (Token is required) ---
 router.get('/profile', protect, userController.getUserProfile);
