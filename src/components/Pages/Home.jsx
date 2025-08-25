@@ -1,11 +1,11 @@
 // Home.jsx
 import React from 'react';
-import Navbar from '../Navbar';
+import Navbar from '@/components/Navbar';
 import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
 import PowerBy from '../home/PowerBy';
 import Features from '../home/Features';
-import Footer from '../Footer'
+import Footer from '@/components/Footer'
 import Pricing from '../home/Pricing';
 
 const Home = () => {
