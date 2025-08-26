@@ -37,13 +37,12 @@ const Hero = () => {
             >
               <Sparkles className="text-yellow-400 fill-yellow-400 w-5 h-5" />
                 <ShinyText 
-                text="Never Lose a Bookmark Again!" 
-                disabled={false} 
-                speed={3} 
-                className='custom-class'
-              />
-
-              <ChevronRight className="w-4 h-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
+                  text="Never Lose a Bookmark Again!"
+                  disabled={false} 
+                  speed={3} 
+                  className='custom-class'
+                />
+                <ChevronRight className="w-4 h-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
             </Button>
           </Link>
 
