@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 exports.sendPasswordResetEmail = async (toEmail, resetLink) => {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Markify <auth@mail.markify.tech>',
+      from: 'Markify <noreply@markify.tech>',
       to: [toEmail],
       subject: 'Reset Your Markify Password',
       html: `
