@@ -136,7 +136,7 @@ exports.forgotPassword = async (req, res) => {
       await sendPasswordResetEmail(user.email, resetUrl);
     }
 
-    res.status(200).json({ message: "If an account with that email exists, a password reset link has been sent." });
+    res.status(200).json({ message: "A reset link has been sent to your registered email." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
