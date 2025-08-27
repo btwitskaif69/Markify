@@ -80,7 +80,7 @@ export default function BookmarkFilters({
             onPressedChange={setShowFavoritesOnly}
             aria-label="Toggle favorites"
           >
-            <Star className="w-4 h-4"/>
+             <Star className={`w-4 h-4 ${showFavoritesOnly? "text-yellow-400 fill-yellow-400": "text-muted-foreground"}`}/>
           </Toggle>
           <Button
             variant={viewMode === "grid" ? "default" : "outline"}
