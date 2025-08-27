@@ -1,5 +1,6 @@
 const prisma = require('../db/prismaClient');
-
+const cheerio = require('cheerio');
+const papaparse = require('papaparse');
 /**
  * Creates a new bookmark for a specific user.
  */
@@ -103,25 +104,14 @@ exports.deleteBookmark = async (req, res) => {
   }
 };
 
-exports.exportBookmarks = async (req, res) => {
+exports.exportBookmarksJSON = async (req, res) => {
   try {
     const bookmarks = await prisma.bookmark.findMany({
       where: { userId: req.user.id },
-      // Exclude user-specific IDs to make the file shareable
-      select: {
-        title: true,
-        previewImage : true,
-        url: true,
-        description: true,
-        category: true,
-        tags: true,
-        isFavorite: true,
-      }
+      select: { title: true, url: true, description: true, category: true, tags: true, isFavorite: true, previewImage: true }
     });
     res.status(200).json(bookmarks);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to export bookmarks." });
-  }
+  } catch (error) { res.status(500).json({ message: "Failed to export bookmarks." }); }
 };
 
 exports.importBookmarks = async (req, res) => {
@@ -177,4 +167,86 @@ exports.importBookmarks = async (req, res) => {
     console.error("Import error:", error);
     res.status(500).json({ message: "Failed to import bookmarks." });
   }
+};
+
+exports.exportBookmarksHTML = async (req, res) => {
+  try {
+    const bookmarks = await prisma.bookmark.findMany({ where: { userId: req.user.id } });
+    let html = `<!DOCTYPE NETSCAPE-Bookmark-file-1>...`; // Your HTML generation logic
+    res.header('Content-Disposition', 'attachment; filename="markify_bookmarks.html"');
+    res.header('Content-Type', 'text/html');
+    res.send(html);
+  } catch (error) { res.status(500).json({ message: "Failed to export as HTML." }); }
+};
+
+exports.exportBookmarksCSV = async (req, res) => {
+  try {
+    const bookmarks = await prisma.bookmark.findMany({
+      where: { userId: req.user.id },
+      select: { title: true, url: true, description: true, category: true, tags: true, isFavorite: true }
+    });
+    const csv = papaparse.unparse(bookmarks);
+    res.header('Content-Disposition', 'attachment; filename="markify_bookmarks.csv"');
+    res.header('Content-Type', 'text/csv');
+    res.send(csv);
+  } catch (error) { res.status(500).json({ message: "Failed to export as CSV." }); }
+};
+
+
+exports.exportBookmarksHTML = async (req, res) => {
+  try {
+    const bookmarks = await prisma.bookmark.findMany({ where: { userId: req.user.id } });
+    let html = `<!DOCTYPE NETSCAPE-Bookmark-file-1>\n<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">\n<TITLE>Bookmarks</TITLE>\n<H1>Bookmarks</H1>\n<DL><p>\n`;
+    bookmarks.forEach(bm => {
+      html += `    <DT><A HREF="${bm.url}">${bm.title}</A>\n`;
+    });
+    html += `</DL><p>\n`;
+    res.header('Content-Disposition', 'attachment; filename="markify_bookmarks.html"');
+    res.header('Content-Type', 'text/html');
+    res.send(html);
+  } catch (error) { res.status(500).json({ message: "Failed to export bookmarks as HTML." }); }
+};
+
+exports.exportBookmarksCSV = async (req, res) => {
+  try {
+    const bookmarks = await prisma.bookmark.findMany({
+      where: { userId: req.user.id },
+      select: { title: true, url: true, description: true, category: true, tags: true, isFavorite: true }
+    });
+    const csv = papaparse.unparse(bookmarks);
+    res.header('Content-Disposition', 'attachment; filename="markify_bookmarks.csv"');
+    res.header('Content-Type', 'text/csv');
+    res.send(csv);
+  } catch (error) { res.status(500).json({ message: "Failed to export bookmarks as CSV." }); }
+};
+
+exports.importBookmarksHTML = async (req, res) => {
+  try {
+    const { htmlContent } = req.body;
+    if (!htmlContent) return res.status(400).json({ message: "HTML content is required." });
+    
+    const $ = cheerio.load(htmlContent);
+    const bookmarksToImport = [];
+    $('a').each((i, link) => {
+      bookmarksToImport.push({ title: $(link).text(), url: $(link).attr('href') });
+    });
+    
+    const dataToCreate = bookmarksToImport.filter(b => b.url).map(b => ({ ...b, userId: req.user.id }));
+    const result = await prisma.bookmark.createMany({ data: dataToCreate, skipDuplicates: true });
+    res.status(201).json({ message: `${result.count} new bookmarks imported from HTML!` });
+  } catch (error) { res.status(500).json({ message: "Failed to import from HTML file." }); }
+};
+
+exports.importBookmarksCSV = async (req, res) => {
+  try {
+    const { csvContent } = req.body;
+    if (!csvContent) return res.status(400).json({ message: "CSV content is required." });
+
+    const parsed = papaparse.parse(csvContent, { header: true });
+    const bookmarksToImport = parsed.data.filter(b => b.url);
+    
+    const dataToCreate = bookmarksToImport.map(b => ({ ...b, userId: req.user.id }));
+    const result = await prisma.bookmark.createMany({ data: dataToCreate, skipDuplicates: true });
+    res.status(201).json({ message: `${result.count} new bookmarks imported from CSV!` });
+  } catch (error) { res.status(500).json({ message: "Failed to import from CSV." }); }
 };
