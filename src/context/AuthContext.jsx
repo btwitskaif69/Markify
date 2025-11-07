@@ -6,14 +6,17 @@ import React, {
   useCallback,
   useMemo
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 const AuthContext = createContext(null);
 const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000";
+const VERIFY_TIMEOUT_MS = 4000;
+const PROTECTED_PATH_PREFIXES = ["/dashboard"];
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Load from localStorage on first render
   const [user, setUser] = useState(() => {
@@ -74,6 +77,10 @@ export const AuthProvider = ({ children }) => {
 
         return response;
       } catch (err) {
+        if (err.name === "AbortError") {
+          console.warn("Auth fetch aborted due to timeout.");
+          throw err;
+        }
         console.error("Auth fetch failed:", err);
         toast.error("Network error. Please try again.");
         throw err;
@@ -87,14 +94,23 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       return;
     }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), VERIFY_TIMEOUT_MS);
     try {
-      const response = await authFetch(`${API_URL}/api/users/profile`);
+      const response = await authFetch(`${API_URL}/api/users/profile`, {
+        signal: controller.signal,
+      });
       if (!response.ok) throw new Error("Token verification failed");
       const userData = await response.json();
       saveUser(userData); // update localStorage user
     } catch (error) {
-      console.error("User verification failed:", error);
+      if (error.name === "AbortError") {
+        console.warn("User verification timed out.");
+      } else {
+        console.error("User verification failed:", error);
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   }, [token, authFetch]);
@@ -121,9 +137,13 @@ export const AuthProvider = ({ children }) => {
     [user, token, logout, authFetch, isLoading]
   );
 
+  const shouldShowGlobalLoader =
+    isLoading &&
+    PROTECTED_PATH_PREFIXES.some((path) => location.pathname.startsWith(path));
+
   return (
     <AuthContext.Provider value={authValue}>
-      {isLoading ? (
+      {shouldShowGlobalLoader ? (
         <div className="flex justify-center items-center min-h-screen">
           <span className="loading loading-spinner text-primary"></span>
         </div>

@@ -13,10 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import { Eye, EyeOff } from "lucide-react"; // 1. Import icons
+import { Eye, EyeOff } from "lucide-react";
 
-// 2. Corrected API URL to point to the user creation endpoint
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api/users`;
+// API URL to user creation endpoint
+const API_URL = `${
+  import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
+}/api/users`;
 
 export function SignupForm({ className, ...props }) {
   const [formData, setFormData] = useState({
@@ -25,7 +27,7 @@ export function SignupForm({ className, ...props }) {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 3. Add state for password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -40,8 +42,8 @@ export function SignupForm({ className, ...props }) {
 
     try {
       const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -50,14 +52,10 @@ export function SignupForm({ className, ...props }) {
       if (!response.ok) {
         throw new Error(data.message || "Signup failed. Please try again.");
       }
-      
-      toast.success("Account created successfully!");
-      
-      login(data.user, data.token);
-      
-      // 4. Corrected redirect to go to the dashboard
-      navigate(`/dashboard/${data.user.id}`);
 
+      toast.success("Account created successfully!");
+      login(data.user, data.token);
+      navigate(`/dashboard/${data.user.id}`);
     } catch (error) {
       console.error("Signup error:", error);
       toast.error(error.message);
@@ -87,10 +85,11 @@ export function SignupForm({ className, ...props }) {
                   value={formData.name}
                   onChange={handleChange}
                   disabled={isLoading}
-                  className="bg-background!"
+                  className="bg-background"
                   required
                 />
               </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -100,13 +99,13 @@ export function SignupForm({ className, ...props }) {
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isLoading}
-                  className="bg-background!"
+                  className="bg-background"
                   required
                 />
               </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                {/* 5. Added password toggle functionality */}
                 <div className="relative">
                   <Input
                     id="password"
@@ -115,32 +114,40 @@ export function SignupForm({ className, ...props }) {
                     value={formData.password}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className="bg-background!"
+                    className="bg-background pr-10"
                     required
                   />
-                   {formData.password.length > 0 && (
-                      <div
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute top-0 right-0 h-full px-3 flex items-center cursor-pointer select-none"
-                      >
-                        {showPassword ? (
-                          <Eye className="h-4 w-4" />
-                        ) : (
-                          <EyeOff className="h-4 w-4" />
-                        )}
-                      </div>
-                    )}
+                  {formData.password.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-2 z-10 flex items-center px-2
+                                 text-muted-foreground hover:opacity-80 focus:outline-none"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-pressed={showPassword}
+                      title={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  )}
                 </div>
               </div>
+
               <div className="flex flex-col gap-3 pt-2">
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating account...' : 'Create Account'}
+                  {isLoading ? "Creating account..." : "Create Account"}
                 </Button>
-                <Button variant="outline" className="w-full bg-background" disabled={isLoading}>
+                <Button
+                  variant="outline"
+                  className="w-full bg-background"
+                  disabled={isLoading}
+                  type="button"
+                >
                   Sign up with Google
                 </Button>
               </div>
             </div>
+
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
               <Link to="/login" className="underline underline-offset-4">
