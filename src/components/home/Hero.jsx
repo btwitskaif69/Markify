@@ -23,11 +23,13 @@ const Hero = () => {
         }}
       />
 
-      {/* Spotlight */}
-      <Spotlight />
+      {/* Spotlight above grid background but below content */}
+      <div className="pointer-events-none absolute inset-0 z-10">
+        <Spotlight />
+      </div>
 
       {/* Hero Content */}
-      <section className="relative z-10 flex items-center justify-center min-h-[100vh]">
+      <section className="relative z-20 flex items-center justify-center min-h-[100vh]">
         <div className="container mx-auto px-6 md:px-12 flex flex-col items-center justify-center text-center">
           {/* Tagline */}
           <Link to="/signup" className="inline-block">
