@@ -56,9 +56,12 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
             {/* This dropdown will be hidden when collapsed */}
             <div className="group-data-[collapsible=icon]:hidden">
               <DropdownMenu modal={false}>
-                
-                <DropdownMenuTrigger>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100">
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

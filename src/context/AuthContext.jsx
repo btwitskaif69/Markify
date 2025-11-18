@@ -13,6 +13,7 @@ const AuthContext = createContext(null);
 const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000";
 const VERIFY_TIMEOUT_MS = 4000;
 const PROTECTED_PATH_PREFIXES = ["/dashboard"];
+const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -124,8 +125,10 @@ export const AuthProvider = ({ children }) => {
     saveUser(userData);
   };
 
-  const authValue = useMemo(
-    () => ({
+  const authValue = useMemo(() => {
+    const isAdmin = user ? ADMIN_EMAILS.includes(user.email) : false;
+
+    return {
       user,
       token,
       login,
@@ -133,9 +136,9 @@ export const AuthProvider = ({ children }) => {
       authFetch,
       isAuthenticated: !!user,
       isLoading,
-    }),
-    [user, token, logout, authFetch, isLoading]
-  );
+      isAdmin,
+    };
+  }, [user, token, logout, authFetch, isLoading]);
 
   const shouldShowGlobalLoader =
     isLoading &&

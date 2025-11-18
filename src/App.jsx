@@ -9,6 +9,7 @@ import Contact from './components/Pages/Contact';
 import Blog from './components/Pages/Blog';
 import BlogPost from './components/Pages/BlogPost';
 import BlogEditor from './components/Pages/BlogEditor';
+import AdminPanel from './components/dashboard/AdminPanel';
 import { LoginForm } from './components/Forms/login-form';
 import { SignupForm } from './components/Forms/signup-form';
 import NotFoundPage from './components/NotFoundPage';
@@ -34,6 +35,7 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard/:userId" element={<Dashboard/>} />
         <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
+        <Route path="/dashboard/:userId/admin" element={<AdminPanel />} />
         <Route path="/cmd" element={<CmdK/>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

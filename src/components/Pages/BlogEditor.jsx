@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -150,6 +148,62 @@ const BlogEditor = () => {
     });
   };
 
+  const handleLinkWordOccurrences = () => {
+    if (!content || !content.trim()) {
+      toast.error("Add some content before linking words.");
+      return;
+    }
+
+    const termInput = window.prompt(
+      "Enter the word you want to link (exact match):",
+      ""
+    );
+    if (!termInput) return;
+
+    const term = termInput.trim();
+    if (!term) return;
+
+    let url = window.prompt("Enter URL (include https://)", "https://");
+    if (!url) return;
+    url = url.trim();
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = `https://${url}`;
+    }
+
+    const escapeRegExp = (str) =>
+      str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const linkRegex = /\[[^\]]+\]\([^)]+\)/g;
+    const placeholders = [];
+    const placeholderPrefix = "__BLOG_LINK__";
+    let index = 0;
+
+    const withoutExistingLinks = content.replace(linkRegex, (match) => {
+      const placeholder = `${placeholderPrefix}${index++}__`;
+      placeholders.push({ placeholder, value: match });
+      return placeholder;
+    });
+
+    const wordRegex = new RegExp(`\\b${escapeRegExp(term)}\\b`, "g");
+    const linked = withoutExistingLinks.replace(
+      wordRegex,
+      `[${term}](${url})`
+    );
+
+    let finalContent = linked;
+    placeholders.forEach(({ placeholder, value }) => {
+      finalContent = finalContent.replace(placeholder, value);
+    });
+
+    if (finalContent === content) {
+      toast.error("No matching word found in the content.");
+      return;
+    }
+
+    setContent(finalContent);
+    toast.success(`Linked all occurrences of "${term}".`);
+  };
+
   const handleAddLink = () => {
     const textarea = contentRef.current;
     if (!textarea) return;
@@ -181,11 +235,8 @@ const BlogEditor = () => {
   };
 
   return (
-    <>
-      <Navbar />
-
-      <main className="bg-background text-foreground">
-        <section className="container mx-auto px-4 py-16 md:py-24 max-w-3xl">
+      <main className="bg-background text-foreground min-h-screen flex">
+        <section className="container mx-auto px-4 py-10 md:py-16 max-w-3xl">
           <p className="text-xs text-muted-foreground mb-3">
             <Link to="/blog" className="hover:underline">
               &larr; Back to blog
@@ -273,6 +324,14 @@ const BlogEditor = () => {
                   >
                     Link
                   </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLinkWordOccurrences}
+                  >
+                    Link word everywhere
+                  </Button>
                 </div>
                 <Textarea
                   ref={contentRef}
@@ -308,9 +367,6 @@ const BlogEditor = () => {
           )}
         </section>
       </main>
-
-      <Footer />
-    </>
   );
 };
 

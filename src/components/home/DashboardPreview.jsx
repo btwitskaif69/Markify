@@ -16,7 +16,7 @@ const DashboardPreview = () => {
             width={1160}
             height={700}
             className="w-full h-auto object-cover rounded-lg sm:rounded-2xl shadow-lg"
-            fetchPriority="high"
+            fetchpriority="high"
           />
         </div>
       </div>
