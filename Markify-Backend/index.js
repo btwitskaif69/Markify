@@ -30,7 +30,8 @@ app.use(cors({
   }
 }));
 
-app.use(express.json());
+// Allow larger JSON payloads so base64 images can be sent safely
+app.use(express.json({ limit: "5mb" }));
 
 // A root route to confirm the API is running
 app.get('/', (req, res) => {

@@ -74,7 +74,7 @@ const BlogEditor = () => {
         title: title.trim(),
         content: content.trim(),
         excerpt: excerpt.trim() || undefined,
-        coverImage: coverImage.trim() || undefined,
+        coverImage: coverImage ? coverImage.trim() : undefined,
       };
 
       const method = isEditMode ? "PATCH" : "POST";
@@ -120,6 +120,31 @@ const BlogEditor = () => {
     } catch (err) {
       toast.error(err.message || "Failed to delete post.");
     }
+  };
+
+  const handleCoverImageUpload = (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload a valid image file.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result;
+      if (typeof result === "string") {
+        setCoverImage(result); // data:<mime>;base64,<data>
+      } else {
+        toast.error("Failed to read image file.");
+      }
+    };
+    reader.onerror = () => {
+      toast.error("Failed to read image file.");
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const applyFormatting = (before, after = before) => {
@@ -275,13 +300,32 @@ const BlogEditor = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Cover image URL (optional)
+                  Cover image (optional)
                 </label>
-                <Input
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://..."
-                />
+                <div className="space-y-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageUpload}
+                  />
+                  <Input
+                    value={coverImage.startsWith("data:") ? "" : coverImage}
+                    onChange={(e) => setCoverImage(e.target.value)}
+                    placeholder="Or paste an image URL (https://...)"
+                  />
+                  {coverImage && (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Preview
+                      </p>
+                      <img
+                        src={coverImage}
+                        alt="Cover preview"
+                        className="w-full max-h-64 object-cover rounded-md border border-border"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
