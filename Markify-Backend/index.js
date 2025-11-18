@@ -5,6 +5,7 @@ const userRoutes = require('./src/routes/user.routes');
 const bookmarkRoutes = require('./src/routes/bookmark.routes');
 const previewRoutes = require('./src/routes/preview.routes');
 const collectionRoutes = require('./src/routes/collection.routes');
+const blogRoutes = require('./src/routes/blog.routes');
 const errorHandler = require("./src/middleware/error.middleware");
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/api/preview', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/collections', collectionRoutes);
+app.use('/api/blog', blogRoutes);
 
 app.use(errorHandler);
 

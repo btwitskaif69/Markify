@@ -26,6 +26,7 @@ model User {
   bookmarks        Bookmark[]
   collections      Collection[]
   passwordResets   PasswordResetToken[]
+  posts            BlogPost[]
 }
 
 model PasswordResetToken {
@@ -69,4 +70,18 @@ model Bookmark {
 
   // A user cannot have two bookmarks with the same title
   @@unique([userId, title])
+}
+
+model BlogPost {
+  id         String   @id @default(cuid())
+  title      String
+  slug       String   @unique
+  content    String
+  excerpt    String?
+  coverImage String?
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
 }
