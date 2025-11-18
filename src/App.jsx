@@ -3,6 +3,10 @@ import { Routes, Route } from 'react-router-dom';
 import Dashboard from './components/dashboard/Dashboard';
 import { ThemeProvider } from "@/components/theme-provider";
 import Home from './components/Pages/Home';
+import About from './components/Pages/About';
+import PricingPage from './components/Pages/Pricing';
+import Contact from './components/Pages/Contact';
+import Blog from './components/Pages/Blog';
 import { LoginForm } from './components/Forms/login-form';
 import { SignupForm } from './components/Forms/signup-form';
 import NotFoundPage from './components/NotFoundPage';
@@ -15,6 +19,10 @@ const App = () => {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>
         <Route path="/" element={<Home/>} />
+        <Route path="/about" element={<About />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/login" element={<LoginForm/>} />
         <Route path="/signup" element={<SignupForm/>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
