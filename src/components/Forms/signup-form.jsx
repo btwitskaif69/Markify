@@ -16,9 +16,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
 
 // API URL to user creation endpoint
-const API_URL = `${
-  import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
-}/api/users`;
+const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
+  }/api/users`;
 
 export function SignupForm({ className, ...props }) {
   const [formData, setFormData] = useState({

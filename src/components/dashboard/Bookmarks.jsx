@@ -1,14 +1,23 @@
 import { useState, useEffect } from "react";
-import BookmarkCard from "@/components/Bookmarks/BookmarkCard";
-import BookmarkListItem from "@/components/Bookmarks/BookmarkListItem";
-import BookmarkFilters from "@/components/Bookmarks/BookmarkFilters";
-import BookmarkStats from "@/components/Bookmarks/BookmarkStats";
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import BookmarkCardSkeleton from "@/components/Bookmarks/BookmarkCardSkeleton";
+import BookmarkFilters from "../Bookmarks/BookmarkFilters";
+import BookmarkStats from "../Bookmarks/BookmarkStats";
+import BookmarkCard from "../Bookmarks/BookmarkCard";
+import BookmarkListItem from "../Bookmarks/BookmarkListItem";
 import CmdK from "./CmdK";
+import BookmarkCardSkeleton from "../Bookmarks/BookmarkCardSkeleton";
 
-export default function Bookmarks({ bookmarks, collections, isLoading, error, onEdit, onDelete, onToggleFavorite, onMove, fetchMoreBookmarks }) {
-  // --- LOCAL UI STATE & FILTERING ---
+export default function Bookmarks({
+  bookmarks = [],
+  collections = [],
+  isLoading = false,
+  error = null,
+  onEdit,
+  onDelete,
+  onToggleFavorite,
+  onMove
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
@@ -26,22 +35,22 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
     return matchesSearch && matchesCategory && matchesFavorites;
   });
 
-  useEffect(() => {
-  const handleScroll = () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-      fetchMoreBookmarks();
-    }
+  const fetchMoreBookmarks = () => {
+    // Placeholder for infinite scroll if needed
+    console.log("Fetch more bookmarks");
   };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [fetchMoreBookmarks]);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        fetchMoreBookmarks();
+      }
+    };
 
-  // --- RENDER LOGIC ---
-  // This early return for error is correct
-  if (error) return <div className="container mx-auto p-6 text-center text-red-500">Error: {error}</div>;
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  // REMOVED the extra 'isLoading' check from here
 
   return (
     <main className="container mx-auto px-4 py-6">
@@ -56,7 +65,7 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
         setViewMode={setViewMode}
         categories={["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]}
         fetchMoreBookmarks={fetchMoreBookmarks}
-        onOpenCmdK={() => setCmdKOpen(true)} // Pass handler to open CmdK
+        onOpenCmdK={() => setCmdKOpen(true)}
       />
       <CmdK
         bookmarks={bookmarks}
@@ -67,7 +76,6 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
       <BookmarkStats bookmarks={bookmarks} />
 
       {isLoading ? (
-        // This part will now be reached, showing the skeletons while loading
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <BookmarkCardSkeleton key={index} />
@@ -97,7 +105,7 @@ export default function Bookmarks({ bookmarks, collections, isLoading, error, on
                 onDelete={onDelete}
                 onToggleFavorite={onToggleFavorite}
                 collections={collections}
-                 onMove={onMove}
+                onMove={onMove}
               />
             ) : (
               <BookmarkListItem

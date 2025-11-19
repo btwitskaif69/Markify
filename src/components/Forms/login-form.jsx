@@ -13,9 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
-import { Eye,  EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
-// --- THIS IS THE FIX ---
 // The URL now includes the full path to the login endpoint
 const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api/users/login`;
 
@@ -50,9 +49,9 @@ export function LoginForm({ className, ...props }) {
       if (!response.ok) {
         throw new Error(data.message || "Login failed. Please try again.");
       }
-      
+
       toast.success("Login successful!");
-      
+
       login(data.user, data.token);
 
       navigate(`/dashboard/${data.user.id}`);
@@ -66,7 +65,7 @@ export function LoginForm({ className, ...props }) {
   };
 
   return (
-     <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className={cn("w-full max-w-md", className)} {...props}>
         <CardHeader>
           <CardTitle className="text-2xl">Login to your account</CardTitle>
@@ -82,7 +81,7 @@ export function LoginForm({ className, ...props }) {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@example.com" // Improved placeholder
+                  placeholder="name@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -97,7 +96,6 @@ export function LoginForm({ className, ...props }) {
                     Forgot your password?
                   </Link>
                 </div>
-                {/* 3. Wrap Input and Button for positioning */}
                 <div className="relative">
                   <Input
                     id="password"
@@ -109,18 +107,18 @@ export function LoginForm({ className, ...props }) {
                     required
                     className="bg-background!"
                   />
-                    {formData.password.length > 0 && (
-                      <div
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute top-0 right-0 h-full px-3 flex items-center cursor-pointer select-none"
-                      >
-                        {showPassword ? (
-                          <Eye className="h-4 w-4" />
-                        ) : (
-                          <EyeOff className="h-4 w-4" />
-                        )}
-                      </div>
-                    )}
+                  {formData.password.length > 0 && (
+                    <div
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute top-0 right-0 h-full px-3 flex items-center cursor-pointer select-none"
+                    >
+                      {showPassword ? (
+                        <Eye className="h-4 w-4" />
+                      ) : (
+                        <EyeOff className="h-4 w-4" />
+                      )}
+                    </div>
+                  )}
 
                 </div>
               </div>

@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Spotlight } from "../ui/spotlight-new";
 
 const tiers = [
   {
@@ -50,8 +51,26 @@ const PricingPage = () => {
     <>
       <Navbar />
 
-      <main className="bg-background text-foreground">
-        <section className="container mx-auto px-4 py-16 md:py-24">
+      <main className="bg-background text-foreground relative overflow-hidden">
+        {/* Grid background */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-0 pointer-events-none
+            [background-image:linear-gradient(to_right,rgba(0,0,0,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.08)_1px,transparent_1px)]
+            dark:[background-image:linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+          style={{
+            backgroundSize: "68px 68px",
+            backgroundPosition: "0 0",
+            opacity: 1,
+          }}
+        />
+
+        {/* Spotlight */}
+        <div className="pointer-events-none absolute inset-0 z-10">
+          <Spotlight />
+        </div>
+
+        <section className="container mx-auto px-4 py-16 md:py-24 relative z-20">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
               Simple, transparent pricing
@@ -66,9 +85,8 @@ const PricingPage = () => {
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm ${
-                  tier.highlighted ? "ring-2 ring-primary" : ""
-                }`}
+                className={`flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm ${tier.highlighted ? "ring-2 ring-primary" : ""
+                  }`}
               >
                 <h2 className="text-lg font-semibold mb-1">{tier.name}</h2>
                 <p className="text-3xl font-bold mb-2">

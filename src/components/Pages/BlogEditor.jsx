@@ -6,9 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-const API_URL = `${
-  import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
-}/api`;
+const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
+  }/api`;
 
 const BlogEditor = () => {
   const { slug } = useParams();
@@ -94,7 +93,7 @@ const BlogEditor = () => {
 
       const saved = await res.json();
       toast.success(isEditMode ? "Post updated." : "Post created.");
-      navigate(`/blog/${saved.slug}`);
+      navigate(`/dashboard/${user.id}/admin`);
     } catch (err) {
       toast.error(err.message || "Failed to save post.");
     } finally {
@@ -116,7 +115,7 @@ const BlogEditor = () => {
         throw new Error(data.message || "Failed to delete post.");
       }
       toast.success("Post deleted.");
-      navigate("/blog");
+      navigate(`/dashboard/${user.id}/admin`);
     } catch (err) {
       toast.error(err.message || "Failed to delete post.");
     }
@@ -260,157 +259,157 @@ const BlogEditor = () => {
   };
 
   return (
-      <main className="bg-background text-foreground min-h-screen flex">
-        <section className="container mx-auto px-4 py-10 md:py-16 max-w-3xl">
-          <p className="text-xs text-muted-foreground mb-3">
-            <Link to="/blog" className="hover:underline">
-              &larr; Back to blog
-            </Link>
-          </p>
+    <main className="bg-background text-foreground min-h-screen flex">
+      <section className="container mx-auto px-4 py-10 md:py-16 max-w-3xl">
+        <p className="text-xs text-muted-foreground mb-3">
+          <Link to="/blog" className="hover:underline">
+            &larr; Back to blog
+          </Link>
+        </p>
 
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
-            {isEditMode ? "Edit blog post" : "Create a blog post"}
-          </h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+          {isEditMode ? "Edit blog post" : "Create a blog post"}
+        </h1>
 
-          {isInitialLoading ? (
-            <p className="text-muted-foreground">Loading post...</p>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium mb-1">Title</label>
+        {isInitialLoading ? (
+          <p className="text-muted-foreground">Loading post...</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium mb-1">Title</label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Write a clear, descriptive title"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Short summary (optional)
+              </label>
+              <Textarea
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                rows={3}
+                placeholder="A short summary that appears in the blog list."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Cover image (optional)
+              </label>
+              <div className="space-y-2">
                 <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Write a clear, descriptive title"
-                  required
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverImageUpload}
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Short summary (optional)
-                </label>
-                <Textarea
-                  value={excerpt}
-                  onChange={(e) => setExcerpt(e.target.value)}
-                  rows={3}
-                  placeholder="A short summary that appears in the blog list."
+                <Input
+                  value={coverImage.startsWith("data:") ? "" : coverImage}
+                  onChange={(e) => setCoverImage(e.target.value)}
+                  placeholder="Or paste an image URL (https://...)"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Cover image (optional)
-                </label>
-                <div className="space-y-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverImageUpload}
-                  />
-                  <Input
-                    value={coverImage.startsWith("data:") ? "" : coverImage}
-                    onChange={(e) => setCoverImage(e.target.value)}
-                    placeholder="Or paste an image URL (https://...)"
-                  />
-                  {coverImage && (
-                    <div className="mt-2">
-                      <p className="text-xs text-muted-foreground mb-1">
-                        Preview
-                      </p>
-                      <img
-                        src={coverImage}
-                        alt="Cover preview"
-                        className="w-full max-h-64 object-cover rounded-md border border-border"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Content
-                </label>
-                <div className="flex flex-wrap gap-2 mb-2 text-xs">
-                  <span className="text-muted-foreground mr-2">
-                    Formatting:
-                  </span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => applyFormatting("**", "**")}
-                  >
-                    Bold
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => applyFormatting("_", "_")}
-                  >
-                    Italic
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => applyFormatting("__", "__")}
-                  >
-                    Underline
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddLink}
-                  >
-                    Link
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLinkWordOccurrences}
-                  >
-                    Link word everywhere
-                  </Button>
-                </div>
-                <Textarea
-                  ref={contentRef}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={12}
-                  placeholder="Write your post content here. Use line breaks to separate paragraphs. Use **bold**, _italic_, __underline__, or [text](https://example.com)."
-                  required
-                />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting
-                    ? isEditMode
-                      ? "Saving..."
-                      : "Publishing..."
-                    : isEditMode
-                    ? "Save changes"
-                    : "Publish post"}
-                </Button>
-                {isEditMode && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleDelete}
-                  >
-                    Delete
-                  </Button>
+                {coverImage && (
+                  <div className="mt-2">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Preview
+                    </p>
+                    <img
+                      src={coverImage}
+                      alt="Cover preview"
+                      className="w-full max-h-64 object-cover rounded-md border border-border"
+                    />
+                  </div>
                 )}
               </div>
-            </form>
-          )}
-        </section>
-      </main>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Content
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2 text-xs">
+                <span className="text-muted-foreground mr-2">
+                  Formatting:
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => applyFormatting("**", "**")}
+                >
+                  Bold
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => applyFormatting("_", "_")}
+                >
+                  Italic
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => applyFormatting("__", "__")}
+                >
+                  Underline
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddLink}
+                >
+                  Link
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLinkWordOccurrences}
+                >
+                  Link word everywhere
+                </Button>
+              </div>
+              <Textarea
+                ref={contentRef}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                rows={12}
+                placeholder="Write your post content here. Use line breaks to separate paragraphs. Use **bold**, _italic_, __underline__, or [text](https://example.com)."
+                required
+              />
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting
+                  ? isEditMode
+                    ? "Saving..."
+                    : "Publishing..."
+                  : isEditMode
+                    ? "Save changes"
+                    : "Publish post"}
+              </Button>
+              {isEditMode && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              )}
+            </div>
+          </form>
+        )}
+      </section>
+    </main>
   );
 };
 

@@ -1,14 +1,33 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Spotlight } from "../ui/spotlight-new";
 
 const About = () => {
   return (
     <>
       <Navbar />
 
-      <main className="bg-background text-foreground">
-        <section className="container mx-auto px-4 py-16 md:py-24">
+      <main className="bg-background text-foreground relative overflow-hidden">
+        {/* Grid background */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-0 pointer-events-none
+            [background-image:linear-gradient(to_right,rgba(0,0,0,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.08)_1px,transparent_1px)]
+            dark:[background-image:linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+          style={{
+            backgroundSize: "68px 68px",
+            backgroundPosition: "0 0",
+            opacity: 1,
+          }}
+        />
+
+        {/* Spotlight */}
+        <div className="pointer-events-none absolute inset-0 z-10">
+          <Spotlight />
+        </div>
+
+        <section className="container mx-auto px-4 py-16 md:py-24 relative z-20">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
             About Markify
           </h1>
