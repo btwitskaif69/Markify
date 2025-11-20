@@ -17,6 +17,7 @@ const features = [
     background: (
       <img
         src={collections}
+        loading="lazy"
         className="absolute -top-25  scale-102 hover:scale-106 ease-in-out duration-300 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_75%,#000_100%)]"
       />
     ),
@@ -32,6 +33,7 @@ const features = [
     background: (
       <img
         src={bg}
+        loading="lazy"
         className="absolute scale-170 duration-300 brightness-150 contrast-125 hover:scale-180 ease-in-out [--duration:20s]
                                         [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
       />
@@ -46,7 +48,7 @@ const features = [
     href: "/",
     cta: "Learn more",
     background: (
-      <img src={bg} className="absolute -right-20 -top-20 opacity-60" />
+      <img src={bg} loading="lazy" className="absolute -right-20 -top-20 opacity-60" />
     ),
     className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
   },
@@ -58,7 +60,7 @@ const features = [
     href: "/",
     cta: "Learn more",
     background: (
-      <img src={bg} className="absolute -right-20 -top-20 opacity-60" />
+      <img src={bg} loading="lazy" className="absolute -right-20 -top-20 opacity-60" />
     ),
     className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
   },
@@ -71,6 +73,7 @@ const features = [
     background: (
       <img
         src={share}
+        loading="lazy"
         className="absolute -top-1  scale-100 hover:scale-110 ease-in-out duration-300 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
       />
     ),

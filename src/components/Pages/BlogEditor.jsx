@@ -1,4 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import {
+  Plus,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Loader2,
+  Sparkles,
+} from "lucide-react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -170,6 +178,34 @@ const BlogEditor = () => {
       textarea.focus();
       textarea.setSelectionRange(newStart, newEnd);
     });
+  };
+
+  const handleGeminiRefactor = async () => {
+    if (!content || !content.trim()) {
+      toast.error("Add some content before refactoring.");
+      return;
+    }
+
+    setIsSubmitting(true); // Re-use submitting state to show loading
+    try {
+      const res = await authFetch(`${API_URL}/gemini/refactor`, {
+        method: "POST",
+        body: JSON.stringify({ text: content }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to refactor content.");
+      }
+
+      const data = await res.json();
+      setContent(data.refactoredText);
+      toast.success("Content refactored with Gemini!");
+    } catch (err) {
+      toast.error(err.message || "Failed to refactor content.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleLinkWordOccurrences = () => {
@@ -374,6 +410,16 @@ const BlogEditor = () => {
                   onClick={handleLinkWordOccurrences}
                 >
                   Link word everywhere
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGeminiRefactor}
+                  className="gap-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  Refactor with Gemini
                 </Button>
               </div>
               <Textarea

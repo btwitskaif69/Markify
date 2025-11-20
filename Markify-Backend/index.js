@@ -6,6 +6,7 @@ const bookmarkRoutes = require('./src/routes/bookmark.routes');
 const previewRoutes = require('./src/routes/preview.routes');
 const collectionRoutes = require('./src/routes/collection.routes');
 const blogRoutes = require('./src/routes/blog.routes');
+const geminiRoutes = require('./src/routes/gemini.routes');
 const errorHandler = require("./src/middleware/error.middleware");
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or Postman)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
@@ -44,6 +45,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/collections', collectionRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/gemini', geminiRoutes);
 
 app.use(errorHandler);
 

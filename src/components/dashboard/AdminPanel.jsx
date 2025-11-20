@@ -55,6 +55,31 @@ export default function AdminPanel() {
   const [posts, setPosts] = useState([]);
   const [isPostsLoading, setIsPostsLoading] = useState(true);
   const [showBlogManager, setShowBlogManager] = useState(false);
+  const [usageCount, setUsageCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.geminiUsage) {
+      setUsageCount(user.geminiUsage);
+    }
+  }, [user]);
+
+  // Fetch latest user data to get updated usage
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await authFetch(`${API_URL}/users/profile`);
+        if (res.ok) {
+          const data = await res.json();
+          setUsageCount(data.geminiUsage || 0);
+        }
+      } catch (err) {
+        console.error("Failed to fetch user data", err);
+      }
+    };
+    if (isAuthenticated) {
+      fetchUserData();
+    }
+  }, [isAuthenticated, authFetch]);
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || !isAdmin)) {
@@ -215,6 +240,23 @@ export default function AdminPanel() {
                       All systems operational
                     </p>
                   </div>
+
+
+                  {/* Gemini Usage Card */}
+                  <div className="rounded-xl border bg-card p-6 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-sm text-muted-foreground">
+                        Gemini Usage
+                      </h3>
+                      <Sparkles className="h-4 w-4 text-indigo-500" />
+                    </div>
+                    <div className="text-2xl font-bold text-indigo-600">
+                      {usageCount}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      API calls made
+                    </p>
+                  </div>
                 </div>
 
                 <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
@@ -336,6 +378,6 @@ export default function AdminPanel() {
           </section>
         </main>
       </SidebarInset>
-    </SidebarProvider>
+    </SidebarProvider >
   );
 }

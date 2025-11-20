@@ -15,9 +15,9 @@ const protect = async (req, res, next) => {
       // Get user from the token and attach it to the request object
       req.user = await prisma.user.findUnique({
         where: { id: decoded.id },
-        select: { id: true, name: true, email: true, avatar: true }, // Select only safe fields
+        select: { id: true, name: true, email: true, avatar: true, geminiUsage: true }, // Select only safe fields
       });
-      
+
       if (!req.user) {
         return res.status(401).json({ message: 'Not authorized, user not found' });
       }

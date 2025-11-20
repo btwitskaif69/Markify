@@ -27,6 +27,7 @@ model User {
   collections      Collection[]
   passwordResets   PasswordResetToken[]
   posts            BlogPost[]
+  geminiUsage      Int          @default(0)
 }
 
 model PasswordResetToken {
