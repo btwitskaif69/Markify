@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -20,7 +21,7 @@ function Footer() {
           <div className="relative">
             <div className="flex items-center gap-2 mb-2">
               <div className="bg-primary text-primary-foreground flex aspect-square size-9 items-center justify-center rounded-lg">
-                <img src={logo} alt="Markify" className="h-6 w-6"/>
+                <img src={logo} alt="Markify" className="h-6 w-6" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-2xl font-semibold">Markify</span>
@@ -49,21 +50,18 @@ function Footer() {
           <div>
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
             <nav className="space-y-2 text-sm">
-              <a href="#" className="block transition-colors hover:text-primary">
+              <Link to="/" className="block transition-colors hover:text-primary">
                 Home
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
+              </Link>
+              <Link to="/about" className="block transition-colors hover:text-primary">
                 About Us
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
-                Services
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
-                Products
-              </a>
-              <a href="#" className="block transition-colors hover:text-primary">
+              </Link>
+              <Link to="/pricing" className="block transition-colors hover:text-primary">
+                Pricing
+              </Link>
+              <Link to="/contact" className="block transition-colors hover:text-primary">
                 Contact
-              </a>
+              </Link>
             </nav>
           </div>
           <div>
@@ -139,15 +137,21 @@ function Footer() {
             © 2025 Markify. All rights reserved.
           </p>
           <nav className="flex gap-4 text-sm">
-            <a href="#" className="transition-colors hover:text-primary">
+            <Link to="/privacy" className="transition-colors hover:text-primary">
               Privacy Policy
-            </a>
-            <a href="#" className="transition-colors hover:text-primary">
+            </Link>
+            <Link to="/terms" className="transition-colors hover:text-primary">
               Terms of Service
-            </a>
-            <a href="#" className="transition-colors hover:text-primary">
+            </Link>
+            <Link to="/cookies" className="transition-colors hover:text-primary">
+              Cookie Policy
+            </Link>
+            <Link to="/refund-policy" className="transition-colors hover:text-primary">
+              Refund Policy
+            </Link>
+            <Link to="/cookie-settings" className="transition-colors hover:text-primary">
               Cookie Settings
-            </a>
+            </Link>
           </nav>
         </div>
       </div>

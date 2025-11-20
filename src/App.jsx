@@ -19,6 +19,11 @@ const NotFoundPage = lazy(() => import('./components/NotFoundPage'));
 const ForgotPassword = lazy(() => import('./components/Forms/forgot-password'));
 const ResetPassword = lazy(() => import('./components/Forms/reset-password'));
 const CmdK = lazy(() => import('./components/dashboard/CmdK'));
+const PrivacyPolicy = lazy(() => import('./components/Pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/Pages/TermsOfService'));
+const CookiePolicy = lazy(() => import('./components/Pages/CookiePolicy'));
+const RefundPolicy = lazy(() => import('./components/Pages/RefundPolicy'));
+const CookieSettings = lazy(() => import('./components/Pages/CookieSettings'));
 
 const App = () => {
   return (
@@ -41,6 +46,11 @@ const App = () => {
           <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
           <Route path="/dashboard/:userId/admin" element={<AdminPanel />} />
           <Route path="/cmd" element={<CmdK />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/cookie-settings" element={<CookieSettings />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
