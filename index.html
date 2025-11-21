@@ -1,26 +1,57 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <link rel="apple-touch-icon" href="/logo.svg" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="canonical" href="https://www.markify.tech/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Markify</title>
-    <meta name="description" content="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager." />
 
-    <script>
-  if (localStorage.theme === 'dark' || 
-     (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-  }
-</script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+  <link rel="apple-touch-icon" href="/logo.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="canonical" href="https://www.markify.tech/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markify</title>
+  <meta name="description"
+    content="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager." />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.markify.tech/" />
+  <meta property="og:title" content="Markify" />
+  <meta property="og:description"
+    content="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager." />
+  <meta property="og:image" content="https://www.markify.tech/logo.svg" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://www.markify.tech/" />
+  <meta property="twitter:title" content="Markify" />
+  <meta property="twitter:description"
+    content="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager." />
+  <meta property="twitter:image" content="https://www.markify.tech/logo.svg" />
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Markify",
+      "url": "https://www.markify.tech/",
+      "logo": "https://www.markify.tech/logo.svg",
+      "description": "Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager."
+    }
+  </script>
+
+  <script>
+    if (localStorage.theme === 'dark' ||
+      (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
