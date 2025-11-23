@@ -63,6 +63,9 @@ const TiltCard = ({ children, className }) => {
   );
 };
 
+import SEO from "../SEO/SEO";
+import { secureFetch } from "@/lib/secureApi";
+
 const Blog = () => {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -70,12 +73,14 @@ const Blog = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
+
     const fetchPosts = async () => {
       // Simulate a slight delay to show off the skeleton loader (optional, remove in prod if needed)
       // await new Promise(resolve => setTimeout(resolve, 1500)); 
 
       try {
-        const res = await fetch(`${API_URL}/blog`);
+        const res = await secureFetch(`${API_URL}/blog`);
         if (!res.ok) throw new Error("Failed to load blog posts.");
         const data = await res.json();
         setPosts(data);
@@ -106,6 +111,11 @@ const Blog = () => {
 
   return (
     <>
+      <SEO
+        title="Blog"
+        description="Read the latest updates, tips, and insights from the Markify team."
+        canonical="https://www.markify.tech/blog"
+      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen relative overflow-hidden perspective-1000">
@@ -142,11 +152,29 @@ const Blog = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-muted-foreground text-lg max-w-2xl mx-auto"
+              className="text-muted-foreground text-lg max-w-2xl mx-auto mb-6"
             >
               Insights, updates, and ideas on building better workflows and
               managing your knowledge with Markify.
             </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex flex-wrap justify-center gap-4 text-sm"
+            >
+              <Link to="/about" className="text-primary hover:underline">
+                Learn More About Markify
+              </Link>
+              <span className="text-muted-foreground">•</span>
+              <Link to="/pricing" className="text-primary hover:underline">
+                Pricing Plans
+              </Link>
+              <span className="text-muted-foreground">•</span>
+              <Link to="/contact" className="text-primary hover:underline">
+                Contact Us
+              </Link>
+            </motion.div>
           </div>
 
           <div className="max-w-7xl mx-auto">
@@ -174,7 +202,7 @@ const Blog = () => {
                 className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
               >
                 {posts.map((post) => (
-                  <motion.div key={post.id} variants={item}>
+                  <motion.article key={post.id} variants={item}>
                     <Link
                       to={`/blog/${post.slug}`}
                       className="group block h-full perspective-1000"
@@ -223,7 +251,7 @@ const Blog = () => {
                         </Card>
                       </TiltCard>
                     </Link>
-                  </motion.div>
+                  </motion.article>
                 ))}
               </motion.div>
             )}

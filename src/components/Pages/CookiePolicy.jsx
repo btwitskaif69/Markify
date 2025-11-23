@@ -1,56 +1,84 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import SEO from "../SEO/SEO";
 
 const CookiePolicy = () => {
     return (
-        <div className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-4xl font-bold mb-8 text-foreground">Cookie Policy</h1>
-                <div className="prose prose-invert max-w-none text-muted-foreground">
-                    <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
+        <>
+            <SEO
+                title="Cookie Policy"
+                description="Markify Cookie Policy - Understand how we use cookies to improve your experience."
+                canonical="https://www.markify.tech/cookies"
+            />
+            <Navbar />
+            <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+                <article className="max-w-4xl mx-auto">
+                    <h1 className="text-4xl font-bold mb-8 text-foreground">Cookie Policy</h1>
+                    <div className="prose prose-invert max-w-none text-muted-foreground">
+                        <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-semibold mb-4 text-foreground">1. What Are Cookies</h2>
-                        <p>
-                            As is common practice with almost all professional websites, this site uses cookies, which are tiny files that are downloaded to your computer, to improve your experience. This page describes what information they gather, how we use it, and why we sometimes need to store these cookies.
-                        </p>
-                    </section>
+                        <section className="mb-8">
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">1. What Are Cookies</h2>
+                            <p>
+                                Cookies are small pieces of text sent by your web browser by a website you visit. A cookie file is stored in your web browser and allows the Service or a third-party to recognize you and make your next visit easier and the Service more useful to you.
+                                For more details on how we protect your data, please refer to our <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+                            </p>
+                        </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-semibold mb-4 text-foreground">2. How We Use Cookies</h2>
-                        <p>
-                            We use cookies for a variety of reasons detailed below. Unfortunately, in most cases, there are no industry standard options for disabling cookies without completely disabling the functionality and features they add to this site. It is recommended that you leave on all cookies if you are not sure whether you need them or not in case they are used to provide a service that you use.
-                        </p>
-                    </section>
+                        <section className="mb-8">
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">2. How Markify Uses Cookies</h2>
+                            <p>
+                                When you use and access the Service, we may place a number of cookies files in your web browser. We use cookies for the following purposes: to enable certain functions of the Service, to provide analytics, to store your preferences, to enable advertisements delivery, including behavioral advertising.
+                            </p>
+                        </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-semibold mb-4 text-foreground">3. The Cookies We Set</h2>
-                        <ul className="list-disc pl-6 mt-2 space-y-2">
-                            <li>
-                                <strong>Account related cookies:</strong> If you create an account with us, then we will use cookies for the management of the signup process and general administration.
-                            </li>
-                            <li>
-                                <strong>Login related cookies:</strong> We use cookies when you are logged in so that we can remember this fact. This prevents you from having to log in every single time you visit a new page.
-                            </li>
-                            <li>
-                                <strong>Site preferences cookies:</strong> In order to provide you with a great experience on this site, we provide the functionality to set your preferences for how this site runs when you use it.
-                            </li>
-                        </ul>
-                    </section>
+                        <section className="mb-8">
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">3. Third-Party Cookies</h2>
+                            <p>
+                                In addition to our own cookies, we may also use various third-parties cookies to report usage statistics of the Service, deliver advertisements on and through the Service, and so on.
+                            </p>
+                        </section>
 
-                    <section className="mb-8">
-                        <h2 className="text-2xl font-semibold mb-4 text-foreground">4. Third Party Cookies</h2>
-                        <p>
-                            In some special cases, we also use cookies provided by trusted third parties. The following section details which third party cookies you might encounter through this site.
-                        </p>
-                        <ul className="list-disc pl-6 mt-2 space-y-2">
-                            <li>
-                                This site uses Google Analytics which is one of the most widespread and trusted analytics solutions on the web for helping us to understand how you use the site and ways that we can improve your experience.
-                            </li>
-                        </ul>
-                    </section>
-                </div>
-            </div>
-        </div>
+                        <section className="mb-8">
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">4. Your Choices Regarding Cookies</h2>
+                            <p>
+                                If you'd like to delete cookies or instruct your web browser to delete or refuse cookies, please visit the help pages of your web browser. Please note, however, that if you delete cookies or refuse to accept them, you might not be able to use all of the features we offer, you may not be able to store your preferences, and some of our pages might not display properly.
+                                You can also manage your preferences on our <Link to="/cookie-settings" className="text-primary hover:underline">Cookie Settings</Link> page.
+                            </p>
+                        </section>
+
+                        <section className="mb-8">
+                            <h2 className="text-2xl font-semibold mb-4 text-foreground">5. Contact Us</h2>
+                            <p>
+                                If you have any questions about our use of cookies, please <Link to="/contact" className="text-primary hover:underline">contact us</Link>.
+                                You can also check our <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> for more information about using our website.
+                            </p>
+                        </section>
+
+                        <section className="mb-8 p-4 border border-border rounded-lg bg-card/50">
+                            <h3 className="text-lg font-semibold mb-3 text-foreground">Related Pages</h3>
+                            <ul className="space-y-2">
+                                <li>
+                                    <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link> - How we protect your data
+                                </li>
+                                <li>
+                                    <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> - Our rules and regulations
+                                </li>
+                                <li>
+                                    <Link to="/cookie-settings" className="text-primary hover:underline">Cookie Settings</Link> - Manage your preferences
+                                </li>
+                                <li>
+                                    <Link to="/about" className="text-primary hover:underline">About Us</Link> - Learn more about Markify
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                </article>
+            </main>
+            <Footer />
+        </>
     );
 };
 

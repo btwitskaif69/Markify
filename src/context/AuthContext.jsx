@@ -53,6 +53,24 @@ export const AuthProvider = ({ children }) => {
     navigate("/login");
   }, [navigate]);
 
+  // Helper for secure fetch, potentially with timeout
+  const secureFetch = useCallback(async (url, options = {}) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), VERIFY_TIMEOUT_MS); // Use VERIFY_TIMEOUT_MS for all secure fetches
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
+  }, []);
+
   const authFetch = useCallback(
     async (url, options = {}) => {
       if (!token) {
@@ -61,7 +79,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await fetch(url, {
+        const response = await secureFetch(url, {
           ...options,
           headers: {
             "Content-Type": "application/json",

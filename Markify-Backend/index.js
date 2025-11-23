@@ -41,6 +41,12 @@ app.get('/', (req, res) => {
 });
 
 // Your API routes
+const encryptResponse = require("./src/middleware/encryptionMiddleware");
+
+// Apply encryption to specific routes or all API routes
+// We'll apply it to all /api routes for now
+app.use('/api', encryptResponse);
+
 app.use('/api/preview', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);

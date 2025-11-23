@@ -8,23 +8,45 @@ import Features from '../home/Features';
 import Footer from '@/components/Footer'
 import Pricing from '../home/Pricing';
 
+import SEO from '../SEO/SEO';
+
 const Home = () => {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Markify",
+    "url": "https://www.markify.tech",
+    "logo": "https://www.markify.tech/logo.svg",
+    "sameAs": [
+      "https://twitter.com/markify",
+      "https://github.com/markify"
+    ]
+  };
+
   return (
     <>
+      <SEO
+        title="Home"
+        description="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager."
+        canonical="https://www.markify.tech/"
+        structuredData={structuredData}
+      />
       <Navbar />
 
-      {/* Hero stays here */}
-      <Hero />
+      <main>
+        {/* Hero stays here */}
+        <Hero />
 
-      {/* Dashboard preview placed AFTER hero and pulled up to overlap */}
-      <div className="relative z-20 flex justify-center items-center px-4 -mt-25 sm:-mt-30 md:-mt-20 lg:-mt-45 mb-10">
+        {/* Dashboard preview placed AFTER hero and pulled up to overlap */}
+        <section className="relative z-20 flex justify-center items-center px-4 -mt-25 sm:-mt-30 md:-mt-20 lg:-mt-45 mb-10">
           <DashboardPreview />
-      </div>
+        </section>
 
-      <PowerBy />
-      <Features/>
-      <Pricing/>
-      <Footer/>
+        <PowerBy />
+        <Features />
+        <Pricing />
+      </main>
+      <Footer />
     </>
   );
 };

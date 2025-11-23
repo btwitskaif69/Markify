@@ -12,6 +12,8 @@ export default defineConfig({
     },
   },
   build: {
+    sourcemap: false, // Disable source maps for production
+    minify: 'esbuild', // Minify code to make it harder to read
     rollupOptions: {
       output: {
         manualChunks: {
