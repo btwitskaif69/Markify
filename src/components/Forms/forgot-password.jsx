@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api/users/forgot-password`;
+const API_URL = `${API_BASE_URL}/users/forgot-password`;
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

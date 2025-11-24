@@ -14,10 +14,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
+import { secureFetch } from "@/lib/secureApi";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
 // API URL to user creation endpoint
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
-  }/api/users`;
+const API_URL = `${API_BASE_URL}/users`;
 
 export function SignupForm({ className, ...props }) {
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ export function SignupForm({ className, ...props }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await secureFetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

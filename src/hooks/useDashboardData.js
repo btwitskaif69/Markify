@@ -2,8 +2,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
+const API_URL = API_BASE_URL;
 const PAGE_SIZE = 8;
 
 export function useDashboardData(user, authFetch, isAuthLoading) {
@@ -25,8 +26,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     async (pageNumber = 0) => {
       try {
         const res = await authFetch(
-          `${API_URL}/users/${userId}/bookmarks?limit=${PAGE_SIZE}&offset=${
-            pageNumber * PAGE_SIZE
+          `${API_URL}/users/${userId}/bookmarks?limit=${PAGE_SIZE}&offset=${pageNumber * PAGE_SIZE
           }`
         );
         if (!res.ok) throw new Error("Failed to fetch bookmarks.");
@@ -34,10 +34,17 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
 
         if (pageNumber === 0) {
           // First load
-          setAllBookmarks(data);
+          if (Array.isArray(data)) {
+            setAllBookmarks(data);
+          } else {
+            console.error("Expected bookmarks to be an array, received:", data);
+            setAllBookmarks([]);
+          }
         } else {
           // Append more
-          setAllBookmarks((prev) => [...prev, ...data]);
+          if (Array.isArray(data)) {
+            setAllBookmarks((prev) => [...prev, ...data]);
+          }
         }
 
         // If fewer than PAGE_SIZE items returned → no more pages
@@ -60,8 +67,9 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       navigate("/login");
       return;
     }
-    if (user.id !== userId) return;
-
+    if (user.id !== userId) {
+      return;
+    }
     setIsLoading(true);
 
     // Initial bookmarks fetch
@@ -70,7 +78,24 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     // Fetch collections in parallel
     authFetch(`${API_URL}/collections`)
       .then((res) => (res.ok ? res.json() : []))
-      .then(setCollections)
+      .then((data) => {
+        // Support both array responses and wrapped object responses
+        let collectionsArray = [];
+        if (Array.isArray(data)) {
+          collectionsArray = data;
+        } else if (data && Array.isArray(data.collections)) {
+          collectionsArray = data.collections;
+        } else if (data && Array.isArray(data.data)) {
+          collectionsArray = data.data;
+        } else {
+          console.error(
+            "Expected collections to be an array (or in `collections`/`data`), received:",
+            data
+          );
+        }
+
+        setCollections(collectionsArray);
+      })
       .catch((err) => {
         if (err.message !== "Session expired") {
           toast.error(err.message);

@@ -8,10 +8,10 @@ import React, {
 } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import { secureFetch as secureApiFetch } from "@/lib/secureApi";
+import { API_BASE_URL, AUTH_TIMEOUT_MS } from "@/lib/apiConfig";
 
 const AuthContext = createContext(null);
-const API_URL = import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000";
-const VERIFY_TIMEOUT_MS = 4000;
 const PROTECTED_PATH_PREFIXES = ["/dashboard"];
 const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
 
@@ -22,7 +22,24 @@ export const AuthProvider = ({ children }) => {
   // Load from localStorage on first render
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        // Validate that user has required fields
+        if (!parsed || !parsed.id || !parsed.email) {
+          console.warn("Invalid user data in localStorage, clearing...");
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          return null;
+        }
+        return parsed;
+      } catch (e) {
+        console.error("Failed to parse stored user:", e);
+        localStorage.removeItem("user");
+        return null;
+      }
+    }
+    return null;
   });
 
   const [token, setToken] = useState(() => localStorage.getItem("token"));
@@ -53,20 +70,21 @@ export const AuthProvider = ({ children }) => {
     navigate("/login");
   }, [navigate]);
 
-  // Helper for secure fetch, potentially with timeout
-  const secureFetch = useCallback(async (url, options = {}) => {
+  // Helper for fetch with encryption support and timeout
+  const timedSecureFetch = useCallback(async (url, options = {}) => {
+    const { timeoutMs = AUTH_TIMEOUT_MS, ...rest } = options;
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), VERIFY_TIMEOUT_MS); // Use VERIFY_TIMEOUT_MS for all secure fetches
+    const timeoutId = timeoutMs ? setTimeout(() => controller.abort(), timeoutMs) : null;
 
     try {
-      const response = await fetch(url, {
-        ...options,
+      const response = await secureApiFetch(url, {
+        ...rest,
         signal: controller.signal,
       });
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
       return response;
     } catch (error) {
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
       throw error;
     }
   }, []);
@@ -79,7 +97,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await secureFetch(url, {
+        const response = await timedSecureFetch(url, {
           ...options,
           headers: {
             "Content-Type": "application/json",
@@ -98,6 +116,7 @@ export const AuthProvider = ({ children }) => {
       } catch (err) {
         if (err.name === "AbortError") {
           console.warn("Auth fetch aborted due to timeout.");
+          toast.error("Request timed out. Please try again.");
           throw err;
         }
         console.error("Auth fetch failed:", err);
@@ -113,26 +132,27 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       return;
     }
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), VERIFY_TIMEOUT_MS);
     try {
-      const response = await authFetch(`${API_URL}/api/users/profile`, {
-        signal: controller.signal,
+      const response = await authFetch(`${API_BASE_URL}/users/profile`, {
+        timeoutMs: AUTH_TIMEOUT_MS,
       });
+      if (response.status === 404) {
+        toast.error("Account not found. Please log in again.");
+        logout();
+        return;
+      }
       if (!response.ok) throw new Error("Token verification failed");
       const userData = await response.json();
-      saveUser(userData); // update localStorage user
+      saveUser(userData);
     } catch (error) {
       if (error.name === "AbortError") {
-        console.warn("User verification timed out.");
-      } else {
-        console.error("User verification failed:", error);
+        toast.error("Login verification took too long. Please try again.");
       }
+      console.error("User verification failed:", error);
     } finally {
-      clearTimeout(timeoutId);
       setIsLoading(false);
     }
-  }, [token, authFetch]);
+  }, [token, authFetch, logout]);
 
   useEffect(() => {
     verifyUser();

@@ -24,7 +24,8 @@ export default function Bookmarks({
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [cmdKOpen, setCmdKOpen] = useState(false);
 
-  const filteredBookmarks = bookmarks.filter((bookmark) => {
+  const safeBookmarks = Array.isArray(bookmarks) ? bookmarks : [];
+  const filteredBookmarks = safeBookmarks.filter((bookmark) => {
     const searchString = String(bookmark.tags || '');
     const matchesSearch =
       bookmark.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,7 +38,6 @@ export default function Bookmarks({
 
   const fetchMoreBookmarks = () => {
     // Placeholder for infinite scroll if needed
-    console.log("Fetch more bookmarks");
   };
 
   useEffect(() => {

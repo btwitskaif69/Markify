@@ -42,16 +42,23 @@ app.get('/', (req, res) => {
 
 // Your API routes
 const encryptResponse = require("./src/middleware/encryptionMiddleware");
+const rateLimitMiddleware = require("./src/middleware/rateLimitMiddleware");
+const cacheMiddleware = require("./src/middleware/cacheMiddleware");
 
-// Apply encryption to specific routes or all API routes
-// We'll apply it to all /api routes for now
-app.use('/api', encryptResponse);
+// Apply rate limiting to all API routes
+app.use('/api', rateLimitMiddleware);
+
+// Apply encryption to all API routes (DISABLED - breaking frontend)
+// app.use('/api', encryptResponse);
 
 app.use('/api/preview', previewRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/collections', collectionRoutes);
-app.use('/api/blog', blogRoutes);
+
+// Apply caching to blog routes (cache for 60 seconds)
+app.use('/api/blog', cacheMiddleware(60), blogRoutes);
+
 app.use('/api/gemini', geminiRoutes);
 
 app.use(errorHandler);

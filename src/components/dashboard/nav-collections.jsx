@@ -22,22 +22,22 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
   return (
     <SidebarGroup>
       <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
-<SidebarGroupLabel className="text-sm text-foreground">
-  <div className="flex items-center gap-2">
-    <Folders className="h-4 w-4" />
-    <span className="font-semibold">Collections</span>
-  </div>
-</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-sm text-foreground">
+          <div className="flex items-center gap-2">
+            <Folders className="h-4 w-4" />
+            <span className="font-semibold">Collections</span>
+          </div>
+        </SidebarGroupLabel>
         <Button onClick={onCreate} variant="ghost" size="icon" className="h-8 w-8">
           <Plus className="h-4 w-4" />
           <span className="sr-only">Create Collection</span>
         </Button>
       </div>
       <SidebarMenu>
-        {collections.map((collection) => (
+        {(Array.isArray(collections) ? collections : []).map((collection) => (
           <div key={collection.id} className="flex items-center group">
             <Link to={`/dashboard/${userId}/collections/${collection.id}`} className="flex-1">
-              <SidebarMenuButton 
+              <SidebarMenuButton
                 className="w-full data-[active=true]:bg-primary"
                 tooltip={collection.name}
                 isActive={collection.id === activeCollectionId}
@@ -48,7 +48,7 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
                 ) : (
                   <Folder className="h-4 w-4" />
                 )}
-                
+
                 <span className="group-data-[collapsible=icon]:hidden">{collection.name}</span>
               </SidebarMenuButton>
             </Link>
@@ -71,10 +71,10 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
                   align="start"
                   sideOffset={8}
                 >
-             <DropdownMenuLabel className="">
-              Settings
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="text-accent-foreground" />
+                  <DropdownMenuLabel className="">
+                    Settings
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="text-accent-foreground" />
                   <DropdownMenuItem onSelect={() => onRename(collection)} className="cursor-pointer">
                     <Edit className="mr-2 h-4 w-4" />
                     <span>Rename</span>

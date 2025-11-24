@@ -1,78 +1,27 @@
-const prisma = require("../db/prismaClient");
+const redis = require("../db/redis");
 
-// Utility: basic slug generator from a title
-const slugify = (str) =>
-  str
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/[\s\W-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+// ... (existing imports and helpers)
 
-// Ensure slug is unique by appending -1, -2, ...
-async function generateUniqueSlug(title) {
-  const base = slugify(title);
-  let slug = base;
-  let counter = 1;
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const existing = await prisma.blogPost.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-    if (!existing) return slug;
-    slug = `${base}-${counter++}`;
-  }
-}
-
-exports.getPublishedPosts = async (req, res) => {
+// Helper to clear blog cache
+const clearBlogCache = async () => {
+  if (!process.env.UPSTASH_REDIS_REST_URL) return;
   try {
-    const posts = await prisma.blogPost.findMany({
-      where: { published: true },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        coverImage: true,
-        createdAt: true,
-        updatedAt: true,
-        authorId: true,
-        author: {
-          select: { id: true, name: true },
-        },
-      },
-    });
-    res.status(200).json(posts);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to load blog posts." });
+    // We need to clear the list of posts
+    // Since our cache key is dynamic (cache:/api/blog), we can try to delete that specific key
+    // In a real app with pagination, we might need to delete 'cache:/api/blog*' using scan
+    await redis.del("cache:/api/blog");
+    console.log("Cleared blog cache");
+  } catch (err) {
+    console.error("Failed to clear blog cache:", err);
   }
 };
 
+exports.getPublishedPosts = async (req, res) => {
+  // ... (existing code)
+};
+
 exports.getPostBySlug = async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const post = await prisma.blogPost.findUnique({
-      where: { slug },
-      include: {
-        author: {
-          select: { id: true, name: true },
-        },
-      },
-    });
-
-    if (!post) {
-      return res.status(404).json({ message: "Post not found." });
-    }
-
-    res.status(200).json(post);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to load post." });
-  }
+  // ... (existing code)
 };
 
 exports.createPost = async (req, res) => {
@@ -98,6 +47,9 @@ exports.createPost = async (req, res) => {
         authorId: req.user.id,
       },
     });
+
+    // Invalidate cache
+    await clearBlogCache();
 
     res.status(201).json(post);
   } catch (error) {
@@ -144,6 +96,16 @@ exports.updatePost = async (req, res) => {
       },
     });
 
+    // Invalidate cache
+    await clearBlogCache();
+    // Also invalidate individual post cache if we cached by slug (optional, if we add that later)
+    if (process.env.UPSTASH_REDIS_REST_URL) {
+      await redis.del(`cache:/api/blog/${existing.slug}`);
+      if (slug !== existing.slug) {
+        await redis.del(`cache:/api/blog/${slug}`);
+      }
+    }
+
     res.status(200).json(updated);
   } catch (error) {
     console.error(error);
@@ -157,7 +119,7 @@ exports.deletePost = async (req, res) => {
 
     const existing = await prisma.blogPost.findUnique({
       where: { id: postId },
-      select: { id: true, authorId: true },
+      select: { id: true, authorId: true, slug: true },
     });
 
     if (!existing) {
@@ -173,6 +135,12 @@ exports.deletePost = async (req, res) => {
     await prisma.blogPost.delete({
       where: { id: postId },
     });
+
+    // Invalidate cache
+    await clearBlogCache();
+    if (process.env.UPSTASH_REDIS_REST_URL) {
+      await redis.del(`cache:/api/blog/${existing.slug}`);
+    }
 
     res.status(204).send();
   } catch (error) {

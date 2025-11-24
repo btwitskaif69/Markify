@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -28,7 +29,7 @@ export default function ResetPassword() {
     }
     setIsLoading(true);
     try {
-      const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"}/api/users/reset-password/${token}`;
+      const API_URL = `${API_BASE_URL}/users/reset-password/${token}`;
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

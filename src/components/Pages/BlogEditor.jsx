@@ -13,9 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
-  }/api`;
+const API_URL = API_BASE_URL;
 
 const BlogEditor = () => {
   const { slug } = useParams();

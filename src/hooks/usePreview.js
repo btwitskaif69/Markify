@@ -1,8 +1,9 @@
 // src/components/Dashboard/usePreview.js
 import { useState, useCallback } from "react";
 import { debounce } from "lodash";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
+const API_URL = API_BASE_URL;
 
 // Utility: Convert image URL to WebP
 async function convertImageToWebP(imageUrl, quality = 0.8) {

@@ -45,9 +45,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
-  }/api`;
+const API_URL = API_BASE_URL;
 
 export default function AdminPanel() {
   const { user, isAdmin, isLoading, isAuthenticated, authFetch } = useAuth();

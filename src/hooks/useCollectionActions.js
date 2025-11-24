@@ -1,8 +1,9 @@
 // src/components/Dashboard/useCollectionActions.js
 import { useState } from "react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
+const API_URL = API_BASE_URL;
 
 export function useCollectionActions(authFetch, setCollections) {
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);

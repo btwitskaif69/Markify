@@ -15,9 +15,11 @@ import { Loader2 } from "lucide-react";
 import { Spotlight } from "../ui/spotlight-new";
 import { SkeletonCard } from "../ui/SkeletonCard";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { API_BASE_URL } from "@/lib/apiConfig";
+import { secureFetch } from "@/lib/secureApi";
+import SEO from "../SEO/SEO";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:5000"
-  }/api`;
+const API_URL = API_BASE_URL;
 
 const TiltCard = ({ children, className }) => {
   const x = useMotionValue(0);
@@ -62,9 +64,6 @@ const TiltCard = ({ children, className }) => {
     </motion.div>
   );
 };
-
-import SEO from "../SEO/SEO";
-import { secureFetch } from "@/lib/secureApi";
 
 const Blog = () => {
   const { user } = useAuth();

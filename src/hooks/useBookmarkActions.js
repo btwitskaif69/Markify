@@ -1,6 +1,7 @@
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const API_URL = `${import.meta.env.VITE_APP_BACKEND_URL}/api`;
+const API_URL = API_BASE_URL;
 
 export function useBookmarkActions(authFetch, user, setAllBookmarks, collections) {
   const handleSubmit = async (bookmarkData, editingBookmark, previewData, closeDialog) => {
