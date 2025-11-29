@@ -22,6 +22,8 @@ export const decryptResponse = (data) => {
     return data;
 };
 
+import { AUTH_TIMEOUT_MS } from "./apiConfig";
+
 /**
  * A wrapper around fetch that automatically decrypts the response.
  * @param {string} url - The URL to fetch.
@@ -29,16 +31,38 @@ export const decryptResponse = (data) => {
  * @returns {Promise<Response>} - The fetch response with a modified .json() method.
  */
 export const secureFetch = async (url, options = {}) => {
-    const response = await fetch(url, options);
+    const { timeoutMs = AUTH_TIMEOUT_MS, ...fetchOptions } = options;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(new Error("Request timed out")), timeoutMs);
 
-    // Clone the response so we can modify the json method
-    const originalJson = response.json.bind(response);
+    // If the caller provided their own signal, we need to respect it too.
+    // However, chaining signals is complex, so for now we'll just use our controller
+    // and if the user passed a signal, we'd ideally listen to it.
+    // For simplicity in this fix, we'll assume most calls don't pass a signal or we override it.
+    // A better approach for signal chaining:
+    if (options.signal) {
+        options.signal.addEventListener('abort', () => controller.abort());
+    }
 
-    // Override .json() to handle decryption automatically
-    response.json = async () => {
-        const data = await originalJson();
-        return decryptResponse(data);
-    };
+    console.log(`[secureFetch] Requesting: ${url} (Timeout: ${timeoutMs}ms)`);
 
-    return response;
+    try {
+        const response = await fetch(url, {
+            ...fetchOptions,
+            signal: controller.signal
+        });
+
+        // Clone the response so we can modify the json method
+        const originalJson = response.json.bind(response);
+
+        // Override .json() to handle decryption automatically
+        response.json = async () => {
+            const data = await originalJson();
+            return decryptResponse(data);
+        };
+
+        return response;
+    } finally {
+        clearTimeout(timeoutId);
+    }
 };

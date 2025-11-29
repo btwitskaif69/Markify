@@ -75,15 +75,14 @@ const Blog = () => {
 
 
     const fetchPosts = async () => {
-      // Simulate a slight delay to show off the skeleton loader (optional, remove in prod if needed)
-      // await new Promise(resolve => setTimeout(resolve, 1500)); 
-
+      console.log("Fetching blog posts from:", `${API_URL}/blog`);
       try {
         const res = await secureFetch(`${API_URL}/blog`);
         if (!res.ok) throw new Error("Failed to load blog posts.");
         const data = await res.json();
         setPosts(data);
       } catch (err) {
+        console.error("Blog fetch error:", err);
         setError(err.message || "Failed to load blog posts.");
       } finally {
         setIsLoading(false);

@@ -1,4 +1,5 @@
 const redis = require("../db/redis");
+const prisma = require("../db/prismaClient");
 
 // ... (existing imports and helpers)
 
@@ -17,11 +18,44 @@ const clearBlogCache = async () => {
 };
 
 exports.getPublishedPosts = async (req, res) => {
-  // ... (existing code)
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { published: true },
+      include: {
+        author: {
+          select: { name: true, avatar: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ message: "Failed to fetch posts.", error: error.message });
+  }
 };
 
 exports.getPostBySlug = async (req, res) => {
-  // ... (existing code)
+  try {
+    const { slug } = req.params;
+    const post = await prisma.blogPost.findUnique({
+      where: { slug },
+      include: {
+        author: {
+          select: { name: true, avatar: true },
+        },
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found." });
+    }
+
+    res.status(200).json(post);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    res.status(500).json({ message: "Failed to fetch post." });
+  }
 };
 
 exports.createPost = async (req, res) => {

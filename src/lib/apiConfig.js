@@ -14,4 +14,4 @@ export const BACKEND_BASE_URL = normalizeBackendUrl(import.meta.env.VITE_APP_BAC
 export const API_BASE_URL = `${BACKEND_BASE_URL}/api`;
 
 // Allow override via env, otherwise give slow endpoints a reasonable window to respond.
-export const AUTH_TIMEOUT_MS = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS || 12000);
+export const AUTH_TIMEOUT_MS = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS || 60000);

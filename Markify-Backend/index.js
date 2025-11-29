@@ -35,6 +35,12 @@ app.use(cors({
 // Allow larger JSON payloads so base64 images can be sent safely
 app.use(express.json({ limit: "5mb" }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  next();
+});
+
 // A root route to confirm the API is running
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Markify API is running successfully.' });
