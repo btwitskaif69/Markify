@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "Markify Sync",
+    "version": "1.0",
+    "description": "Sync your browser bookmarks with Markify.",
+    "permissions": [
+        "bookmarks",
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "http://localhost:5173/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://localhost:5173/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    }
+}

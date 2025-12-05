@@ -1,11 +1,82 @@
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, ArrowLeft, Calendar, User, Clock } from "lucide-react";
+import { API_BASE_URL } from "@/lib/apiConfig";
 import { secureFetch } from "@/lib/secureApi";
+import SEO from "../SEO/SEO";
 
-// ... (existing imports)
+const API_URL = API_BASE_URL;
 
-// ... (existing helper functions)
+// Helper function to render markdown-like content
+const renderContent = (content) => {
+  if (!content) return { __html: "" };
+
+  let html = content
+    // Escape HTML first
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    // Headers
+    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+    // Bold and Italic
+    .replace(/\*\*\*(.*?)\*\*\*/gim, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/gim, "<em>$1</em>")
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>')
+    // Code blocks
+    .replace(/```([\s\S]*?)```/gim, "<pre><code>$1</code></pre>")
+    // Inline code
+    .replace(/`([^`]+)`/gim, "<code>$1</code>")
+    // Blockquotes
+    .replace(/^> (.*$)/gim, "<blockquote>$1</blockquote>")
+    // Unordered lists
+    .replace(/^\* (.*$)/gim, "<li>$1</li>")
+    .replace(/^- (.*$)/gim, "<li>$1</li>")
+    // Horizontal rule
+    .replace(/^---$/gim, "<hr />")
+    // Paragraphs (double newlines)
+    .replace(/\n\n/gim, "</p><p>")
+    // Single newlines to <br>
+    .replace(/\n/gim, "<br />");
+
+  // Wrap in paragraph
+  html = `<p>${html}</p>`;
+
+  // Fix consecutive list items
+  html = html.replace(/<\/li><br \/><li>/g, "</li><li>");
+  html = html.replace(/<li>/g, "<ul><li>").replace(/<\/li>(?!<li>)/g, "</li></ul>");
+  html = html.replace(/<\/ul><ul>/g, "");
+
+  return { __html: html };
+};
 
 const BlogPost = () => {
-  // ... (existing state)
+  const { slug } = useParams();
+  const [post, setPost] = useState(null);
+  const [latestPosts, setLatestPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Track scroll progress
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      setScrollProgress(Math.min(progress, 1));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +109,7 @@ const BlogPost = () => {
 
     fetchData();
   }, [slug]);
+
   // Construct structured data if post exists
   const articleSchema = post ? {
     "@context": "https://schema.org",

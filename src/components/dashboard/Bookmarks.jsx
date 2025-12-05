@@ -16,13 +16,18 @@ export default function Bookmarks({
   onEdit,
   onDelete,
   onToggleFavorite,
-  onMove
+  onMove,
+  onBulkDelete
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [cmdKOpen, setCmdKOpen] = useState(false);
+
+  // Selection mode state
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   const safeBookmarks = Array.isArray(bookmarks) ? bookmarks : [];
   const filteredBookmarks = safeBookmarks.filter((bookmark) => {
@@ -38,6 +43,57 @@ export default function Bookmarks({
 
   const fetchMoreBookmarks = () => {
     // Placeholder for infinite scroll if needed
+  };
+
+  // Clear selection when exiting selection mode
+  useEffect(() => {
+    if (!isSelectionMode) {
+      setSelectedIds(new Set());
+    }
+  }, [isSelectionMode]);
+
+  // Handle toggling selection of a bookmark
+  const handleToggleSelect = (bookmarkId) => {
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(bookmarkId)) {
+        newSet.delete(bookmarkId);
+      } else {
+        newSet.add(bookmarkId);
+      }
+      return newSet;
+    });
+  };
+
+  // Handle select all visible bookmarks
+  const handleSelectAll = () => {
+    if (selectedIds.size === filteredBookmarks.length) {
+      // Deselect all
+      setSelectedIds(new Set());
+    } else {
+      // Select all filtered bookmarks
+      setSelectedIds(new Set(filteredBookmarks.map(b => b.id)));
+    }
+  };
+
+  // Handle delete selected bookmarks
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) return;
+
+    const idsToDelete = Array.from(selectedIds);
+
+    // Call bulk delete if available, otherwise delete one by one
+    if (onBulkDelete) {
+      await onBulkDelete(idsToDelete);
+    } else {
+      for (const id of idsToDelete) {
+        await onDelete(id);
+      }
+    }
+
+    // Clear selection and exit selection mode
+    setSelectedIds(new Set());
+    setIsSelectionMode(false);
   };
 
   useEffect(() => {
@@ -66,6 +122,13 @@ export default function Bookmarks({
         categories={["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]}
         fetchMoreBookmarks={fetchMoreBookmarks}
         onOpenCmdK={() => setCmdKOpen(true)}
+        // Selection mode props
+        isSelectionMode={isSelectionMode}
+        setIsSelectionMode={setIsSelectionMode}
+        selectedCount={selectedIds.size}
+        totalCount={filteredBookmarks.length}
+        onSelectAll={handleSelectAll}
+        onDeleteSelected={handleDeleteSelected}
       />
       <CmdK
         bookmarks={bookmarks}
@@ -106,6 +169,10 @@ export default function Bookmarks({
                 onToggleFavorite={onToggleFavorite}
                 collections={collections}
                 onMove={onMove}
+                // Selection mode props
+                isSelectionMode={isSelectionMode}
+                isSelected={selectedIds.has(bookmark.id)}
+                onToggleSelect={handleToggleSelect}
               />
             ) : (
               <BookmarkListItem
@@ -114,6 +181,10 @@ export default function Bookmarks({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onToggleFavorite={onToggleFavorite}
+                // Selection mode props
+                isSelectionMode={isSelectionMode}
+                isSelected={selectedIds.has(bookmark.id)}
+                onToggleSelect={handleToggleSelect}
               />
             )
           )}
