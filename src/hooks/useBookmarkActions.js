@@ -153,47 +153,95 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
   };
 
   /**
-   * Syncs bookmarks from browser, then fetches previews one by one in the background
+   * Syncs bookmarks by importing Chrome's exported bookmarks HTML file
+   * User exports from Chrome: Bookmarks → Bookmark Manager → ⋮ → Export bookmarks
    */
   const handleSyncLocalBookmarks = async () => {
-    try {
-      // Step 1: Sync bookmarks quickly (without previews)
-      const response = await authFetch(`${API_URL}/bookmarks/sync-local`, {
-        method: "POST",
+    return new Promise((resolve) => {
+      // Create a file input to let user select the bookmarks HTML file
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.html';
+
+      fileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+          resolve(false);
+          return;
+        }
+
+        try {
+          const htmlContent = await file.text();
+
+          // Parse the HTML to extract bookmarks
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlContent, 'text/html');
+          const bookmarks = [];
+
+          // Chrome exports bookmarks as <A> tags with HREF attribute
+          const links = doc.querySelectorAll('a[href]');
+
+          links.forEach((link) => {
+            const url = link.getAttribute('href');
+            const title = link.textContent?.trim();
+            const addDate = link.getAttribute('add_date');
+
+            // Skip non-http URLs (like javascript:, chrome:, etc.)
+            if (url && title && (url.startsWith('http://') || url.startsWith('https://'))) {
+              bookmarks.push({
+                title,
+                url,
+                addDate: addDate ? new Date(parseInt(addDate) * 1000).toISOString() : null,
+              });
+            }
+          });
+
+          if (bookmarks.length === 0) {
+            toast.info("No valid bookmarks found in the file.");
+            resolve(true);
+            return;
+          }
+
+          // Import bookmarks via the existing import endpoint
+          const response = await authFetch(`${API_URL}/bookmarks/import`, {
+            method: "POST",
+            body: JSON.stringify(bookmarks),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to import bookmarks.");
+          }
+
+          const result = await response.json();
+
+          if (result.createdCount === 0) {
+            toast.success("All bookmarks already synced! No new bookmarks to import.");
+          } else {
+            toast.success(`${result.createdCount} bookmarks synced! (${result.skippedCount} duplicates skipped)`);
+          }
+
+          // Reload bookmarks to show the newly imported ones
+          const reloadResponse = await authFetch(`${API_URL}/users/${user.id}/bookmarks`);
+          if (reloadResponse.ok) {
+            const updatedBookmarks = await reloadResponse.json();
+            setAllBookmarks(updatedBookmarks);
+          }
+
+          resolve(true);
+        } catch (err) {
+          toast.error(err.message || "Failed to parse bookmarks file.");
+          resolve(false);
+        }
+      };
+
+      // Show instructions toast
+      toast.info("Select your exported Chrome bookmarks HTML file", {
+        description: "Export from Chrome: Bookmarks → ⋮ → Export bookmarks"
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to sync bookmarks.");
-      }
-
-      const result = await response.json();
-
-      if (result.createdCount === 0) {
-        toast.success(`${result.message} (No new bookmarks to import)`);
-        return true;
-      }
-
-      toast.success(`${result.createdCount} bookmarks imported from ${result.source}. Fetching previews...`);
-
-      // Step 2: Reload bookmarks to get the newly created ones
-      const reloadResponse = await authFetch(`${API_URL}/users/${user.id}/bookmarks`);
-      if (reloadResponse.ok) {
-        const bookmarks = await reloadResponse.json();
-        setAllBookmarks(bookmarks);
-      }
-
-      // Step 3: Fetch previews one by one in the background (non-blocking)
-      if (result.createdIds && result.createdIds.length > 0) {
-        // Start fetching previews without blocking
-        fetchPreviewsInBackground(result.createdIds);
-      }
-
-      return true;
-    } catch (err) {
-      toast.error(err.message);
-      return false;
-    }
+      fileInput.click();
+    });
   };
 
   /**
