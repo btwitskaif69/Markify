@@ -200,23 +200,35 @@ exports.importBookmarks = async (req, res) => {
 exports.syncLocalBookmarks = async (req, res) => {
   try {
     const homeDir = os.homedir();
-    const edgePath = path.join(homeDir, 'AppData', 'Local', 'Microsoft', 'Edge', 'User Data', 'Default', 'Bookmarks');
-    const chromePath = path.join(homeDir, 'AppData', 'Local', 'Google', 'Chrome', 'User Data', 'Default', 'Bookmarks');
-    const bravePath = path.join(homeDir, 'AppData', 'Local', 'BraveSoftware', 'Brave-Browser', 'User Data', 'Default', 'Bookmarks');
+
+    // Helper to find bookmarks file across multiple profiles (Default, Profile 1-5)
+    const findBookmarksFile = (browserUserDataPath) => {
+      const profiles = ['Default', 'Profile 1', 'Profile 2', 'Profile 3', 'Profile 4', 'Profile 5'];
+      for (const profile of profiles) {
+        const bookmarksPath = path.join(browserUserDataPath, profile, 'Bookmarks');
+        if (fs.existsSync(bookmarksPath)) return bookmarksPath;
+      }
+      return null;
+    };
+
+    // Browser user data directories
+    const chromeUserData = path.join(homeDir, 'AppData', 'Local', 'Google', 'Chrome', 'User Data');
+    const edgeUserData = path.join(homeDir, 'AppData', 'Local', 'Microsoft', 'Edge', 'User Data');
+    const braveUserData = path.join(homeDir, 'AppData', 'Local', 'BraveSoftware', 'Brave-Browser', 'User Data');
 
     let bookmarksFilePath = null;
 
-    if (fs.existsSync(bravePath)) {
-      bookmarksFilePath = bravePath;
-    } else if (fs.existsSync(edgePath)) {
-      bookmarksFilePath = edgePath;
-    } else if (fs.existsSync(chromePath)) {
-      bookmarksFilePath = chromePath;
-    }
+    // Check Brave first, then Edge, then Chrome (across all profiles)
+    bookmarksFilePath = findBookmarksFile(braveUserData);
+    if (!bookmarksFilePath) bookmarksFilePath = findBookmarksFile(edgeUserData);
+    if (!bookmarksFilePath) bookmarksFilePath = findBookmarksFile(chromeUserData);
 
     if (!bookmarksFilePath) {
-      return res.status(404).json({ message: "No browser bookmarks file found (checked Brave, Edge, and Chrome)." });
+      console.log('Bookmark paths checked:', { chromeUserData, edgeUserData, braveUserData });
+      return res.status(404).json({ message: "No browser bookmarks file found (checked Brave, Edge, and Chrome across multiple profiles)." });
     }
+
+    console.log('Found bookmarks file at:', bookmarksFilePath);
 
     const fileContent = fs.readFileSync(bookmarksFilePath, 'utf8');
     const bookmarksData = JSON.parse(fileContent);
