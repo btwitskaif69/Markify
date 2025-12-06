@@ -206,7 +206,7 @@ const About = () => {
               >
                 <div className="w-32 h-32 mx-auto rounded-full border-4 border-background shadow-xl mb-6 overflow-hidden relative">
                   <img
-                    src="https://media.licdn.com/dms/image/v2/D5603AQGpNQqDlJLbLg/profile-displayphoto-shrink_200_200/B56ZdFx.R9HEAc-/0/1749222419725?e=1766620800&v=beta&t=Yv7sdiOp0qc_-SOnXvGcOFlC63Uuoh8Qip4r7u20DHA"
+                    src="/images/mohd-kaif.jpg"
                     alt="Mohd Kaif"
                     className="w-full h-full object-cover"
                   />
@@ -218,8 +218,8 @@ const About = () => {
                 </p>
                 <div className="flex justify-center gap-4">
                   <a href="https://github.com/btwitskaif69" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Github className="w-5 h-5" /></a>
-                  <a href="https://twitter.com/btwitskaif" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
-                  <a href="https://linkedin.com/in/mohd-kaif-009952250/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
+                  <a href="https://twitter.com/btwitskaif69" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
+                  <a href="https://www.linkedin.com/in/btwitskaif69/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
                 </div>
               </motion.div>
             </div>
