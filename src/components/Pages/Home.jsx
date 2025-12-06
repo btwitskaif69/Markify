@@ -2,6 +2,7 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '../home/Hero';
+import { WaitlistHero } from '../waitlist-hero';
 import DashboardPreview from '../home/DashboardPreview';
 import PowerBy from '../home/PowerBy';
 import Features from '../home/Features';
@@ -44,6 +45,10 @@ const Home = () => {
 
         <PowerBy />
         <Features />
+
+        {/* Waitlist Hero placed here */}
+        <WaitlistHero />
+
         <Pricing />
       </main>
       <Footer />
