@@ -17,7 +17,11 @@ const features = [
     background: (
       <img
         src={collections}
+        alt="Smart bookmark collections interface showing organized folders"
         loading="lazy"
+        decoding="async"
+        width={400}
+        height={300}
         className="absolute -top-25  scale-102 hover:scale-106 ease-in-out duration-300 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_75%,#000_100%)]"
       />
     ),
@@ -33,7 +37,11 @@ const features = [
     background: (
       <img
         src={bg}
+        alt="Global search interface with instant results"
         loading="lazy"
+        decoding="async"
+        width={600}
+        height={400}
         className="absolute scale-170 duration-300 brightness-150 contrast-125 hover:scale-180 ease-in-out [--duration:20s]
                                         [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
       />
@@ -48,7 +56,7 @@ const features = [
     href: "/",
     cta: "Learn more",
     background: (
-      <img src={bg} loading="lazy" className="absolute -right-20 -top-20 opacity-60" />
+      <img src={bg} alt="Privacy protection illustration" loading="lazy" decoding="async" width={200} height={200} className="absolute -right-20 -top-20 opacity-60" />
     ),
     className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
   },
@@ -60,7 +68,7 @@ const features = [
     href: "/",
     cta: "Learn more",
     background: (
-      <img src={bg} loading="lazy" className="absolute -right-20 -top-20 opacity-60" />
+      <img src={bg} alt="Cross-device sync illustration" loading="lazy" decoding="async" width={200} height={200} className="absolute -right-20 -top-20 opacity-60" />
     ),
     className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
   },
@@ -73,7 +81,11 @@ const features = [
     background: (
       <img
         src={share}
+        alt="Bookmark sharing interface"
         loading="lazy"
+        decoding="async"
+        width={400}
+        height={300}
         className="absolute -top-1  scale-100 hover:scale-110 ease-in-out duration-300 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)]"
       />
     ),
@@ -85,14 +97,14 @@ const Features = () => {
   return (
     <section className="py-10">
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header: improved h1 + p (responsive, accessible, dark-mode friendly, gradient highlight) */}
+        {/* Header: improved h2 for SEO (only one h1 per page) */}
         <header className="text-center mb-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight leading-tight max-w-5xl mx-auto text-primary">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight leading-tight max-w-5xl mx-auto text-primary">
             Everything you need to stay organized
             <span className="block mt-3 text-2xl sm:text-2xl md:text-3xl text-accent-foreground">
               Bookmarks, Collections & Lightning Search
             </span>
-          </h1>
+          </h2>
         </header>
 
         {/* Features grid */}

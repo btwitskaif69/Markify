@@ -48,18 +48,18 @@ const Navbar = () => {
         <NavbarLogo />
         <NavItems items={navItems} onItemClick={closeMobileMenu} />
         <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
-        <div
+        <button
           onClick={handleThemeToggle}
-          className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 ${
-            isDark ? "rotate-180" : "rotate-0"
-          }`}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 bg-transparent border-none ${isDark ? "rotate-180" : "rotate-0"
+            }`}
         >
           {isDark ? (
             <Sun className="h-6 w-6 text-yellow-500" />
           ) : (
             <Moon className="h-6 w-6 text-gray-500" />
           )}
-        </div>
+        </button>
         <NavbarButton as={Link} to="/signup">
           Sign Up
         </NavbarButton>
@@ -69,20 +69,20 @@ const Navbar = () => {
       <MobileNav>
         <MobileNavHeader>
           <NavbarLogo />
-          
-          <div
-          onClick={handleThemeToggle}
-          className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 ${
-            isDark ? "rotate-180" : "rotate-0"
-          }`}
-        >
-          {isDark ? (
-            <Sun className="h-6 w-6 text-yellow-500" />
-          ) : (
-            <Moon className="h-6 w-6 text-gray-500" />
-          )}
-        </div>
-        
+
+          <button
+            onClick={handleThemeToggle}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 bg-transparent border-none ${isDark ? "rotate-180" : "rotate-0"
+              }`}
+          >
+            {isDark ? (
+              <Sun className="h-6 w-6 text-yellow-500" />
+            ) : (
+              <Moon className="h-6 w-6 text-gray-500" />
+            )}
+          </button>
+
           <MobileNavToggle isOpen={mobileOpen} onClick={toggleMobileMenu} />
         </MobileNavHeader>
 
