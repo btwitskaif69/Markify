@@ -189,37 +189,84 @@ const About = () => {
 
         {/* Creator Section */}
         <section className="relative z-20 py-24 bg-card/30 border-t border-border/50">
-          <div className="container mx-auto px-4 text-center">
-            <div className="max-w-3xl mx-auto mb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto mb-16 text-center">
               <h2 className="text-3xl md:text-5xl font-bold mb-6">Meet the Creator</h2>
               <p className="text-lg text-muted-foreground">
-                Markify is a one-man show, built with passion and caffeine by a developer who loves solving problems.
+                Markify is a one-man show, built with passion and caffeine.
               </p>
             </div>
 
-            <div className="max-w-md mx-auto">
+            <div className="max-w-4xl mx-auto">
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative rounded-2xl overflow-hidden bg-card border border-border p-8"
+                className="relative group rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-white/0 p-8 md:p-12 overflow-hidden"
               >
-                <div className="w-32 h-32 mx-auto rounded-full border-4 border-background shadow-xl mb-6 overflow-hidden relative">
-                  <img
-                    src="/images/mohd-kaif.jpg"
-                    alt="Mohd Kaif"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-2xl font-bold mb-2">Mohd Kaif</h3>
-                <p className="text-primary font-medium mb-4">Founder & Developer</p>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  I created Markify to solve my own problem of organizing scattered digital resources. I run the entire project solo—from writing the code to designing the pixels and managing the servers.
-                </p>
-                <div className="flex justify-center gap-4">
-                  <a href="https://github.com/btwitskaif69" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Github className="w-5 h-5" /></a>
-                  <a href="https://twitter.com/btwitskaif69" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
-                  <a href="https://www.linkedin.com/in/btwitskaif69/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
+                {/* Decorative background glow */}
+                <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-primary/20 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
+                <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-700" />
+
+                <div className="relative z-10 flex flex-col md:flex-row gap-10 items-center md:items-start text-center md:text-left">
+                  {/* Image Column */}
+                  <div className="flex-shrink-0 relative">
+                    <div className="w-48 h-48 rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl relative z-10 rotate-3 group-hover:rotate-0 transition-all duration-500 ease-out">
+                      <img
+                        src="/images/mohd-kaif.jpg"
+                        alt="Mohd Kaif"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* Image backdrop */}
+                    <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl transform translate-y-4 scale-90 -z-10" />
+                  </div>
+
+                  {/* Content Column */}
+                  <div className="flex-1 space-y-6">
+                    <div>
+                      <h3 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60 mb-2">
+                        Mohd Kaif
+                      </h3>
+                      <p className="text-xl text-primary font-medium tracking-wide">
+                        Founder & Full Stack Developer
+                      </p>
+                    </div>
+
+                    <p className="text-lg text-muted-foreground/90 leading-relaxed font-light">
+                      "I created Markify to solve my own problem of organizing scattered digital resources. What started as a weekend project has grown into a powerful tool that helps thousands of people tame the chaos of the web. I run the entire project solo—from writing the code to designing the pixels."
+                    </p>
+
+                    <div className="flex items-center justify-center md:justify-start gap-6 pt-2">
+                      <a
+                        href="https://github.com/btwitskaif69"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 rounded-xl bg-white/5 hover:bg-white/10 hover:scale-110 hover:text-white text-muted-foreground transition-all duration-300 border border-white/5"
+                        aria-label="GitHub"
+                      >
+                        <Github className="w-6 h-6" />
+                      </a>
+                      <a
+                        href="https://twitter.com/btwitskaif"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 rounded-xl bg-white/5 hover:bg-white/10 hover:scale-110 hover:text-blue-400 text-muted-foreground transition-all duration-300 border border-white/5"
+                        aria-label="Twitter"
+                      >
+                        <Twitter className="w-6 h-6" />
+                      </a>
+                      <a
+                        href="https://linkedin.com/in/mohd-kaif-009952250/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 rounded-xl bg-white/5 hover:bg-white/10 hover:scale-110 hover:text-blue-600 text-muted-foreground transition-all duration-300 border border-white/5"
+                        aria-label="LinkedIn"
+                      >
+                        <Linkedin className="w-6 h-6" />
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
