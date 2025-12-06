@@ -1,6 +1,6 @@
 "use client";;
 import { cn } from "@/lib/utils";
-import {Menu, X} from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import {
   motion,
   AnimatePresence,
@@ -54,7 +54,7 @@ export const NavBody = ({
       animate={{
         backdropFilter: visible ? "blur(10px)" : "none",
         boxShadow: visible
-          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
+          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 -1px 0 0 rgba(234, 88, 12, 0.8), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
           : "none",
         width: visible ? "40%" : "100%",
         y: visible ? 20 : 0,
@@ -120,7 +120,7 @@ export const MobileNav = ({
       animate={{
         backdropFilter: visible ? "blur(10px)" : "none",
         boxShadow: visible
-          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
+          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 -1px 0 0 rgba(234, 88, 12, 0.8), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
           : "none",
         width: visible ? "90%" : "100%",
         paddingRight: visible ? "12px" : "0px",
@@ -192,15 +192,15 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-              <>
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full mr-2">
-                  {/* <BookMarked className="size-4" /> */}
-                  <img src={logo} alt="Markify" className="h-5 w-5"/>
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate text-lg font-semibold">Markify</span>
-                </div>
-                </>
+    <>
+      <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full mr-2">
+        {/* <BookMarked className="size-4" /> */}
+        <img src={logo} alt="Markify" className="h-5 w-5" />
+      </div>
+      <div className="grid flex-1 text-left text-sm leading-tight">
+        <span className="truncate text-lg font-semibold">Markify</span>
+      </div>
+    </>
   );
 };
 
