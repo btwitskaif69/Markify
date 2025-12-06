@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import logo from "@/assets/logo-light.svg";
 
 const categories = ["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"];
 
@@ -29,13 +30,14 @@ export default function BookmarkFormDialog({
   onUrlChange,
   onAddClick,
   collections,
+  isSubmitting,
 }) {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const dataToSubmit = {
-        ...formData,
-        // Ensure we send null if the collectionId is an empty string
-        collectionId: formData.collectionId || null,
+      ...formData,
+      // Ensure we send null if the collectionId is an empty string
+      collectionId: formData.collectionId || null,
     };
     onSubmit(dataToSubmit);
   };
@@ -130,7 +132,7 @@ export default function BookmarkFormDialog({
           <div>
             <Label htmlFor="category" className="mb-2">Category</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}>
-              <SelectTrigger><SelectValue placeholder="Select a category"/></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (<SelectItem key={category} value={category}>{category}</SelectItem>))}
               </SelectContent>
@@ -147,8 +149,19 @@ export default function BookmarkFormDialog({
             <p className="text-xs text-muted-foreground mt-1">Separate tags with commas</p>
           </div>
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit">{editingBookmark ? "Update" : "Add"} Bookmark</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center animate-spin mr-2">
+                    <img src={logo} alt="" className="w-4 h-4" />
+                  </div>
+                  {editingBookmark ? "Updating..." : "Adding..."}
+                </>
+              ) : (
+                <>{editingBookmark ? "Update" : "Add"} Bookmark</>
+              )}
+            </Button>
           </div>
         </form>
       </DialogContent>

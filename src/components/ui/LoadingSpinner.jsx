@@ -1,11 +1,15 @@
 import React from 'react';
+import logo from '@/assets/logo-light.svg';
 
-const LoadingSpinner = () => {
+const LoadingSpinner = ({ size = "w-12 h-12" }) => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">
-            <div className="relative w-16 h-16">
-                <div className="absolute top-0 left-0 w-full h-full border-4 border-primary/30 rounded-full"></div>
-                <div className="absolute top-0 left-0 w-full h-full border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
+            <div className={`${size} bg-primary rounded-full flex items-center justify-center animate-spin`}>
+                <img
+                    src={logo}
+                    alt="Loading..."
+                    className="w-2/3 h-2/3"
+                />
             </div>
         </div>
     );

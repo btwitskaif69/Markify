@@ -1,9 +1,11 @@
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import { useState } from "react";
 
 const API_URL = API_BASE_URL;
 
 export function useBookmarkActions(authFetch, user, setAllBookmarks, collections) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const handleSubmit = async (bookmarkData, editingBookmark, previewData, closeDialog) => {
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null;
@@ -13,6 +15,7 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     const method = isEditing ? "PATCH" : "POST";
     const dataToSubmit = { ...bookmarkData, previewImage: previewData?.image || null };
 
+    setIsSubmitting(true);
     try {
       const response = await authFetch(url, { method, body: JSON.stringify(dataToSubmit) });
       if (response.status === 409) {
@@ -35,6 +38,8 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
       if (err.message !== "Session expired") {
         toast.error(err.message);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -269,5 +274,5 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     }
   };
 
-  return { handleSubmit, handleDelete, handleToggleFavorite, handleMoveBookmark, handleImportBookmarks, handleSyncLocalBookmarks };
+  return { handleSubmit, handleDelete, handleToggleFavorite, handleMoveBookmark, handleImportBookmarks, handleSyncLocalBookmarks, isSubmitting };
 }

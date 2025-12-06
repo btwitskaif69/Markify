@@ -49,7 +49,8 @@ export default function Dashboard() {
     handleToggleFavorite,
     handleMoveBookmark,
     handleImportBookmarks,
-    handleSyncLocalBookmarks
+    handleSyncLocalBookmarks,
+    isSubmitting
   } = useBookmarkActions(authFetch, user, setAllBookmarks, collections);
 
 
@@ -190,6 +191,7 @@ export default function Dashboard() {
               onUrlChange={handleUrlChange}
               onAddClick={handleAddClick}
               collections={collections}
+              isSubmitting={isSubmitting}
             />
           </div>
         </header>
