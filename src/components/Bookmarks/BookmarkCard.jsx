@@ -50,9 +50,10 @@ export default function BookmarkCard({
       exit={{ opacity: 0, y: -20 }}
       viewport={{ once: false, amount: 0.2 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
+      className="h-full"
     >
       <Card
-        className={`p-2 pb-0 gap-0 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group ${isSelected ? "ring-2 ring-primary bg-primary/5" : ""
+        className={`p-2 pb-0 gap-0 shadow-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-in-out relative group h-full flex flex-col ${isSelected ? "ring-2 ring-primary bg-primary/5" : ""
           } ${isSelectionMode ? "cursor-pointer" : ""}`}
         onClick={handleCardClick}
       >
@@ -114,7 +115,7 @@ export default function BookmarkCard({
 
           {/* Description & URL (this part grows to fill space) */}
           <div className="flex-grow">
-            <p className="text-sm text-muted-foreground line-clamp-3 text-ellipsis mb-2">{bookmark.description}</p>
+            <p className="text-sm text-muted-foreground line-clamp-3 text-ellipsis mb-2 min-h-[3.75rem]">{bookmark.description || "\u00A0"}</p>
             <a
               href={bookmark.url}
               target="_blank"
@@ -137,7 +138,7 @@ export default function BookmarkCard({
               if (tagsArray.length === 0) return null;
 
               return (
-                <div className="flex flex-wrap gap-1 mb-3">
+                <div className="flex flex-wrap gap-1 mb-3 min-h-[1.75rem]">
                   {tagsArray.slice(0, 5).map((tag, index) => (
                     <Badge key={index} variant="primary" className="text-xs">
                       {tag}
@@ -145,7 +146,9 @@ export default function BookmarkCard({
                   ))}
                 </div>
               );
-            })()}
+            })()
+              /* Always render the wrapper for consistent spacing */
+              || <div className="min-h-[1.75rem] mb-3"></div>}
 
             {/* Category & Date (no border-t) */}
             <div className="flex items-center justify-between text-xs text-muted-foreground">

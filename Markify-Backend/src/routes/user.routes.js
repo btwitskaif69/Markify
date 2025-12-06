@@ -12,6 +12,7 @@ router.post('/reset-password/:token', userController.resetPassword);
 
 // --- Protected Routes (Token is required) ---
 router.get('/profile', protect, userController.getUserProfile);
+router.patch('/profile', protect, userController.updateUserProfile);
 router.get('/:userId/bookmarks', protect, bookmarkController.getBookmarksForUser);
 router.post('/:userId/bookmarks', protect, bookmarkController.addBookmark);
 

@@ -7,7 +7,7 @@ const { sendPasswordResetEmail } = require('../services/email.service'); // 2. I
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     // You can change this value to '7d', '24h', '365d', etc.
-    expiresIn: '30d', 
+    expiresIn: '30d',
   });
 };
 
@@ -131,7 +131,7 @@ exports.forgotPassword = async (req, res) => {
       });
 
       const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-      
+
       // This will now work correctly
       await sendPasswordResetEmail(user.email, resetUrl);
     }
@@ -180,5 +180,67 @@ exports.resetPassword = async (req, res) => {
     res.status(200).json({ message: "Password has been reset successfully." });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+/**
+ * Updates the currently logged-in user's profile (name, avatar).
+ */
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const { name, avatar } = req.body;
+    const userId = req.user.id;
+
+    // Build the update object dynamically
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+
+    // Handle avatar upload to R2
+    if (avatar !== undefined && avatar !== null) {
+      // Check if it's a base64 image (new upload)
+      if (avatar.startsWith("data:image")) {
+        const { uploadImage, deleteImage } = require("../services/r2.service");
+
+        // Delete old avatar if exists
+        const currentUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { avatar: true },
+        });
+        if (currentUser?.avatar) {
+          await deleteImage(currentUser.avatar);
+        }
+
+        // Upload new avatar to R2
+        const fileName = `${userId}-${Date.now()}`;
+        const avatarUrl = await uploadImage(avatar, fileName);
+        updateData.avatar = avatarUrl;
+      } else {
+        // It's already a URL, just store it
+        updateData.avatar = avatar;
+      }
+    }
+
+    // If no fields to update, return early
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No fields to update." });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+        isSubscribed: true,
+      },
+    });
+
+    res.status(200).json({ message: "Profile updated successfully.", user: updatedUser });
+  } catch (error) {
+    console.error("updateUserProfile error:", error.message);
+    console.error("Full error:", error);
+    res.status(500).json({ message: error.message || "Internal Server Error" });
   }
 };

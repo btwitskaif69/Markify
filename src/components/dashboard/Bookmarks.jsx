@@ -109,7 +109,7 @@ export default function Bookmarks({
 
 
   return (
-    <main className="container mx-auto px-4 py-6">
+    <main className="w-full px-6 py-6">
       <BookmarkFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

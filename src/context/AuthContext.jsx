@@ -163,6 +163,15 @@ export const AuthProvider = ({ children }) => {
     saveUser(userData);
   };
 
+  // Update profile in state (after profile edit)
+  const updateProfile = (updatedUserData) => {
+    if (updatedUserData) {
+      // Merge with existing user data to preserve fields not returned by the API
+      const mergedUser = { ...user, ...updatedUserData };
+      saveUser(mergedUser);
+    }
+  };
+
   const authValue = useMemo(() => {
     const isAdmin = user ? ADMIN_EMAILS.includes(user.email) : false;
 
@@ -172,6 +181,7 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       authFetch,
+      updateProfile,
       isAuthenticated: !!user,
       isLoading,
       isAdmin,

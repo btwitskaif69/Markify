@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from 'prop-types';
 import {
   ChevronsUpDown,
@@ -19,9 +19,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
+import AccountDialog from "./AccountDialog";
 
 export function NavUser({ user }) {
-  const { logout } = useAuth();
+  const { logout, authFetch, updateProfile } = useAuth();
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
 
   if (!user) {
     return (
@@ -45,7 +47,7 @@ export function NavUser({ user }) {
                   : "U"}
               </AvatarFallback>
             </Avatar>
-            
+
             <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
               <span className="truncate font-medium">{user.name}</span>
               <span className="truncate text-xs text-muted-foreground">{user.email}</span>
@@ -53,13 +55,13 @@ export function NavUser({ user }) {
             <ChevronsUpDown className="ml-auto size-4 text-muted-foreground group-data-[collapsible=icon]:hidden" />
           </div>
         </DropdownMenuTrigger>
-        
-<DropdownMenuContent
-  className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg z-50 bg-background"
-  align="start"
-  side={window.innerWidth < 640 ? "bottom" : "right"}
-  sideOffset={8}
->
+
+        <DropdownMenuContent
+          className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg z-50 bg-background"
+          align="start"
+          side={window.innerWidth < 640 ? "bottom" : "right"}
+          sideOffset={8}
+        >
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar className="h-8 w-8 rounded-lg">
@@ -85,7 +87,7 @@ export function NavUser({ user }) {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setAccountDialogOpen(true)}>
               <BadgeCheck className="mr-2 h-4 w-4" />
               <span>Account</span>
             </DropdownMenuItem>
@@ -105,6 +107,14 @@ export function NavUser({ user }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <AccountDialog
+        open={accountDialogOpen}
+        setOpen={setAccountDialogOpen}
+        user={user}
+        authFetch={authFetch}
+        onProfileUpdate={updateProfile}
+      />
     </div>
   );
 }
