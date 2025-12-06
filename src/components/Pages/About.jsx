@@ -187,97 +187,41 @@ const About = () => {
           </div>
         </section>
 
-        {/* Team Section */}
+        {/* Creator Section */}
         <section className="relative z-20 py-24 bg-card/30 border-t border-border/50">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-3xl mx-auto mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">Meet the team</h2>
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">Meet the Creator</h2>
               <p className="text-lg text-muted-foreground">
-                We are a small but passionate team of developers and designers building the tools we surely wish existed.
+                Markify is a one-man show, built with passion and caffeine by a developer who loves solving problems.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {/* Team Member 1 - Placeholder */}
+            <div className="max-w-md mx-auto">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="group relative rounded-2xl overflow-hidden bg-card border border-border p-6"
+                className="group relative rounded-2xl overflow-hidden bg-card border border-border p-8"
               >
-                <div className="aspect-square rounded-xl bg-muted/50 mb-6 overflow-hidden relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
-                    <Users className="w-20 h-20" />
-                  </div>
+                <div className="w-32 h-32 mx-auto rounded-full border-4 border-background shadow-xl mb-6 overflow-hidden relative">
+                  <img
+                    src="https://media.licdn.com/dms/image/v2/D5603AQGpNQqDlJLbLg/profile-displayphoto-shrink_200_200/B56ZdFx.R9HEAc-/0/1749222419725?e=1766620800&v=beta&t=Yv7sdiOp0qc_-SOnXvGcOFlC63Uuoh8Qip4r7u20DHA"
+                    alt="Mohd Kaif"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-xl font-bold">Alex Chen</h3>
-                <p className="text-primary font-medium mb-4">Founder & Lead Engineer</p>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Previously built scaling systems at tech giants. Obsessed with performance and clean code.
+                <h3 className="text-2xl font-bold mb-2">Mohd Kaif</h3>
+                <p className="text-primary font-medium mb-4">Founder & Developer</p>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  I created Markify to solve my own problem of organizing scattered digital resources. I run the entire project solo—from writing the code to designing the pixels and managing the servers.
                 </p>
                 <div className="flex justify-center gap-4">
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Github className="w-5 h-5" /></a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
+                  <a href="https://github.com/btwitskaif69" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Github className="w-5 h-5" /></a>
+                  <a href="https://twitter.com/btwitskaif" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
+                  <a href="https://linkedin.com/in/mohd-kaif-009952250/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
                 </div>
               </motion.div>
-
-              {/* Team Member 2 - Placeholder */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="group relative rounded-2xl overflow-hidden bg-card border border-border p-6"
-              >
-                <div className="aspect-square rounded-xl bg-muted/50 mb-6 overflow-hidden relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
-                    <Users className="w-20 h-20" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold">Sarah Miller</h3>
-                <p className="text-primary font-medium mb-4">Head of Design</p>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Believes that tools should be invisible and intuitive. Award-winning UI/UX designer.
-                </p>
-                <div className="flex justify-center gap-4">
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Github className="w-5 h-5" /></a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
-                </div>
-              </motion.div>
-
-              {/* Team Member 3 - Placeholder */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="group relative rounded-2xl overflow-hidden bg-card border border-border p-6"
-              >
-                <div className="aspect-square rounded-xl bg-muted/50 mb-6 overflow-hidden relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
-                    <Users className="w-20 h-20" />
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold">David Kim</h3>
-                <p className="text-primary font-medium mb-4">Product Operations</p>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Ensures the ship runs smoothly. Passionate about community building and user success.
-                </p>
-                <div className="flex justify-center gap-4">
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Github className="w-5 h-5" /></a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="w-5 h-5" /></a>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="w-5 h-5" /></a>
-                </div>
-              </motion.div>
-            </div>
-
-            <div className="mt-16">
-              <p className="text-muted-foreground mb-4">Interested in joining us?</p>
-              <Link to="/contact" className="inline-flex items-center text-primary font-semibold hover:underline">
-                Check out our open positions <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
             </div>
           </div>
         </section>
