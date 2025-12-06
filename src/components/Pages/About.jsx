@@ -248,7 +248,7 @@ const About = () => {
                         <Github className="w-6 h-6" />
                       </a>
                       <a
-                        href="https://twitter.com/btwitskaif"
+                        href="https://x.com/btwitskaif69"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-3 rounded-xl bg-white/5 hover:bg-white/10 hover:scale-110 hover:text-blue-400 text-muted-foreground transition-all duration-300 border border-white/5"
@@ -257,7 +257,7 @@ const About = () => {
                         <Twitter className="w-6 h-6" />
                       </a>
                       <a
-                        href="https://linkedin.com/in/mohd-kaif-009952250/"
+                        href="https://linkedin.com/in/btwitskaif69/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-3 rounded-xl bg-white/5 hover:bg-white/10 hover:scale-110 hover:text-blue-600 text-muted-foreground transition-all duration-300 border border-white/5"
