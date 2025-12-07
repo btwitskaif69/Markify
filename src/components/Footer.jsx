@@ -3,159 +3,133 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Facebook, Instagram, Linkedin, Send, Twitter } from "lucide-react"
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  Youtube,
+  Smartphone,
+  Tablet,
+  Chrome
+} from "lucide-react"
 import logo from "@/assets/logo-light.svg"
-
 
 function Footer() {
   return (
-    (<footer
-      className="relative border-t bg-background text-foreground transition-colors duration-300">
-      <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="bg-primary text-primary-foreground flex aspect-square size-9 items-center justify-center rounded-lg">
-                <img src={logo} alt="Markify" className="h-6 w-6" />
+    <footer className="relative bg-[#000000] text-white overflow-hidden pb-20 pt-24 border-t border-white/5">
+      {/* Content Container */}
+      <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
+
+        {/* Top Section: Logo & Links */}
+        <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8 mb-32">
+
+          {/* Brand / Logo Section */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center gap-3 mb-6 group w-fit">
+              <div className="bg-white/5 p-3 rounded-xl backdrop-blur-sm group-hover:bg-white/10 transition-colors border border-white/5">
+                <img src={logo} alt="Markify" className="h-10 w-10 brightness-0 invert opacity-100" />
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate text-2xl font-semibold">Markify</span>
+              <span className="text-3xl font-bold tracking-tight text-white">Markify</span>
+            </Link>
+          </div>
+
+          {/* Navigation Columns */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 lg:gap-20 w-full lg:w-auto">
+
+            {/* Column 1: Product */}
+            <div className="space-y-6">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Product</h3>
+              <ul className="space-y-4 text-sm text-white">
+                <li><Link to="/features" className="hover:text-primary transition-colors duration-200">Features</Link></li>
+                <li><Link to="/pricing" className="hover:text-primary transition-colors duration-200">Pricing</Link></li>
+                <li><Link to="/enterprise" className="hover:text-primary transition-colors duration-200">Enterprise</Link></li>
+                <li><Link to="/changelog" className="hover:text-primary transition-colors duration-200">Changelog</Link></li>
+              </ul>
+            </div>
+
+            {/* Column 2: Resources */}
+            <div className="space-y-6">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Resources</h3>
+              <ul className="space-y-4 text-sm text-white">
+                <li><Link to="/blog" className="hover:text-primary transition-colors duration-200">Blog</Link></li>
+                <li><Link to="/docs" className="hover:text-primary transition-colors duration-200">Documentation</Link></li>
+                <li><Link to="/help" className="hover:text-primary transition-colors duration-200">Help Center</Link></li>
+                <li><Link to="/community" className="hover:text-primary transition-colors duration-200">Community</Link></li>
+              </ul>
+            </div>
+
+            {/* Column 3: Download */}
+            <div className="space-y-6">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Download</h3>
+              <div className="bg-white p-2 rounded-xl w-fit mb-4 border border-white/5">
+                {/* QR Code Placeholder */}
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent("https://markify.tech")}&bgcolor=ffffff&color=000000&format=svg`}
+                  alt="Download App"
+                  className="h-20 w-20"
+                />
               </div>
+              <ul className="space-y-4 text-sm text-white">
+                <li>
+                  <Link to="/extension" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
+                    <Chrome className="h-4 w-4" /> Chrome Extension
+                  </Link>
+                </li>
+              </ul>
             </div>
-            <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
-            <p className="mb-6 text-muted-foreground">
-              Join our newsletter for the latest updates and exclusive offers.
-            </p>
-            <form className="relative">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="pr-12 backdrop-blur-sm" />
-              <Button
-                type="submit"
-                size="icon"
-                className="absolute right-1 top-1 h-8 w-8 rounded-full bg-primary text-primary-foreground transition-transform hover:scale-105">
-                <Send className="h-4 w-4" />
-                <span className="sr-only">Subscribe</span>
-              </Button>
-            </form>
-            <div
-              className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-primary/10 blur-2xl" />
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
-            <nav className="space-y-2 text-sm">
-              <Link to="/" className="block transition-colors hover:text-primary">
-                Home
-              </Link>
-              <Link to="/about" className="block transition-colors hover:text-primary">
-                About Us
-              </Link>
-              <Link to="/pricing" className="block transition-colors hover:text-primary">
-                Pricing
-              </Link>
-              <Link to="/contact" className="block transition-colors hover:text-primary">
-                Contact
-              </Link>
-            </nav>
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Contact Us</h3>
-            <address className="space-y-2 text-sm not-italic">
-              <p>123 Innovation Street</p>
-              <p>Tech City, TC 12345</p>
-              <p>Phone: (123) 456-7890</p>
-              <p>Email: hello@example.com</p>
-            </address>
-          </div>
-          <div className="relative">
-            <h3 className="mb-4 text-lg font-semibold">Follow Us</h3>
-            <div className="mb-6 flex space-x-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
-                      <Facebook className="h-4 w-4" />
-                      <span className="sr-only">Facebook</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Follow us on Facebook</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
-                      <Twitter className="h-4 w-4" />
-                      <span className="sr-only">Twitter</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Follow us on Twitter</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
-                      <Instagram className="h-4 w-4" />
-                      <span className="sr-only">Instagram</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Follow us on Instagram</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="rounded-full bg-background!">
-                      <Linkedin className="h-4 w-4" />
-                      <span className="sr-only">LinkedIn</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Connect with us on LinkedIn</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+
+            {/* Column 4: Social */}
+            <div className="space-y-6">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Social</h3>
+              <ul className="space-y-4 text-sm text-white">
+                <li>
+                  <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
+                    <Linkedin className="h-4 w-4" /> LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <a href="https://youtube.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
+                    <Youtube className="h-4 w-4" /> YouTube
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
+                    <Twitter className="h-4 w-4" /> X (Twitter)
+                  </a>
+                </li>
+                <li>
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
+                    <Instagram className="h-4 w-4" /> Instagram
+                  </a>
+                </li>
+              </ul>
             </div>
+
           </div>
         </div>
-        <div
-          className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
-          <p className="text-sm text-muted-foreground">
-            © 2025 Markify. All rights reserved.
-          </p>
-          <nav className="flex gap-4 text-sm">
-            <Link to="/privacy" className="transition-colors hover:text-primary">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="transition-colors hover:text-primary">
-              Terms of Service
-            </Link>
-            <Link to="/cookies" className="transition-colors hover:text-primary">
-              Cookie Policy
-            </Link>
-            <Link to="/refund-policy" className="transition-colors hover:text-primary">
-              Refund Policy
-            </Link>
-            <Link to="/cookie-settings" className="transition-colors hover:text-primary">
-              Cookie Settings
-            </Link>
-          </nav>
+
+        {/* Bottom Bar: Copyright & Legal */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-zinc-500 font-medium pt-8 border-t border-white/10">
+          <p>© 2025 Markify Inc. All rights reserved.</p>
+          <div className="flex gap-8">
+            <Link to="/privacy" className="hover:text-primary transition-colors duration-200">Privacy policy</Link>
+            <Link to="/terms" className="hover:text-primary transition-colors duration-200">Terms of service</Link>
+            <Link to="/security" className="hover:text-primary transition-colors duration-200">Security</Link>
+            <Link to="/cookies" className="hover:text-primary transition-colors duration-200">Cookie settings</Link>
+          </div>
         </div>
       </div>
-    </footer>)
+
+      {/* Massive Background Watermark */}
+      <div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none flex justify-center items-end" aria-hidden="true">
+        <h1 className="text-[25vw] leading-[0.75] font-semibold text-white/[0.04] tracking-tighter whitespace-nowrap transform translate-y-[20%]">
+          Markify
+        </h1>
+      </div>
+
+      {/* Overlay Gradient for Fade effect */}
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+    </footer>
   );
 }
 

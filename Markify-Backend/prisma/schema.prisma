@@ -28,6 +28,7 @@ model User {
   passwordResets   PasswordResetToken[]
   posts            BlogPost[]
   geminiUsage      Int          @default(0)
+  review           Review?
 }
 
 model PasswordResetToken {
@@ -85,4 +86,13 @@ model BlogPost {
   updatedAt  DateTime @updatedAt
   author     User     @relation(fields: [authorId], references: [id])
   authorId   String
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique  // One review per user
 }

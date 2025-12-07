@@ -8,6 +8,7 @@ const previewRoutes = require('./src/routes/preview.routes');
 const collectionRoutes = require('./src/routes/collection.routes');
 const blogRoutes = require('./src/routes/blog.routes');
 const geminiRoutes = require('./src/routes/gemini.routes');
+const reviewRoutes = require('./src/routes/review.routes');
 const errorHandler = require("./src/middleware/error.middleware");
 
 const app = express();
@@ -66,6 +67,7 @@ app.use('/api/collections', collectionRoutes);
 app.use('/api/blog', cacheMiddleware(60), blogRoutes);
 
 app.use('/api/gemini', geminiRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.use(errorHandler);
 

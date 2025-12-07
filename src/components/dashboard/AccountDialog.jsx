@@ -14,12 +14,15 @@ import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import logo from "@/assets/logo-light.svg";
+import ImageCropper from "./ImageCropper";
 
 export default function AccountDialog({ open, setOpen, user, authFetch, onProfileUpdate }) {
     const [name, setName] = useState(user?.name || "");
     const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
     const [avatarBase64, setAvatarBase64] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [cropperOpen, setCropperOpen] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState(null);
     const fileInputRef = useRef(null);
 
     // Reset form when dialog opens
@@ -28,6 +31,7 @@ export default function AccountDialog({ open, setOpen, user, authFetch, onProfil
             setName(user.name || "");
             setAvatarPreview(user.avatar || null);
             setAvatarBase64(null);
+            setImageToCrop(null);
         }
     }, [open, user]);
 
@@ -45,20 +49,29 @@ export default function AccountDialog({ open, setOpen, user, authFetch, onProfil
             return;
         }
 
-        // Validate file size (max 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            toast.error("Image size should be less than 2MB.");
+        // Validate file size (max 5MB for cropping, will be compressed after)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Image size should be less than 5MB.");
             return;
         }
 
-        // Convert to base64
+        // Convert to base64 and open cropper
         const reader = new FileReader();
         reader.onload = () => {
             const base64 = reader.result;
-            setAvatarPreview(base64);
-            setAvatarBase64(base64);
+            setImageToCrop(base64);
+            setCropperOpen(true);
         };
         reader.readAsDataURL(file);
+
+        // Reset file input so same file can be selected again
+        e.target.value = "";
+    };
+
+    const handleCropComplete = (croppedImage) => {
+        setAvatarPreview(croppedImage);
+        setAvatarBase64(croppedImage);
+        setImageToCrop(null);
     };
 
     const handleSubmit = async (e) => {
@@ -108,83 +121,94 @@ export default function AccountDialog({ open, setOpen, user, authFetch, onProfil
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Account Settings</DialogTitle>
-                    <DialogDescription>
-                        Update your profile information and avatar.
-                    </DialogDescription>
-                </DialogHeader>
+        <>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Account Settings</DialogTitle>
+                        <DialogDescription>
+                            Update your profile information and avatar.
+                        </DialogDescription>
+                    </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-                    {/* Avatar Upload */}
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
-                            <Avatar className="h-24 w-24 border-4 border-primary/20">
-                                <AvatarImage src={avatarPreview} alt={name} />
-                                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                                    {getInitials(name)}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Camera className="h-8 w-8 text-white" />
+                    <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+                        {/* Avatar Upload */}
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
+                                <Avatar className="h-24 w-24 border-4 border-primary/20">
+                                    <AvatarImage src={avatarPreview} alt={name} className="object-cover" />
+                                    <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                                        {getInitials(name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Camera className="h-8 w-8 text-white" />
+                                </div>
                             </div>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                            <p className="text-sm text-muted-foreground">Click to upload and crop avatar</p>
                         </div>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="hidden"
-                        />
-                        <p className="text-sm text-muted-foreground">Click to upload a new avatar</p>
-                    </div>
 
-                    {/* Name Input */}
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your name"
-                            required
-                        />
-                    </div>
+                        {/* Name Input */}
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Enter your name"
+                                required
+                            />
+                        </div>
 
-                    {/* Email (Read-only) */}
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            value={user?.email || ""}
-                            disabled
-                            className="bg-muted"
-                        />
-                        <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
-                    </div>
+                        {/* Email (Read-only) */}
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                value={user?.email || ""}
+                                disabled
+                                className="bg-muted"
+                            />
+                            <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
+                        </div>
 
-                    {/* Actions */}
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? (
-                                <>
-                                    <div className="w-5 h-5 bg-primary-foreground rounded-full flex items-center justify-center animate-spin mr-2">
-                                        <img src={logo} alt="" className="w-3 h-3" />
-                                    </div>
-                                    Saving...
-                                </>
-                            ) : (
-                                "Save Changes"
-                            )}
-                        </Button>
-                    </div>
-                </form>
-            </DialogContent>
-        </Dialog>
+                        {/* Actions */}
+                        <div className="flex justify-end gap-2 pt-4">
+                            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? (
+                                    <>
+                                        <div className="w-5 h-5 bg-primary-foreground rounded-full flex items-center justify-center animate-spin mr-2">
+                                            <img src={logo} alt="" className="w-3 h-3" />
+                                        </div>
+                                        Saving...
+                                    </>
+                                ) : (
+                                    "Save Changes"
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Image Cropper Dialog */}
+            <ImageCropper
+                open={cropperOpen}
+                setOpen={setCropperOpen}
+                imageSrc={imageToCrop}
+                onCropComplete={handleCropComplete}
+            />
+        </>
     );
 }
+

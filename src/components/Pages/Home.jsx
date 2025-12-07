@@ -8,6 +8,7 @@ import PowerBy from '../home/PowerBy';
 import Features from '../home/Features';
 import Footer from '@/components/Footer'
 import Pricing from '../home/Pricing';
+import ReviewsMarquee from '../home/ReviewsMarquee';
 
 import SEO from '../SEO/SEO';
 
@@ -50,6 +51,9 @@ const Home = () => {
         <WaitlistHero />
 
         <Pricing />
+
+        {/* User Reviews Marquee */}
+        <ReviewsMarquee />
       </main>
       <Footer />
     </>

@@ -150,6 +150,24 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }
 
 @layer base {
@@ -191,7 +209,6 @@ html {
   scrollbar-color: var(--color-primary) transparent;
 }
 
-
 @layer base {
   :root {
     /* This makes the animation start and end gently, which feels much smoother. */
@@ -210,7 +227,6 @@ input:-webkit-autofill:active {
   transition: background-color 9999s ease-in-out 0s !important; /* suppress flicker */
 }
 
-
 /* src/index.css or App.css */
 @keyframes shine {
   0% {
@@ -224,4 +240,3 @@ input:-webkit-autofill:active {
 .animate-shine {
   animation: shine 2s linear infinite;
 }
-

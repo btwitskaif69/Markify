@@ -6,6 +6,19 @@ import {
   Trash2,
   Loader2,
   Sparkles,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Code,
+  Quote,
+  Strikethrough,
+  Bold,
+  Italic,
+  Underline,
+  Link2,
+  LinkIcon,
 } from "lucide-react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -177,6 +190,55 @@ const BlogEditor = () => {
     window.requestAnimationFrame(() => {
       textarea.focus();
       textarea.setSelectionRange(newStart, newEnd);
+    });
+  };
+
+  const applyLinePrefix = (prefix) => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd, value } = textarea;
+    if (selectionStart == null || selectionEnd == null) return;
+
+    // Find the start of the current line
+    let lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+    let lineEnd = value.indexOf("\n", selectionEnd);
+    if (lineEnd === -1) lineEnd = value.length;
+
+    const selectedLines = value.slice(lineStart, lineEnd);
+    const lines = selectedLines.split("\n");
+
+    const prefixedLines = lines.map((line, idx) => {
+      // For numbered lists, use incrementing numbers
+      if (prefix === "1. ") {
+        return `${idx + 1}. ${line}`;
+      }
+      return `${prefix}${line}`;
+    }).join("\n");
+
+    const newValue = value.slice(0, lineStart) + prefixedLines + value.slice(lineEnd);
+    setContent(newValue);
+
+    window.requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(lineStart, lineStart + prefixedLines.length);
+    });
+  };
+
+  const applyCodeBlock = () => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd, value } = textarea;
+    const selected = value.slice(selectionStart, selectionEnd) || "code here";
+
+    const codeBlock = `\n\`\`\`\n${selected}\n\`\`\`\n`;
+    const newValue = value.slice(0, selectionStart) + codeBlock + value.slice(selectionEnd);
+
+    setContent(newValue);
+
+    window.requestAnimationFrame(() => {
+      textarea.focus();
     });
   };
 
@@ -367,60 +429,166 @@ const BlogEditor = () => {
               <label className="block text-sm font-medium mb-1">
                 Content
               </label>
-              <div className="flex flex-wrap gap-2 mb-2 text-xs">
-                <span className="text-muted-foreground mr-2">
-                  Formatting:
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => applyFormatting("**", "**")}
-                >
-                  Bold
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => applyFormatting("_", "_")}
-                >
-                  Italic
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => applyFormatting("__", "__")}
-                >
-                  Underline
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddLink}
-                >
-                  Link
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLinkWordOccurrences}
-                >
-                  Link word everywhere
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGeminiRefactor}
-                  className="gap-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                >
-                  <Sparkles className="h-3 w-3" />
-                  Refactor with Gemini
-                </Button>
+              {/* Formatting Toolbar */}
+              <div className="flex flex-col gap-2 mb-3 p-3 rounded-lg border bg-muted/30">
+                {/* Headings Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium w-16">
+                    Headings:
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyLinePrefix("# ")}
+                    title="Heading 1"
+                  >
+                    <Heading1 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyLinePrefix("## ")}
+                    title="Heading 2"
+                  >
+                    <Heading2 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyLinePrefix("### ")}
+                    title="Heading 3"
+                  >
+                    <Heading3 className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Text Styling Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium w-16">
+                    Text:
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyFormatting("**", "**")}
+                    title="Bold"
+                  >
+                    <Bold className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyFormatting("_", "_")}
+                    title="Italic"
+                  >
+                    <Italic className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyFormatting("__", "__")}
+                    title="Underline"
+                  >
+                    <Underline className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyFormatting("~~", "~~")}
+                    title="Strikethrough"
+                  >
+                    <Strikethrough className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Lists & Blocks Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium w-16">
+                    Lists:
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyLinePrefix("- ")}
+                    title="Bullet List"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyLinePrefix("1. ")}
+                    title="Numbered List"
+                  >
+                    <ListOrdered className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyLinePrefix("> ")}
+                    title="Blockquote"
+                  >
+                    <Quote className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={applyCodeBlock}
+                    title="Code Block"
+                  >
+                    <Code className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {/* Links & AI Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium w-16">
+                    Links:
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddLink}
+                    title="Add Link"
+                  >
+                    <Link2 className="h-4 w-4 mr-1" />
+                    Link
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLinkWordOccurrences}
+                    title="Link All Occurrences"
+                  >
+                    <LinkIcon className="h-4 w-4 mr-1" />
+                    Link All
+                  </Button>
+                  <div className="flex-1" />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGeminiRefactor}
+                    className="gap-1 text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:hover:bg-indigo-950"
+                    title="Refactor with AI"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Refactor with Gemini
+                  </Button>
+                </div>
               </div>
               <Textarea
                 ref={contentRef}
