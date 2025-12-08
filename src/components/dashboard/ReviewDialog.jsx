@@ -13,8 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
 export function ReviewDialog({ open, onOpenChange }) {
     const { authFetch } = useAuth();
@@ -33,7 +32,7 @@ export function ReviewDialog({ open, onOpenChange }) {
 
     const fetchMyReview = async () => {
         try {
-            const response = await authFetch(`${API_URL}/reviews/me`);
+            const response = await authFetch(`${API_BASE_URL}/reviews/me`);
             if (response.ok) {
                 const review = await response.json();
                 if (review) {
@@ -59,7 +58,7 @@ export function ReviewDialog({ open, onOpenChange }) {
 
         setIsSubmitting(true);
         try {
-            const response = await authFetch(`${API_URL}/reviews`, {
+            const response = await authFetch(`${API_BASE_URL}/reviews`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ rating, content: content.trim() }),
@@ -106,8 +105,8 @@ export function ReviewDialog({ open, onOpenChange }) {
                                 >
                                     <Star
                                         className={`h-8 w-8 transition-colors ${star <= (hoveredRating || rating)
-                                                ? "fill-yellow-400 text-yellow-400"
-                                                : "text-gray-300"
+                                            ? "fill-yellow-400 text-yellow-400"
+                                            : "text-gray-300"
                                             }`}
                                     />
                                 </button>

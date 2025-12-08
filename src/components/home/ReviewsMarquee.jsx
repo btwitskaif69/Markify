@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Marquee } from "@/components/ui/marquee";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
 // Individual review card component
 function ReviewCard({ name, avatar, rating, content }) {
@@ -55,7 +54,7 @@ export default function ReviewsMarquee() {
 
     const fetchReviews = async () => {
         try {
-            const response = await fetch(`${API_URL}/reviews`);
+            const response = await fetch(`${API_BASE_URL}/reviews`);
             if (response.ok) {
                 const data = await response.json();
                 setReviews(data);
