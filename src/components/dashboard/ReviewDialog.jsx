@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { Star } from "lucide-react";
+import { Star, Clock, CheckCircle, XCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
     Dialog,
@@ -14,6 +14,39 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
+
+// Status badge component
+function StatusBadge({ status }) {
+    const statusConfig = {
+        PENDING: {
+            icon: Clock,
+            text: "Pending Approval",
+            className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+        },
+        APPROVED: {
+            icon: CheckCircle,
+            text: "Approved",
+            className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+        },
+        REJECTED: {
+            icon: XCircle,
+            text: "Rejected",
+            className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+        }
+    };
+
+    const config = statusConfig[status];
+    if (!config) return null;
+
+    const Icon = config.icon;
+
+    return (
+        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${config.className}`}>
+            <Icon className="h-3 w-3" />
+            {config.text}
+        </div>
+    );
+}
 
 export function ReviewDialog({ open, onOpenChange }) {
     const { authFetch } = useAuth();
@@ -65,7 +98,10 @@ export function ReviewDialog({ open, onOpenChange }) {
             });
 
             if (response.ok) {
-                toast.success(existingReview ? "Review updated!" : "Review submitted! Thank you!");
+                const message = existingReview
+                    ? "Review updated! It will be visible after admin approval."
+                    : "Review submitted! It will be visible after admin approval.";
+                toast.success(message);
                 onOpenChange(false);
             } else {
                 const data = await response.json();
@@ -90,6 +126,14 @@ export function ReviewDialog({ open, onOpenChange }) {
                 </DialogHeader>
 
                 <div className="py-4 space-y-4">
+                    {/* Status Badge */}
+                    {existingReview && existingReview.status && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">Current status:</span>
+                            <StatusBadge status={existingReview.status} />
+                        </div>
+                    )}
+
                     {/* Star Rating */}
                     <div>
                         <label className="text-sm font-medium mb-2 block">Rating</label>
@@ -125,6 +169,11 @@ export function ReviewDialog({ open, onOpenChange }) {
                             className="resize-none"
                         />
                     </div>
+
+                    {/* Info about approval */}
+                    <p className="text-xs text-muted-foreground">
+                        Reviews are subject to admin approval before appearing publicly.
+                    </p>
                 </div>
 
                 <DialogFooter>
@@ -139,3 +188,4 @@ export function ReviewDialog({ open, onOpenChange }) {
         </Dialog>
     );
 }
+

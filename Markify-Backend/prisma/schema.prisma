@@ -88,11 +88,18 @@ model BlogPost {
   authorId   String
 }
 
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Review {
-  id        String   @id @default(cuid())
-  rating    Int      // 1-5 stars
+  id        String       @id @default(cuid())
+  rating    Int          // 1-5 stars
   content   String
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique  // One review per user
+  status    ReviewStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String       @unique  // One review per user
 }

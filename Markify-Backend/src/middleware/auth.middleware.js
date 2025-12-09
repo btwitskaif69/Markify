@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const prisma = require('../db/prismaClient');
 
+// Admin emails list - same as frontend
+const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
+
 const protect = async (req, res, next) => {
   let token;
 
@@ -34,4 +37,12 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// Middleware to check if user is admin
+const adminOnly = (req, res, next) => {
+  if (!req.user || !ADMIN_EMAILS.includes(req.user.email)) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly };

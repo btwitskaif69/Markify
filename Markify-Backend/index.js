@@ -17,7 +17,8 @@ const port = process.env.PORT || 5000;
 // List all the frontend URLs that are allowed to access your API
 const allowedOrigins = [
   process.env.FRONTEND_URL,    // Your live Vercel URL
-  'http://localhost:5173'      // Your local development URL
+  'http://localhost:5173',     // Your local development URL
+  'http://localhost:5174'      // Alternative local dev port
 ];
 
 app.use(cors({
@@ -71,12 +72,10 @@ app.use('/api/reviews', reviewRoutes);
 
 app.use(errorHandler);
 
-// This part is for local development only
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {
-    console.log(`🚀 Server is running on http://localhost:${port}`)
-  })
-}
+// Start server in development mode
+app.listen(port, () => {
+  console.log(`🚀 Server is running on http://localhost:${port}`)
+});
 
 // Export the app for Vercel
 module.exports = app;
