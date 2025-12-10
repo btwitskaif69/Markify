@@ -10,5 +10,6 @@ router.post('/:bookmarkId/fetch-preview', protect, bookmarkController.fetchBookm
 router.get('/export', protect, bookmarkController.exportBookmarks);
 router.post('/import', protect, bookmarkController.importBookmarks);
 router.post('/sync-local', protect, bookmarkController.syncLocalBookmarks);
+router.post('/extract-metadata', protect, bookmarkController.extractUrlMetadata);
 
 module.exports = router;

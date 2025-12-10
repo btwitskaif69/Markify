@@ -415,3 +415,76 @@ exports.fetchBookmarkPreview = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch preview." });
   }
 };
+
+/**
+ * Extracts metadata from a URL without saving it.
+ * Used for "Auto-fill" functionality in the frontend.
+ */
+exports.extractUrlMetadata = async (req, res) => {
+  try {
+    const { url } = req.body;
+
+    if (!url) {
+      return res.status(400).json({ message: "URL is required." });
+    }
+
+    const TIMEOUT_MS = 8000;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const html = await response.text();
+        const metadata = await metascraper({ html, url });
+
+        // Extract keywords for tags
+        const textToAnalyze = `${metadata.title || ''} ${metadata.description || ''}`;
+        let tags = '';
+        try {
+          const extractedKeywords = keyword_extractor.extract(textToAnalyze, {
+            language: "english",
+            remove_digits: true,
+            return_changed_case: true,
+            remove_duplicates: true,
+          });
+          tags = extractedKeywords.slice(0, 5).join(', ');
+        } catch (e) {
+          console.error("Keyword extraction failed:", e);
+        }
+
+        return res.status(200).json({
+          success: true,
+          data: {
+            title: metadata.title || "",
+            description: metadata.description || "",
+            image: metadata.image || null,
+            tags: tags
+          }
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: `Failed to fetch URL (HTTP ${response.status})`
+        });
+      }
+    } catch (fetchErr) {
+      clearTimeout(timeoutId);
+      return res.status(400).json({
+        success: false,
+        message: fetchErr.name === 'AbortError' ? 'Timeout fetching URL' : 'Failed to fetch URL'
+      });
+    }
+
+  } catch (error) {
+    console.error("Metadata extraction error:", error);
+    res.status(500).json({ message: "Failed to extract metadata." });
+  }
+};

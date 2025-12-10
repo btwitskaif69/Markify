@@ -26,9 +26,10 @@ function getS3Client() {
  * Uploads an image to Cloudflare R2
  * @param {string} base64Data - The base64 encoded image data (with or without data URI prefix)
  * @param {string} fileName - The desired file name (without extension)
+ * @param {string} folder - The folder to upload to (default: "avatars")
  * @returns {Promise<string>} - The public URL of the uploaded image
  */
-async function uploadImage(base64Data, fileName) {
+async function uploadImage(base64Data, fileName, folder = "avatars") {
     // Extract the actual base64 data and content type
     let contentType = "image/png";
     let base64Content = base64Data;
@@ -44,7 +45,7 @@ async function uploadImage(base64Data, fileName) {
 
     // Get file extension from content type
     const extension = contentType.split("/")[1] || "png";
-    const fullFileName = `avatars/${fileName}.${extension}`;
+    const fullFileName = `${folder}/${fileName}.${extension}`;
 
     // Convert base64 to buffer
     const buffer = Buffer.from(base64Content, "base64");
