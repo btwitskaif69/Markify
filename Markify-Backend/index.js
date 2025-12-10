@@ -18,6 +18,8 @@ const port = process.env.PORT || 5000;
 // List all the frontend URLs that are allowed to access your API
 const allowedOrigins = [
   process.env.FRONTEND_URL,    // Your live Vercel URL
+  'https://www.markify.tech',  // Production Domain
+  'https://markify.tech',      // Production Domain (non-www)
   'http://localhost:5173',     // Your local development URL
   'http://localhost:5174'      // Alternative local dev port
 ];
