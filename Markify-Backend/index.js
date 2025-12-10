@@ -16,25 +16,20 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // List all the frontend URLs that are allowed to access your API
+// List all the frontend URLs that are allowed to access your API
 const allowedOrigins = [
   process.env.FRONTEND_URL,    // Your live Vercel URL
   'https://www.markify.tech',  // Production Domain
   'https://markify.tech',      // Production Domain (non-www)
   'http://localhost:5173',     // Your local development URL
   'http://localhost:5174'      // Alternative local dev port
-];
+].filter(Boolean); // Filter out undefined values (e.g. if env var is missing)
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 
 // Allow larger JSON payloads so base64 images can be sent safely
