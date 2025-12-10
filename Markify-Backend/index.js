@@ -16,7 +16,6 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // List all the frontend URLs that are allowed to access your API
-// List all the frontend URLs that are allowed to access your API
 const allowedOrigins = [
   process.env.FRONTEND_URL,    // Your live Vercel URL
   'https://www.markify.tech',  // Production Domain
@@ -71,10 +70,12 @@ app.use('/api/upload', uploadRoutes);
 
 app.use(errorHandler);
 
-// Start server in development mode
-app.listen(port, () => {
-  console.log(`🚀 Server is running on http://localhost:${port}`)
-});
+// Start server only in local development (not on Vercel serverless)
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`🚀 Server is running on http://localhost:${port}`)
+  });
+}
 
 // Export the app for Vercel
 module.exports = app;
