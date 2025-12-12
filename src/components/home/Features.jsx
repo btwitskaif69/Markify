@@ -1,8 +1,8 @@
 import React from "react";
 import { Search, ShieldUser, Folders, Share2, RefreshCw } from "lucide-react";
-import bg from "@/assets/global-search.png";
-import collections from "@/assets/collections.png";
-import share from "@/assets/share.png";
+import bg from "@/assets/global-search.webp";
+import collections from "@/assets/collections.webp";
+import share from "@/assets/share.webp";
 
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 
