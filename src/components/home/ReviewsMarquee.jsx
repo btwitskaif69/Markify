@@ -18,7 +18,11 @@ function ReviewCard({ name, avatar, rating, content }) {
                 <img
                     className="rounded-full h-10 w-10 object-cover"
                     alt={name}
-                    src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`}
+                    src={avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=40`}
+                    width={40}
+                    height={40}
+                    loading="lazy"
+                    decoding="async"
                 />
                 <div className="flex flex-col">
                     <figcaption className="text-sm font-medium dark:text-white">
