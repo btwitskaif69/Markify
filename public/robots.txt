@@ -2,7 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /dashboard/
 Disallow: /blog/new
-Disallow: /cmd
 Disallow: /login
 Disallow: /signup
 Disallow: /forgot-password

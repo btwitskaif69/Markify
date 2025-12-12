@@ -1,7 +1,8 @@
 import React from "react";
-import dark from "@/assets/preview-dark.webp";
-import light from "@/assets/preview-light.webp";
 import { useTheme } from "../theme-provider";
+
+const PREVIEW_DARK = "https://pub-6e5fe33c1bbd45e78c3e0b2e77816d4d.r2.dev/assets/preview-dark.png";
+const PREVIEW_LIGHT = "https://pub-6e5fe33c1bbd45e78c3e0b2e77816d4d.r2.dev/assets/preview-light.png";
 
 const DashboardPreview = () => {
   const { theme } = useTheme();
@@ -11,7 +12,7 @@ const DashboardPreview = () => {
       <div className="w-[90vw] max-w-[1600px] min-w-[350px]">
         <div className="bg-primary shadow-amber-300 rounded-md sm:rounded-3xl p-1 sm:p-3 shadow-2xl overflow-hidden">
           <img
-            src={theme === "dark" ? dark : light}
+            src={theme === "dark" ? PREVIEW_DARK : PREVIEW_LIGHT}
             alt="Markify dashboard preview showing bookmark management interface"
             width={1160}
             height={700}

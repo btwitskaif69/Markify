@@ -5,7 +5,6 @@ import Hero from '../home/Hero';
 import { WaitlistHero } from '../waitlist-hero';
 import DashboardPreview from '../home/DashboardPreview';
 import PowerBy from '../home/PowerBy';
-import Features from '../home/Features';
 import Footer from '@/components/Footer'
 import Pricing from '../home/Pricing';
 import ReviewsMarquee from '../home/ReviewsMarquee';
@@ -45,7 +44,6 @@ const Home = () => {
         </section>
 
         <PowerBy />
-        <Features />
 
         {/* Waitlist Hero placed here */}
         <WaitlistHero />
