@@ -1,8 +1,8 @@
 import React from "react";
 import { useTheme } from "../theme-provider";
 
-const PREVIEW_DARK = "https://pub-6e5fe33c1bbd45e78c3e0b2e77816d4d.r2.dev/assets/preview-dark.webp";
-const PREVIEW_LIGHT = "https://pub-6e5fe33c1bbd45e78c3e0b2e77816d4d.r2.dev/assets/preview-light.webp";
+const PREVIEW_DARK = "https://assets.markify.tech/assets/assets_preview-dark.webp";
+const PREVIEW_LIGHT = "https://assets.markify.tech/assets/assets_preview-light.webp";
 
 const DashboardPreview = () => {
   const { theme } = useTheme();
