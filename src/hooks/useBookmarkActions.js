@@ -250,6 +250,37 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
   };
 
   /**
+   * Deletes multiple bookmarks at once using the bulk delete endpoint
+   */
+  const handleBulkDelete = async (ids) => {
+    if (!ids || ids.length === 0) return;
+
+    // Optimistically remove from state
+    let originalBookmarks;
+    setAllBookmarks((prev) => {
+      originalBookmarks = prev;
+      return prev.filter((b) => !ids.includes(b.id));
+    });
+
+    try {
+      const response = await authFetch(`${API_URL}/bookmarks/bulk-delete`, {
+        method: "POST",
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) throw new Error("Failed to delete bookmarks.");
+
+      const result = await response.json();
+      toast.success(`${result.deletedCount} bookmarks deleted.`);
+    } catch (err) {
+      if (err.message !== "Session expired") {
+        toast.error("Failed to delete. Restoring bookmarks.");
+        setAllBookmarks(originalBookmarks);
+      }
+    }
+  };
+
+  /**
    * Fetches previews for a list of bookmark IDs one at a time
    * This runs in the background and updates bookmarks as previews are fetched
    */
@@ -274,5 +305,5 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     }
   };
 
-  return { handleSubmit, handleDelete, handleToggleFavorite, handleMoveBookmark, handleImportBookmarks, handleSyncLocalBookmarks, isSubmitting };
+  return { handleSubmit, handleDelete, handleBulkDelete, handleToggleFavorite, handleMoveBookmark, handleImportBookmarks, handleSyncLocalBookmarks, isSubmitting };
 }

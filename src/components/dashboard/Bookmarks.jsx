@@ -7,6 +7,7 @@ import BookmarkCard from "../Bookmarks/BookmarkCard";
 import BookmarkListItem from "../Bookmarks/BookmarkListItem";
 import CmdK from "./CmdK";
 import BookmarkCardSkeleton from "../Bookmarks/BookmarkCardSkeleton";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 export default function Bookmarks({
   bookmarks = [],
@@ -28,6 +29,9 @@ export default function Bookmarks({
   // Selection mode state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
+
+  // Confirmation dialog state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const safeBookmarks = Array.isArray(bookmarks) ? bookmarks : [];
   const filteredBookmarks = safeBookmarks.filter((bookmark) => {
@@ -76,10 +80,15 @@ export default function Bookmarks({
     }
   };
 
-  // Handle delete selected bookmarks
-  const handleDeleteSelected = async () => {
+  // Open confirmation dialog before deleting
+  const handleDeleteSelectedClick = () => {
     if (selectedIds.size === 0) return;
+    setShowDeleteConfirm(true);
+  };
 
+  // Confirm and execute bulk delete
+  const handleConfirmDelete = async () => {
+    setShowDeleteConfirm(false);
     const idsToDelete = Array.from(selectedIds);
 
     // Call bulk delete if available, otherwise delete one by one
@@ -128,7 +137,7 @@ export default function Bookmarks({
         selectedCount={selectedIds.size}
         totalCount={filteredBookmarks.length}
         onSelectAll={handleSelectAll}
-        onDeleteSelected={handleDeleteSelected}
+        onDeleteSelected={handleDeleteSelectedClick}
       />
       <CmdK
         bookmarks={bookmarks}
@@ -190,6 +199,14 @@ export default function Bookmarks({
           )}
         </div>
       )}
+
+      <ConfirmationDialog
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        onConfirm={handleConfirmDelete}
+        title={`Delete ${selectedIds.size} bookmark${selectedIds.size > 1 ? 's' : ''}?`}
+        description="This action cannot be undone. All selected bookmarks will be permanently deleted."
+      />
     </main>
   );
 }

@@ -7,6 +7,7 @@ import {
   BadgeCheck,
   CreditCard,
   Bell,
+  Star,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -20,10 +21,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext";
 import AccountDialog from "./AccountDialog";
+import { ReviewDialog } from "./ReviewDialog";
 
 export function NavUser({ user }) {
   const { logout, authFetch, updateProfile } = useAuth();
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
 
   if (!user) {
     return (
@@ -99,6 +102,10 @@ export function NavUser({ user }) {
               <Bell className="mr-2 h-4 w-4" />
               <span>Notifications</span>
             </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => setReviewDialogOpen(true)}>
+              <Star className="mr-2 h-4 w-4" />
+              <span>Leave a Review</span>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
@@ -115,6 +122,8 @@ export function NavUser({ user }) {
         authFetch={authFetch}
         onProfileUpdate={updateProfile}
       />
+
+      <ReviewDialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen} />
     </div>
   );
 }

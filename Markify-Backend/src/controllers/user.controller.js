@@ -2,7 +2,7 @@ const prisma = require('../db/prismaClient');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // 1. Import jsonwebtoken
 const crypto = require('crypto'); // 1. Import the built-in crypto module
-const { sendPasswordResetEmail } = require('../services/email.service'); // 2. Import your email service
+const { sendPasswordResetEmail, sendVerificationEmail } = require('../services/email.service'); // 2. Import your email service
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -12,32 +12,149 @@ const generateToken = (userId) => {
 };
 
 /**
- * Creates a single new user and logs them in.
+ * Helper to generate a 6-digit verification code
  */
-exports.createUser = async (req, res) => {
+const generateVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+/**
+ * Initiates signup by creating a verification token and sending email.
+ */
+exports.initiateSignup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Check if email already exists as a verified user
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ message: 'Conflict: Email already exists.' });
+    }
+
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await prisma.user.create({
+    // Generate verification code
+    const code = generateVerificationCode();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Delete any existing verification token for this email
+    await prisma.emailVerificationToken.deleteMany({
+      where: { email },
+    });
+
+    // Create new verification token
+    await prisma.emailVerificationToken.create({
       data: {
-        name,
         email,
-        password: hashedPassword,
+        name,
+        hashedPassword,
+        code,
+        expiresAt,
       },
     });
 
+    // Send verification email
+    await sendVerificationEmail(email, code);
+
+    res.status(200).json({ message: 'Verification code sent to your email.' });
+  } catch (error) {
+    console.error('initiateSignup error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+/**
+ * Verifies email code and creates the user account.
+ */
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    // Find the verification token
+    const verificationToken = await prisma.emailVerificationToken.findUnique({
+      where: { email },
+    });
+
+    if (!verificationToken) {
+      return res.status(400).json({ message: 'No verification pending for this email.' });
+    }
+
+    // Check if code matches
+    if (verificationToken.code !== code) {
+      return res.status(400).json({ message: 'Invalid verification code.' });
+    }
+
+    // Check if code is expired
+    if (verificationToken.expiresAt < new Date()) {
+      return res.status(400).json({ message: 'Verification code has expired. Please request a new one.' });
+    }
+
+    // Create the user
+    const user = await prisma.user.create({
+      data: {
+        name: verificationToken.name,
+        email: verificationToken.email,
+        password: verificationToken.hashedPassword,
+        isVerified: true,
+      },
+    });
+
+    // Delete the verification token
+    await prisma.emailVerificationToken.delete({
+      where: { email },
+    });
+
+    // Generate JWT token
     const token = generateToken(user.id);
 
     delete user.password;
-    res.status(201).json({ message: 'User created successfully', user, token });
+    res.status(201).json({ message: 'Account verified successfully!', user, token });
   } catch (error) {
     if (error.code === 'P2002') {
       return res.status(409).json({ message: 'Conflict: Email already exists.' });
     }
-    console.error(error);
+    console.error('verifyEmail error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+/**
+ * Resends the verification code to the email.
+ */
+exports.resendVerificationCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find existing verification token
+    const existingToken = await prisma.emailVerificationToken.findUnique({
+      where: { email },
+    });
+
+    if (!existingToken) {
+      return res.status(400).json({ message: 'No verification pending for this email.' });
+    }
+
+    // Generate new code
+    const code = generateVerificationCode();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Update the token with new code
+    await prisma.emailVerificationToken.update({
+      where: { email },
+      data: { code, expiresAt },
+    });
+
+    // Send new verification email
+    await sendVerificationEmail(email, code);
+
+    res.status(200).json({ message: 'New verification code sent to your email.' });
+  } catch (error) {
+    console.error('resendVerificationCode error:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };

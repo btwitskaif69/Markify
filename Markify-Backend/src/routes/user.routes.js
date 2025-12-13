@@ -5,7 +5,9 @@ const bookmarkController = require('../controllers/bookmark.controller');
 const { protect } = require('../middleware/auth.middleware'); // 1. Import the middleware
 
 // --- Public Routes (No token needed) ---
-router.post('/', userController.createUser);
+router.post('/initiate-signup', userController.initiateSignup);
+router.post('/verify-email', userController.verifyEmail);
+router.post('/resend-verification', userController.resendVerificationCode);
 router.post('/login', userController.loginUser);
 router.post('/forgot-password', userController.forgotPassword);
 router.post('/reset-password/:token', userController.resetPassword);

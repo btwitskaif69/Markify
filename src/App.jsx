@@ -18,6 +18,7 @@ const SignupForm = lazy(() => import('./components/Forms/signup-form').then(modu
 const NotFoundPage = lazy(() => import('./components/NotFoundPage'));
 const ForgotPassword = lazy(() => import('./components/Forms/forgot-password'));
 const ResetPassword = lazy(() => import('./components/Forms/reset-password'));
+const VerifyEmail = lazy(() => import('./components/Forms/verify-email'));
 const CmdK = lazy(() => import('./components/dashboard/CmdK'));
 const PrivacyPolicy = lazy(() => import('./components/Pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/Pages/TermsOfService'));
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/dashboard/:userId" element={<Dashboard />} />
           <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
           <Route path="/dashboard/:userId/admin" element={<AdminPanel />} />

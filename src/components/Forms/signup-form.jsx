@@ -17,8 +17,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { secureFetch } from "@/lib/secureApi";
 import { API_BASE_URL } from "@/lib/apiConfig";
 
-// API URL to user creation endpoint
-const API_URL = `${API_BASE_URL}/users`;
+// API URL to initiate signup endpoint
+const API_URL = `${API_BASE_URL}/users/initiate-signup`;
 
 export function SignupForm({ className, ...props }) {
   const [formData, setFormData] = useState({
@@ -53,9 +53,8 @@ export function SignupForm({ className, ...props }) {
         throw new Error(data.message || "Signup failed. Please try again.");
       }
 
-      toast.success("Account created successfully!");
-      login(data.user, data.token);
-      navigate(`/dashboard/${data.user.id}`);
+      toast.success("Verification code sent to your email!");
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       console.error("Signup error:", error);
       toast.error(error.message);

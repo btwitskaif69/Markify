@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -18,6 +19,7 @@ import ConfirmationDialog from "./ConfirmationDialog";
 import Bookmarks from "./Bookmarks";
 import CmdK from "./CmdK";
 import ImportBookmarks from "./ImportBookmarks";
+import WelcomeDialog from "./WelcomeDialog";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import {
@@ -32,6 +34,18 @@ const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", cate
 export default function Dashboard() {
   const { user, authFetch, isLoading: isAuthLoading } = useAuth();
   const { theme, setTheme } = useTheme();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  // Check for welcome param (new user onboarding)
+  useEffect(() => {
+    if (searchParams.get("welcome") === "true") {
+      setShowWelcome(true);
+      // Remove the query param from URL
+      searchParams.delete("welcome");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const {
     allBookmarks,
@@ -46,6 +60,7 @@ export default function Dashboard() {
   const {
     handleSubmit,
     handleDelete,
+    handleBulkDelete,
     handleToggleFavorite,
     handleMoveBookmark,
     handleImportBookmarks,
@@ -220,12 +235,19 @@ export default function Dashboard() {
           error={error}
           onEdit={handleEditClick}
           onDelete={handleDelete}
+          onBulkDelete={handleBulkDelete}
           onToggleFavorite={handleToggleFavorite}
           onMove={handleMoveBookmark}
         />
 
         <CmdK bookmarks={allBookmarks} />
       </SidebarInset>
+
+      <WelcomeDialog
+        open={showWelcome}
+        onOpenChange={setShowWelcome}
+        userName={user?.name}
+      />
     </SidebarProvider>
   );
 }

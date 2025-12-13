@@ -113,6 +113,35 @@ exports.deleteBookmark = async (req, res) => {
   }
 };
 
+/**
+ * Deletes multiple bookmarks at once.
+ */
+exports.bulkDeleteBookmarks = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'An array of bookmark IDs is required.' });
+    }
+
+    // Delete all bookmarks that belong to the user
+    const result = await prisma.bookmark.deleteMany({
+      where: {
+        id: { in: ids },
+        userId: req.user.id,
+      },
+    });
+
+    res.status(200).json({
+      message: `${result.count} bookmarks deleted.`,
+      deletedCount: result.count,
+    });
+  } catch (error) {
+    console.error("Bulk delete error:", error);
+    res.status(500).json({ message: 'Failed to delete bookmarks.' });
+  }
+};
+
 exports.exportBookmarks = async (req, res) => {
   try {
     const bookmarks = await prisma.bookmark.findMany({
@@ -164,6 +193,7 @@ exports.importBookmarks = async (req, res) => {
     }
 
     const skippedCount = bookmarksToImport.length - newBookmarks.length;
+    let createdIds = [];
 
     if (newBookmarks.length > 0) {
       const dataToCreate = newBookmarks.map(bookmark => ({
@@ -171,20 +201,37 @@ exports.importBookmarks = async (req, res) => {
         url: bookmark.url,
         description: bookmark.description || "",
         category: bookmark.category || "Other",
-        tags: bookmark.tags || "",
+        tags: bookmark.tags || "imported",
         isFavorite: bookmark.isFavorite || false,
+        previewImage: bookmark.previewImage || null,
         userId: req.user.id,
       }));
 
       await prisma.bookmark.createMany({
         data: dataToCreate,
       });
+
+      // Retrieve the IDs of newly created bookmarks (those needing preview enrichment)
+      const createdBookmarks = await prisma.bookmark.findMany({
+        where: {
+          userId: req.user.id,
+          url: { in: newBookmarks.map(b => b.url) },
+        },
+        select: { id: true, previewImage: true },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Only return IDs of bookmarks that don't have preview images
+      createdIds = createdBookmarks
+        .filter(b => !b.previewImage)
+        .map(b => b.id);
     }
 
     res.status(201).json({
       message: `Import complete.`,
       createdCount: newBookmarks.length,
       skippedCount: skippedCount,
+      createdIds: createdIds, // Frontend will use these to fetch previews one by one
     });
 
   } catch (error) {
