@@ -276,10 +276,10 @@ export default function ImportExport({ onRefetch }) {
         {/* Import Dropdown */}
         <SidebarMenuItem>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <SidebarMenuButton className="w-full hover:bg-primary! hover:text-primary-foreground!" tooltip="Import Bookmarks">
+            <DropdownMenuTrigger className="w-full">
+              <SidebarMenuButton tooltip="Import Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
                 <Upload className="h-4 w-4" />
-                <span className="group-data-[collapsible=icon]:hidden">Import Data</span>
+                <span>Import Data</span>
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
@@ -304,10 +304,10 @@ export default function ImportExport({ onRefetch }) {
         {/* Export Dropdown */}
         <SidebarMenuItem>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <SidebarMenuButton className="w-full hover:bg-primary! hover:text-primary-foreground!" tooltip="Export Bookmarks">
+            <DropdownMenuTrigger className="w-full">
+              <SidebarMenuButton tooltip="Export Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
                 <Download className="h-4 w-4" />
-                <span className="group-data-[collapsible=icon]:hidden">Export Data</span>
+                <span>Export Data</span>
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">

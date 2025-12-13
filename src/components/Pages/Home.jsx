@@ -7,8 +7,12 @@ import PowerBy from '../home/PowerBy';
 import SEO from '../SEO/SEO';
 
 // Lazy load below-fold components
+const Features = lazy(() => import('../home/Features'));
+const HowItWorks = lazy(() => import('../home/HowItWorks'));
+const Stats = lazy(() => import('../home/Stats'));
 const WaitlistHero = lazy(() => import('../waitlist-hero').then(m => ({ default: m.WaitlistHero })));
-const Pricing = lazy(() => import('../home/Pricing'));
+const FAQ = lazy(() => import('../home/FAQ'));
+const CTA = lazy(() => import('../home/CTA'));
 const ReviewsMarquee = lazy(() => import('../home/ReviewsMarquee'));
 const Footer = lazy(() => import('@/components/Footer'));
 
@@ -49,17 +53,39 @@ const Home = () => {
 
         <PowerBy />
 
-        {/* Below-fold content - lazy loaded */}
+        {/* Features Section */}
+        <Suspense fallback={<BelowFoldPlaceholder />}>
+          <Features />
+        </Suspense>
+
+        {/* How It Works */}
+        <Suspense fallback={<BelowFoldPlaceholder />}>
+          <HowItWorks />
+        </Suspense>
+
+        {/* Stats */}
+        <Suspense fallback={<BelowFoldPlaceholder />}>
+          <Stats />
+        </Suspense>
+
+        {/* Waitlist/Email Section */}
         <Suspense fallback={<BelowFoldPlaceholder />}>
           <WaitlistHero />
         </Suspense>
 
+        {/* FAQ */}
         <Suspense fallback={<BelowFoldPlaceholder />}>
-          <Pricing />
+          <FAQ />
         </Suspense>
 
+        {/* Reviews */}
         <Suspense fallback={<BelowFoldPlaceholder />}>
           <ReviewsMarquee />
+        </Suspense>
+
+        {/* Final CTA */}
+        <Suspense fallback={<BelowFoldPlaceholder />}>
+          <CTA />
         </Suspense>
       </main>
 
@@ -71,4 +97,3 @@ const Home = () => {
 };
 
 export default Home;
-
