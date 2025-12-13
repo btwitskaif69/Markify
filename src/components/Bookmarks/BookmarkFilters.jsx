@@ -120,18 +120,8 @@ export default function BookmarkFilters({
           </Select>
         </div>
 
-        {/* Right: Toggle Favorite + View Mode + Selection Mode */}
+        {/* Right: Toggle Favorite + View Mode */}
         <div className="flex gap-2 items-center">
-          {/* Selection Mode Toggle */}
-          <Toggle
-            pressed={isSelectionMode}
-            onPressedChange={setIsSelectionMode}
-            aria-label="Toggle selection mode"
-            className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-          >
-            <CheckSquare className="w-4 h-4" />
-          </Toggle>
-
           <Toggle
             pressed={showFavoritesOnly}
             onPressedChange={setShowFavoritesOnly}

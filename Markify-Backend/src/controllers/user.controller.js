@@ -2,7 +2,7 @@ const prisma = require('../db/prismaClient');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // 1. Import jsonwebtoken
 const crypto = require('crypto'); // 1. Import the built-in crypto module
-const { sendPasswordResetEmail, sendVerificationEmail } = require('../services/email.service'); // 2. Import your email service
+const { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } = require('../services/email.service'); // 2. Import your email service
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -111,6 +111,11 @@ exports.verifyEmail = async (req, res) => {
 
     // Generate JWT token
     const token = generateToken(user.id);
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(user.email, user.name).catch(err =>
+      console.error('Failed to send welcome email:', err)
+    );
 
     delete user.password;
     res.status(201).json({ message: 'Account verified successfully!', user, token });

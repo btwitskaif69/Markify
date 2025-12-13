@@ -105,6 +105,12 @@ export default function Bookmarks({
     setIsSelectionMode(false);
   };
 
+  // Enter selection mode and select the clicked bookmark
+  const handleEnterSelectionMode = (bookmarkId) => {
+    setIsSelectionMode(true);
+    setSelectedIds(new Set([bookmarkId]));
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
@@ -182,6 +188,7 @@ export default function Bookmarks({
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.has(bookmark.id)}
                 onToggleSelect={handleToggleSelect}
+                onEnterSelectionMode={handleEnterSelectionMode}
               />
             ) : (
               <BookmarkListItem

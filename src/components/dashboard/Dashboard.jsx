@@ -18,16 +18,7 @@ import CollectionFormDialog from "@/components/Collections/CollectionFormDialog"
 import ConfirmationDialog from "./ConfirmationDialog";
 import Bookmarks from "./Bookmarks";
 import CmdK from "./CmdK";
-import ImportBookmarks from "./ImportBookmarks";
 import WelcomeDialog from "./WelcomeDialog";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
@@ -91,13 +82,6 @@ export default function Dashboard() {
   const [isBookmarkDialogOpen, setIsBookmarkDialogOpen] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  const handleSyncClick = async () => {
-    setIsSyncing(true);
-    await handleSyncLocalBookmarks();
-    setIsSyncing(false);
-  };
 
   const handleAddClick = () => {
     setEditingBookmark(null);
@@ -170,28 +154,6 @@ export default function Dashboard() {
             >
               {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
             </div>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleSyncClick}
-                    disabled={isSyncing}
-                    className="shrink-0"
-                  >
-                    <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
-                    <span className="sr-only">Sync from Browser</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Sync from Browser</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <ImportBookmarks onImport={handleImportBookmarks} />
 
             <BookmarkFormDialog
               open={isBookmarkDialogOpen}
