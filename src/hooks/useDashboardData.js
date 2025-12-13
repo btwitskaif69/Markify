@@ -119,6 +119,12 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     return allBookmarks.filter((bm) => bm.collectionId === activeCollectionId);
   }, [activeCollectionId, allBookmarks]);
 
+  // Get active collection object
+  const activeCollection = useMemo(() => {
+    if (!activeCollectionId) return null;
+    return collections.find((c) => c.id === activeCollectionId) || null;
+  }, [activeCollectionId, collections]);
+
   return {
     allBookmarks,
     bookmarks,
@@ -130,5 +136,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     hasMore,
     fetchMoreBookmarks,
     isFetchingMore,
+    activeCollectionId,
+    activeCollection,
   };
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from '@/assets/logo-light.svg';
 
-const LoadingSpinner = ({ size = "w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" }) => {
+const LoadingSpinner = ({ size = "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14" }) => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">
             <div className={`${size} bg-primary rounded-full flex items-center justify-center animate-spin`}>

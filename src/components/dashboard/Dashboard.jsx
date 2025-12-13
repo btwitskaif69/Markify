@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -45,7 +45,8 @@ export default function Dashboard() {
     collections,
     setCollections,
     isLoading,
-    error
+    error,
+    activeCollection
   } = useDashboardData(user, authFetch, isAuthLoading);
 
   const {
@@ -136,11 +137,20 @@ export default function Dashboard() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    {user ? `${user.name}'s Bookmarks` : "Bookmarks"}
+                  <BreadcrumbLink asChild>
+                    <Link to={user ? `/dashboard/${user.id}` : "/login"}>
+                      {user ? `${user.name}'s Bookmarks` : "Bookmarks"}
+                    </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                {activeCollection && (
+                  <>
+                    <BreadcrumbSeparator className="hidden md:block" />
+                    <BreadcrumbItem className="hidden md:block">
+                      <BreadcrumbLink>{activeCollection.name}</BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </>
+                )}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
