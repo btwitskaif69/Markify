@@ -25,6 +25,7 @@ const TermsOfService = lazy(() => import('./components/Pages/TermsOfService'));
 const CookiePolicy = lazy(() => import('./components/Pages/CookiePolicy'));
 const RefundPolicy = lazy(() => import('./components/Pages/RefundPolicy'));
 const CookieSettings = lazy(() => import('./components/Pages/CookieSettings'));
+const WhatIsMarkify = lazy(() => import('./components/Pages/WhatIsMarkify'));
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="/cookies" element={<CookiePolicy />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/cookie-settings" element={<CookieSettings />} />
+          <Route path="/what-is-markify" element={<WhatIsMarkify />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
