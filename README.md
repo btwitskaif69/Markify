@@ -1,108 +1,166 @@
-# MARKIFY
+<div align="center">
 
-*Transform Ideas Into Action, Instantly and Seamlessly*
+![Markify Banner](https://assets.markify.tech/assets/markify%20og%20image.png)
 
-![last-commit](https://img.shields.io/github/last-commit/btwitskaif69/Markify?style=flat\&logo=git\&logoColor=white\&color=0080ff)
-![repo-top-language](https://img.shields.io/github/languages/top/btwitskaif69/Markify?style=flat\&color=0080ff)
-![repo-language-count](https://img.shields.io/github/languages/count/btwitskaif69/Markify?style=flat\&color=0080ff)
+# Markify
 
-### 🛠️ Built With
+### 🔖 The Modern Bookmark Manager for the Modern Web
 
-<p align="center">
-  <img alt="Express" src="https://img.shields.io/badge/Express-000000.svg?style=flat&logo=Express&logoColor=white" />
-  <img alt="JSON" src="https://img.shields.io/badge/JSON-000000.svg?style=flat&logo=JSON&logoColor=white" />
-  <img alt="Markdown" src="https://img.shields.io/badge/Markdown-000000.svg?style=flat&logo=Markdown&logoColor=white" />
-  <img alt="Resend" src="https://img.shields.io/badge/Resend-000000.svg?style=flat&logo=Resend&logoColor=white" />
-  <img alt="npm" src="https://img.shields.io/badge/npm-CB3837.svg?style=flat&logo=npm&logoColor=white" />
-  <img alt="Cheerio" src="https://img.shields.io/badge/Cheerio-E88C1F.svg?style=flat&logo=Cheerio&logoColor=white" />
-  <img alt=".ENV" src="https://img.shields.io/badge/.ENV-ECD53F.svg?style=flat&logo=dotenv&logoColor=black" />
-  <img alt="JavaScript" src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=flat&logo=JavaScript&logoColor=black" />
-  <img alt="Nodemon" src="https://img.shields.io/badge/Nodemon-76D04B.svg?style=flat&logo=Nodemon&logoColor=white" />
-  <img alt="React" src="https://img.shields.io/badge/React-61DAFB.svg?style=flat&logo=React&logoColor=black" />
-  <img alt="Prisma" src="https://img.shields.io/badge/Prisma-2D3748.svg?style=flat&logo=Prisma&logoColor=white" />
-  <img alt="Zod" src="https://img.shields.io/badge/Zod-3E67B1.svg?style=flat&logo=Zod&logoColor=white" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-646CFF.svg?style=flat&logo=Vite&logoColor=white" />
-  <img alt="ESLint" src="https://img.shields.io/badge/ESLint-4B32C3.svg?style=flat&logo=ESLint&logoColor=white" />
-  <img alt="datefns" src="https://img.shields.io/badge/datefns-770C56.svg?style=flat&logo=date-fns&logoColor=white" />
-  <img alt="React Hook Form" src="https://img.shields.io/badge/React%20Hook%20Form-EC5990.svg?style=flat&logo=React-Hook-Form&logoColor=white" />
-</p>
+**Save, organize, and rediscover the content that matters—without the chaos.**
+
+[![Website](https://img.shields.io/badge/Website-markify.tech-orange?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.markify.tech)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/btwitskaif69/Markify?style=for-the-badge&logo=git&logoColor=white&color=0080ff)](https://github.com/btwitskaif69/Markify/commits)
+
+[Live Demo](https://www.markify.tech) · [What is Markify?](https://www.markify.tech/what-is-markify) · [Blog](https://www.markify.tech/blog) · [Report Bug](https://github.com/btwitskaif69/Markify/issues)
+
+</div>
 
 ---
 
-## Table of Contents
+## ✨ Features
 
-* [Overview](#overview)
-* [Getting Started](#getting-started)
-
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [Testing](#testing)
-
----
-
-## Overview
-
-Markify is an all-in-one developer platform that simplifies building scalable, maintainable web applications with a focus on consistency and modern tooling. It combines a structured component architecture, a fast React development environment, and a powerful backend API for user management, bookmarks, and content extraction.
-
-**Why Markify?**
-
-This project streamlines frontend and backend development, ensuring high-quality, cohesive user interfaces and robust data handling.
-
-### Core Features
-
-* 🎨 **Component Standards:** Consistent, theme-aligned UI styling.
-* 🚀 **Fast Development:** Vite + React + Babel/SWC plugins.
-* 🔧 **Backend Power:** Authentication, content extraction & data management using Prisma.
-* 🛠️ **Rich UI Components:** Buttons, modals, navigation, and more.
-* 🎯 **Developer-Focused:** Utility functions & scalable project structure.
+| Feature | Description |
+|---------|-------------|
+| 🔍 **Full-Text Search** | Find any bookmark instantly across titles, descriptions, and tags |
+| 📁 **Smart Collections** | Organize bookmarks with custom collections and nested folders |
+| 🏷️ **Tags & Filters** | Flexible tagging system for quick categorization |
+| 🌐 **Browser Extension** | Save links with one click from Chrome, Firefox, or Edge |
+| ☁️ **Cross-Device Sync** | Access your bookmarks from anywhere—web, mobile, or extension |
+| 🔒 **Privacy First** | Your data is encrypted and never sold |
+| 🌙 **Dark Mode** | Beautiful dark theme that's easy on the eyes |
+| 📤 **Import/Export** | Migrate from Chrome, Raindrop, or Pinboard seamlessly |
 
 ---
 
-## Getting Started
+## 🛠️ Tech Stack
+
+<div align="center">
+
+| Frontend | Backend | Database | Deployment |
+|----------|---------|----------|------------|
+| ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white) | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white) |
+| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | ![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white) | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) | ![Cloudflare](https://img.shields.io/badge/Cloudflare_R2-F38020?style=flat&logo=cloudflare&logoColor=white) |
+| ![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat&logo=tailwind-css&logoColor=white) | ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat&logo=zod&logoColor=white) | | |
+
+</div>
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-* **Programming Language:** JavaScript
-* **Package Manager:** npm
+- **Node.js** v18 or higher
+- **npm** or **yarn**
+- **PostgreSQL** database (or use a hosted solution like Supabase/Neon)
 
 ### Installation
 
-1. **Clone the repository:**
+```bash
+# Clone the repository
+git clone https://github.com/btwitskaif69/Markify.git
 
-```sh
-git clone https://github.com/btwitskaif69/Markify
-```
-
-2. **Navigate to the project directory:**
-
-```sh
+# Navigate to project directory
 cd Markify
-```
 
-3. **Install dependencies:**
-
-```sh
+# Install frontend dependencies
 npm install
-```
 
-### Usage
+# Install backend dependencies
+cd Markify-Backend
+npm install
 
-Run the project:
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database URL and API keys
 
-```sh
-npm start
-```
+# Run database migrations
+npx prisma migrate dev
 
-### Testing
-
-Markify uses the **{test_framework}** test framework.
-Run tests:
-
-```sh
-npm test
+# Start development servers
+cd ..
+npm run dev           # Frontend: http://localhost:5173
+cd Markify-Backend
+npm run dev           # Backend: http://localhost:3000
 ```
 
 ---
 
-[⬆ Return to top](#markify)
+## 📁 Project Structure
+
+```
+Markify/
+├── src/
+│   ├── components/        # React components
+│   │   ├── Pages/         # Page components (Home, About, etc.)
+│   │   ├── dashboard/     # Dashboard components
+│   │   ├── ui/            # Reusable UI components
+│   │   └── Forms/         # Authentication forms
+│   ├── context/           # React context providers
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility functions
+│   └── assets/            # Static assets
+├── Markify-Backend/
+│   ├── controllers/       # Route controllers
+│   ├── routes/            # API routes
+│   ├── prisma/            # Database schema & migrations
+│   └── utils/             # Backend utilities
+├── markify-extension/     # Browser extension
+└── public/                # Static files
+```
+
+---
+
+## 🔗 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/signup` | Create new account |
+| `POST` | `/api/auth/login` | User login |
+| `GET` | `/api/bookmarks` | Get all bookmarks |
+| `POST` | `/api/bookmarks` | Create bookmark |
+| `GET` | `/api/collections` | Get all collections |
+| `POST` | `/api/collections` | Create collection |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+<div align="center">
+
+**Mohd Kaif**
+
+[![GitHub](https://img.shields.io/badge/GitHub-btwitskaif69-181717?style=for-the-badge&logo=github)](https://github.com/btwitskaif69)
+[![Twitter](https://img.shields.io/badge/Twitter-@btwitskaif69-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://x.com/btwitskaif69)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-btwitskaif69-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/btwitskaif69)
+
+</div>
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you find it useful!**
+
+Built with ❤️ by [Mohd Kaif](https://github.com/btwitskaif69)
+
+</div>

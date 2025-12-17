@@ -40,6 +40,7 @@ function Footer() {
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Product</h3>
               <ul className="space-y-4 text-sm text-white">
+                <li><Link to="/what-is-markify" className="hover:text-primary transition-colors duration-200">What is Markify?</Link></li>
                 <li><Link to="/features" className="hover:text-primary transition-colors duration-200">Features</Link></li>
                 <li><Link to="/pricing" className="hover:text-primary transition-colors duration-200">Pricing</Link></li>
                 <li><Link to="/enterprise" className="hover:text-primary transition-colors duration-200">Enterprise</Link></li>
