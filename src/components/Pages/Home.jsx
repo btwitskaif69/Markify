@@ -3,14 +3,14 @@ import React, { lazy, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
-import PowerBy from '../home/PowerBy';
+import Marquee from '../home/Marquee';
 import SEO from '../SEO/SEO';
 
 // Lazy load below-fold components
 const Features = lazy(() => import('../home/Features'));
 const HowItWorks = lazy(() => import('../home/HowItWorks'));
 const Stats = lazy(() => import('../home/Stats'));
-const WaitlistHero = lazy(() => import('../waitlist-hero').then(m => ({ default: m.WaitlistHero })));
+
 const FAQ = lazy(() => import('../home/FAQ'));
 const CTA = lazy(() => import('../home/CTA'));
 const ReviewsMarquee = lazy(() => import('../home/ReviewsMarquee'));
@@ -107,7 +107,7 @@ const Home = () => {
           <DashboardPreview />
         </section>
 
-        <PowerBy />
+        <Marquee />
 
         {/* Features Section */}
         <Suspense fallback={<BelowFoldPlaceholder />}>
@@ -124,10 +124,6 @@ const Home = () => {
           <Stats />
         </Suspense>
 
-        {/* Waitlist/Email Section */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <WaitlistHero />
-        </Suspense>
 
         {/* FAQ */}
         <Suspense fallback={<BelowFoldPlaceholder />}>
