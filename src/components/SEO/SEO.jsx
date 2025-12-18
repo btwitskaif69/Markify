@@ -8,7 +8,7 @@ const SEO = ({
     canonical,
     type = 'website',
     name = 'Markify',
-    image = 'https://www.markify.tech/logo.svg',
+    image = 'https://assets.markify.tech/assets/markify%20og%20image.png',
     structuredData
 }) => {
     const siteUrl = 'https://www.markify.tech';
