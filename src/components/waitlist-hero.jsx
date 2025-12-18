@@ -1,4 +1,5 @@
 import { useState, useRef } from "react"
+import logo from "../assets/logo.svg"
 
 export const WaitlistHero = () => {
   const [email, setEmail] = useState("")
@@ -231,11 +232,11 @@ export const WaitlistHero = () => {
         <div
           className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6">
           <div
-            className="w-16 h-16 rounded-2xl shadow-lg overflow-hidden mb-2 ring-1 ring-white/10 bg-black p-2">
+            className="w-16 h-16 rounded-2xl shadow-lg overflow-hidden mb-2 ring-1 ring-white/10 bg-primary p-2">
             <img
-              src="/logo.svg"
+              src={logo}
               alt="Markify Logo"
-              className="w-full h-full object-contain" />
+              className="w-full h-full object-contain hover:animate-spin" />
 
           </div>
 
@@ -259,8 +260,8 @@ export const WaitlistHero = () => {
             {/* SUCCESS STATE */}
             <div
               className={`absolute inset-0 flex items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${status === "success"
-                  ? "opacity-100 scale-100 rotate-x-0 animate-success-pulse animate-success-glow"
-                  : "opacity-0 scale-95 -rotate-x-90 pointer-events-none"
+                ? "opacity-100 scale-100 rotate-x-0 animate-success-pulse animate-success-glow"
+                : "opacity-0 scale-95 -rotate-x-90 pointer-events-none"
                 }`}
               style={{ backgroundColor: colors.success }}>
               {/* Celebration rings */}
@@ -297,8 +298,8 @@ export const WaitlistHero = () => {
             <form
               onSubmit={handleSubmit}
               className={`relative w-full h-full group transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${status === "success"
-                  ? "opacity-0 scale-95 rotate-x-90 pointer-events-none"
-                  : "opacity-100 scale-100 rotate-x-0"
+                ? "opacity-0 scale-95 rotate-x-90 pointer-events-none"
+                : "opacity-100 scale-100 rotate-x-0"
                 }`}>
               <input
                 type="email"

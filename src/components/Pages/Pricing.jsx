@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "../ui/spotlight-new";
+import SEO from "../SEO/SEO";
 
 const tiers = [
   {
@@ -49,6 +50,11 @@ const tiers = [
 const PricingPage = () => {
   return (
     <>
+      <SEO
+        title="Pricing"
+        description="Choose the perfect Markify plan for your needs. Simple, transparent pricing with no hidden fees. Free, Pro, and Team plans available."
+        canonical="https://www.markify.tech/pricing"
+      />
       <Navbar />
 
       <main className="bg-background text-foreground relative overflow-hidden">

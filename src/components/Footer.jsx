@@ -12,7 +12,7 @@ import {
   Tablet,
   Chrome
 } from "lucide-react"
-import logo from "@/assets/logo-light.svg"
+import logo from "@/assets/logo.svg"
 
 function Footer() {
   return (
@@ -26,8 +26,8 @@ function Footer() {
           {/* Brand / Logo Section */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center gap-3 mb-6 group w-fit">
-              <div className="bg-white/5 p-3 rounded-xl backdrop-blur-sm group-hover:bg-white/10 transition-colors border border-white/5">
-                <img src={logo} alt="Markify" className="h-10 w-10 brightness-0 invert opacity-100" />
+              <div className="bg-primary p-2 rounded-xl">
+                <img src={logo} alt="Markify" className="h-10 w-10 brightness-0 invert opacity-100 hover:animate-spin" />
               </div>
               <span className="text-3xl font-bold tracking-tight text-white">Markify</span>
             </Link>
@@ -40,7 +40,6 @@ function Footer() {
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Product</h3>
               <ul className="space-y-4 text-sm text-white">
-                <li><Link to="/what-is-markify" className="hover:text-primary transition-colors duration-200">What is Markify?</Link></li>
                 <li><Link to="/features" className="hover:text-primary transition-colors duration-200">Features</Link></li>
                 <li><Link to="/pricing" className="hover:text-primary transition-colors duration-200">Pricing</Link></li>
                 <li><Link to="/enterprise" className="hover:text-primary transition-colors duration-200">Enterprise</Link></li>
@@ -52,6 +51,7 @@ function Footer() {
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Resources</h3>
               <ul className="space-y-4 text-sm text-white">
+                <li><Link to="/what-is-markify" className="hover:text-primary transition-colors duration-200">What is Markify?</Link></li>
                 <li><Link to="/blog" className="hover:text-primary transition-colors duration-200">Blog</Link></li>
                 <li><Link to="/docs" className="hover:text-primary transition-colors duration-200">Documentation</Link></li>
                 <li><Link to="/help" className="hover:text-primary transition-colors duration-200">Help Center</Link></li>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spotlight } from "../ui/spotlight-new";
+import SEO from "../SEO/SEO";
 
 const Contact = () => {
   const handleSubmit = (event) => {
@@ -13,6 +14,11 @@ const Contact = () => {
 
   return (
     <>
+      <SEO
+        title="Contact Us"
+        description="Get in touch with the Markify team. Have a question, feature idea, or partnership opportunity? Send us a message and we'll get back to you."
+        canonical="https://www.markify.tech/contact"
+      />
       <Navbar />
 
       <main className="bg-background text-foreground relative overflow-hidden">

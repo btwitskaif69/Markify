@@ -13,7 +13,7 @@ import {
   SidebarMenuButton
 } from "@/components/ui/sidebar"
 import ImportExport from "./ImportExport";
-import logo from "@/assets/logo-light.svg"
+import logo from "@/assets/logo.svg"
 
 export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, ...props }) {
   const { user, logout } = useAuth();
@@ -29,7 +29,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
           >
             <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
               {/* <BookMarked className="size-4" /> */}
-              <img src={logo} alt="Markify" className="h-5 w-5"/>
+              <img src={logo} alt="Markify" className="h-5 w-5" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate text-lg font-semibold">Markify</span>
@@ -39,13 +39,13 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
-        <NavCollections 
+        <NavCollections
           collections={collections}
           onCreate={onCreateCollection}
           onRename={onRenameCollection}
           onDelete={onDeleteCollection}
         />
-         <ImportExport />
+        <ImportExport />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} logout={logout} />

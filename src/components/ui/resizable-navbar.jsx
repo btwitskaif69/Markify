@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 
 import React, { useRef, useState } from "react";
-import logo from '@/assets/logo-light.svg'
+import logo from '@/assets/logo.svg'
 
 
 export const Navbar = ({

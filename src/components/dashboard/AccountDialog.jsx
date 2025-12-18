@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
-import logo from "@/assets/logo-light.svg";
+import logo from "@/assets/logo.svg";
 import ImageCropper from "./ImageCropper";
 
 export default function AccountDialog({ open, setOpen, user, authFetch, onProfileUpdate }) {
