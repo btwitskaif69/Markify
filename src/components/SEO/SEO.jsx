@@ -52,7 +52,7 @@ SEO.propTypes = {
     type: PropTypes.string,
     name: PropTypes.string,
     image: PropTypes.string,
-    structuredData: PropTypes.object
+    structuredData: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
 };
 
 export default SEO;
