@@ -16,6 +16,9 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+
 const API_URL = API_BASE_URL;
 
 // --- Simple Markdown Renderer ---
@@ -60,7 +63,46 @@ const BlogEditor = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(isEditMode);
 
+  // Auto-Link State
+  const [linkKeyword, setLinkKeyword] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+
   const contentRef = useRef(null);
+
+  // Helper to escape regex special characters
+  const escapeRegex = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+
+  const handleAutoLink = () => {
+    if (!linkKeyword || !linkUrl) return;
+
+    try {
+      const escapedKeyword = escapeRegex(linkKeyword);
+      // Regex: matching keyword as whole word, avoiding existing markdown links
+      // Negative lookbehind (?<!\[) ensures we don't match matching [keyword]
+      // This is a basic implementation and might loop if not careful, but fine for simple cases.
+      const regex = new RegExp(`(?<!\\[)\\b${escapedKeyword}\\b(?!\\])`, 'gi');
+
+      let count = 0;
+      const newContent = content.replace(regex, (match) => {
+        count++;
+        return `[${match}](${linkUrl})`;
+      });
+
+      if (count > 0) {
+        setContent(newContent);
+        toast.success(`Linked ${count} occurrences of "${linkKeyword}"`);
+        setLinkKeyword("");
+        setLinkUrl("");
+      } else {
+        toast.info(`No occurrences of "${linkKeyword}" found to link.`);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to apply links.");
+    }
+  };
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) navigate("/login");
@@ -261,6 +303,53 @@ const BlogEditor = () => {
               <Button type="button" variant="ghost" size="sm" className="text-indigo-500 gap-1" onClick={() => toast.info("AI features coming soon!")}>
                 <Sparkles className="h-3 w-3" /> AI Refactor
               </Button>
+            </div>
+
+            {/* Extended Toolbar - Auto Link */}
+            <div className="flex items-center gap-2 p-2 px-4 border-b bg-muted/20 text-xs text-muted-foreground">
+              <span className="font-semibold">Tools:</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-7 gap-1 text-xs">
+                    <Link2 className="h-3 w-3" /> Auto-Link
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Auto-Link Keywords</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Automatically link all occurrences of a word.
+                      </p>
+                    </div>
+                    <div className="grid gap-2">
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor="link-word">Word</Label>
+                        <Input
+                          id="link-word"
+                          placeholder="e.g. Markify"
+                          className="col-span-2 h-8"
+                          value={linkKeyword}
+                          onChange={(e) => setLinkKeyword(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor="link-url">URL</Label>
+                        <Input
+                          id="link-url"
+                          placeholder="https://..."
+                          className="col-span-2 h-8"
+                          value={linkUrl}
+                          onChange={(e) => setLinkUrl(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <Button onClick={handleAutoLink} disabled={!linkKeyword || !linkUrl} size="sm">
+                      Apply Links
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Split View */}

@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, ArrowLeft, Folder, Share2 } from "lucide-react";
+import { ExternalLink, ArrowLeft, Folder, Share2, Calendar } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const API_URL = API_BASE_URL;
 
@@ -37,11 +38,7 @@ export default function SharedCollection() {
     }, [shareId]);
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground">Loading...</div>
-            </div>
-        );
+        return <LoadingSpinner />;
     }
 
     if (error || !collection) {
@@ -71,53 +68,145 @@ export default function SharedCollection() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen py-12 px-4 md:px-8 bg-muted/30">
-                <div className="max-w-6xl mx-auto">
-                    <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
-                    </Link>
+            <main className="min-h-screen py-16 md:py-24 px-4 md:px-8 bg-background">
+                <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row items-start justify-center gap-8 relative">
+                    {/* LEFT COLUMN: Back Link */}
+                    <div className="hidden lg:block w-48 sticky top-24 shrink-0">
+                        <Link
+                            to="/"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-card hover:bg-primary/5 text-sm font-medium text-muted-foreground hover:text-primary transition-all group"
+                        >
+                            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                            Back to Home
+                        </Link>
+                    </div>
 
-                    {/* Collection Header */}
-                    <Card className="mb-8">
-                        <CardHeader>
-                            <div className="flex items-center gap-3 mb-4">
-                                <Avatar className="h-10 w-10">
-                                    <AvatarImage src={collection.sharedBy?.avatar} />
-                                    <AvatarFallback>
-                                        {collection.sharedBy?.name?.charAt(0)?.toUpperCase() || "U"}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="text-sm font-medium">{collection.sharedBy?.name || "Unknown User"}</p>
-                                    <p className="text-xs text-muted-foreground">Shared this collection</p>
+                    {/* CENTER COLUMN: Main Content */}
+                    <div className="w-full flex-1 min-w-0">
+                        {/* Mobile Back Link */}
+                        <Link
+                            to="/"
+                            className="lg:hidden inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                            Back to Home
+                        </Link>
+
+                        {/* Collection Header */}
+                        <Card className="mb-8 border-border/50 shadow-md bg-card/50 backdrop-blur-sm">
+                            <CardHeader className="pb-6">
+                                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-border/50">
+                                    <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+                                        <AvatarImage src={collection.sharedBy?.avatar} />
+                                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                                            {collection.sharedBy?.name?.charAt(0)?.toUpperCase() || "U"}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-sm font-medium">{collection.sharedBy?.name || "Unknown User"}</p>
+                                        <p className="text-xs text-muted-foreground">Shared this collection</p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="flex items-center gap-3">
-                                <Folder className="h-8 w-8 text-primary" />
-                                <div>
-                                    <CardTitle className="text-2xl">{collection.name}</CardTitle>
-                                    <p className="text-muted-foreground">
-                                        {collection.bookmarks?.length || 0} bookmarks
-                                    </p>
+                                <div className="flex items-start gap-4">
+                                    <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                                        <Folder className="h-8 w-8" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-2xl md:text-3xl font-bold mb-2">{collection.name}</CardTitle>
+                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                            <Badge variant="outline" className="px-2 py-0.5 h-6">
+                                                {collection.bookmarks?.length || 0} bookmarks
+                                            </Badge>
+                                            <span className="flex items-center gap-1.5">
+                                                <Calendar className="h-3.5 w-3.5" />
+                                                Created {new Date(collection.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardHeader>
-                    </Card>
-
-                    {/* Bookmarks Grid */}
-                    {collection.bookmarks?.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {collection.bookmarks.map((bookmark) => (
-                                <BookmarkPreviewCard key={bookmark.id} bookmark={bookmark} />
-                            ))}
-                        </div>
-                    ) : (
-                        <Card className="p-8 text-center">
-                            <p className="text-muted-foreground">This collection is empty.</p>
+                            </CardHeader>
                         </Card>
-                    )}
+
+                        {/* Bookmarks Grid */}
+                        {collection.bookmarks?.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {collection.bookmarks.map((bookmark) => (
+                                    <BookmarkPreviewCard key={bookmark.id} bookmark={bookmark} />
+                                ))}
+                            </div>
+                        ) : (
+                            <Card className="p-12 text-center border-dashed border-2">
+                                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                                    <Folder className="h-6 w-6 text-muted-foreground" />
+                                </div>
+                                <h3 className="text-lg font-medium mb-1">Empty Collection</h3>
+                                <p className="text-muted-foreground">This collection doesn't have any bookmarks yet.</p>
+                            </Card>
+                        )}
+
+                        {/* Mobile CTA */}
+                        <div className="lg:hidden mt-12 p-6 rounded-2xl border border-border bg-gradient-to-br from-primary/5 via-background to-background text-center">
+                            <h3 className="text-lg font-bold mb-2">Build your own collections</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Join Markify to organize your digital life.
+                            </p>
+                            <Link to="/signup">
+                                <Button className="w-full">Get Started Free</Button>
+                            </Link>
+                        </div>
+
+                        {/* Powered by footer */}
+                        <p className="text-center text-xs text-muted-foreground mt-12 mb-8 opacity-60 hover:opacity-100 transition-opacity">
+                            Shared via <span className="font-semibold text-primary">Markify</span> — The smart bookmark manager
+                        </p>
+                    </div>
+
+                    {/* RIGHT COLUMN: SEO CTA - Sticky */}
+                    <div className="hidden lg:block w-72 sticky top-24 shrink-0 space-y-6">
+                        <div className="p-6 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm shadow-sm flex flex-col items-center text-center group hover:border-primary/30 transition-colors">
+                            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center mb-4 shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform">
+                                <Folder className="h-6 w-6 text-white" />
+                            </div>
+
+                            <h3 className="text-lg font-bold mb-2 text-foreground">Save your collections</h3>
+                            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                                Join thousands of users who use <strong>Markify</strong> to organize, share, and collaborate on their favorite web content.
+                            </p>
+
+                            <div className="w-full space-y-3">
+                                <Link to="/signup">
+                                    <Button className="w-full font-semibold shadow-md">
+                                        Start Curating for Free
+                                    </Button>
+                                </Link>
+                                <Link to="/">
+                                    <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-foreground">
+                                        Learn More
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Features List Mini */}
+                        <div className="p-5 rounded-xl border border-border/40 bg-muted/20">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Why Markify?</p>
+                            <ul className="text-sm space-y-2.5">
+                                <li className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                                    Smart Categorization
+                                </li>
+                                <li className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                                    Beautiful Previews
+                                </li>
+                                <li className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+                                    Share & Collaborate
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </main>
             <Footer />

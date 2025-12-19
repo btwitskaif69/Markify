@@ -16,7 +16,7 @@ import logo from "@/assets/logo.svg"
 
 function Footer() {
   return (
-    <footer className="relative bg-[#000000] text-white overflow-hidden pb-20 pt-24 border-t border-white/5">
+    <footer className="relative bg-background text-foreground overflow-hidden pb-20 pt-24 border-t border-border/40">
       {/* Content Container */}
       <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
 
@@ -27,9 +27,9 @@ function Footer() {
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center gap-3 mb-6 group w-fit">
               <div className="bg-primary p-2 rounded-xl">
-                <img src={logo} alt="Markify" className="h-10 w-10 brightness-0 invert opacity-100 hover:animate-spin" />
+                <img src={logo} alt="Markify" className="h-10 w-10 brightness-0 invert dark:invert-0 opacity-100 hover:animate-spin" />
               </div>
-              <span className="text-3xl font-bold tracking-tight text-white">Markify</span>
+              <span className="text-3xl font-bold tracking-tight text-foreground">Markify</span>
             </Link>
           </div>
 
@@ -39,7 +39,7 @@ function Footer() {
             {/* Column 1: Product */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Product</h3>
-              <ul className="space-y-4 text-sm text-white">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li><Link to="/features" className="hover:text-primary transition-colors duration-200">Features</Link></li>
                 <li><Link to="/pricing" className="hover:text-primary transition-colors duration-200">Pricing</Link></li>
                 <li><Link to="/enterprise" className="hover:text-primary transition-colors duration-200">Enterprise</Link></li>
@@ -50,7 +50,7 @@ function Footer() {
             {/* Column 2: Resources */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Resources</h3>
-              <ul className="space-y-4 text-sm text-white">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li><Link to="/what-is-markify" className="hover:text-primary transition-colors duration-200">What is Markify?</Link></li>
                 <li><Link to="/blog" className="hover:text-primary transition-colors duration-200">Blog</Link></li>
                 <li><Link to="/docs" className="hover:text-primary transition-colors duration-200">Documentation</Link></li>
@@ -62,15 +62,15 @@ function Footer() {
             {/* Column 3: Download */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Download</h3>
-              <div className="bg-white p-2 rounded-xl w-fit mb-4 border border-white/5">
+              <div className="bg-muted p-2 rounded-xl w-fit mb-4 border border-border">
                 {/* QR Code Placeholder */}
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent("https://markify.tech")}&bgcolor=ffffff&color=000000&format=svg`}
                   alt="Download App"
-                  className="h-20 w-20"
+                  className="h-20 w-20 mix-blend-multiply dark:mix-blend-screen dark:invert"
                 />
               </div>
-              <ul className="space-y-4 text-sm text-white">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <Link to="/extension" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
                     <Chrome className="h-4 w-4" /> Chrome Extension
@@ -82,7 +82,7 @@ function Footer() {
             {/* Column 4: Social */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">Social</h3>
-              <ul className="space-y-4 text-sm text-white">
+              <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors duration-200">
                     <Linkedin className="h-4 w-4" /> LinkedIn
@@ -110,7 +110,7 @@ function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright & Legal */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-zinc-500 font-medium pt-8 border-t border-white/10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-muted-foreground font-medium pt-8 border-t border-border/40">
           <p>© 2025 Markify Inc. All rights reserved.</p>
           <div className="flex gap-8">
             <Link to="/privacy" className="hover:text-primary transition-colors duration-200">Privacy policy</Link>
@@ -123,13 +123,13 @@ function Footer() {
 
       {/* Massive Background Watermark */}
       <div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none flex justify-center items-end" aria-hidden="true">
-        <h1 className="text-[25vw] leading-[0.75] font-semibold text-white/[0.04] tracking-tighter whitespace-nowrap transform translate-y-[20%]">
+        <h1 className="text-[25vw] leading-[0.75] font-semibold text-foreground/5 tracking-tighter whitespace-nowrap transform translate-y-[20%]">
           Markify
         </h1>
       </div>
 
       {/* Overlay Gradient for Fade effect */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none"></div>
     </footer>
   );
 }

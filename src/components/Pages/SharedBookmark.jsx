@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Calendar, Tag, ArrowLeft, Share2 } from "lucide-react";
+import { ExternalLink, Calendar, Tag, ArrowLeft, Share2, Link2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const API_URL = API_BASE_URL;
 
@@ -37,30 +38,30 @@ export default function SharedBookmark() {
     }, [shareId]);
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground">Loading...</div>
-            </div>
-        );
+        return <LoadingSpinner />;
     }
 
     if (error || !bookmark) {
         return (
             <>
                 <Navbar />
-                <div className="min-h-screen flex flex-col items-center justify-center p-4">
-                    <Card className="max-w-md w-full text-center p-8">
-                        <Share2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <h1 className="text-2xl font-bold mb-2">Bookmark Not Found</h1>
-                        <p className="text-muted-foreground mb-6">
-                            This bookmark may have been removed or the link is no longer valid.
-                        </p>
-                        <Link to="/">
-                            <Button>
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Home
-                            </Button>
-                        </Link>
+                <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+                    <Card className="max-w-md w-full text-center p-8 py-0! border-destructive/20">
+                        <CardContent className="pt-8 pb-8">
+                            <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-destructive/10 flex items-center justify-center">
+                                <Share2 className="h-8 w-8 text-destructive" />
+                            </div>
+                            <h1 className="text-2xl font-bold mb-2">Bookmark Not Found</h1>
+                            <p className="text-muted-foreground mb-6">
+                                This bookmark may have been removed or the link is no longer valid.
+                            </p>
+                            <Link to="/">
+                                <Button variant="outline" className="gap-2">
+                                    <ArrowLeft className="h-4 w-4" />
+                                    Back to Home
+                                </Button>
+                            </Link>
+                        </CardContent>
                     </Card>
                 </div>
                 <Footer />
@@ -72,95 +73,207 @@ export default function SharedBookmark() {
         ? bookmark.tags.split(',').map(tag => tag.trim()).filter(Boolean)
         : [];
 
+    const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
+
     return (
         <>
             <Navbar />
-            <main className="min-h-screen py-12 px-4 md:px-8 bg-muted/30">
-                <div className="max-w-3xl mx-auto">
-                    <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
-                    </Link>
+            <main className="min-h-screen py-16 md:py-24 px-4 md:px-8 bg-background">
+                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start justify-center gap-8 relative">
+                    {/* LEFT COLUMN: Back Link */}
+                    <div className="hidden lg:block w-48 sticky top-24 shrink-0">
+                        <Link
+                            to="/"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-card hover:bg-primary/5 text-sm font-medium text-muted-foreground hover:text-primary transition-all group"
+                        >
+                            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                            Back to Home
+                        </Link>
+                    </div>
 
-                    <Card className="overflow-hidden">
-                        {bookmark.previewImage && (
-                            <div className="w-full h-64 overflow-hidden">
-                                <img
-                                    src={bookmark.previewImage}
-                                    alt={bookmark.title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        )}
+                    {/* CENTER COLUMN: Main Card */}
+                    <div className="w-full max-w-2xl flex-1">
+                        {/* Mobile Back Link */}
+                        <Link
+                            to="/"
+                            className="lg:hidden inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                            Back to Home
+                        </Link>
 
-                        <CardHeader>
-                            <div className="flex items-center gap-3 mb-4">
-                                <Avatar className="h-10 w-10">
-                                    <AvatarImage src={bookmark.sharedBy?.avatar} />
-                                    <AvatarFallback>
-                                        {bookmark.sharedBy?.name?.charAt(0)?.toUpperCase() || "U"}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="text-sm font-medium">{bookmark.sharedBy?.name || "Unknown User"}</p>
-                                    <p className="text-xs text-muted-foreground">Shared this bookmark</p>
+                        <Card className="py-0! overflow-hidden border-border/50 shadow-2xl bg-card/50 backdrop-blur-sm ring-1 ring-white/5">
+                            {/* Preview Image */}
+                            {bookmark.previewImage ? (
+                                <div className="w-full h-48 md:h-72 overflow-hidden bg-muted group">
+                                    <img
+                                        src={bookmark.previewImage}
+                                        alt={bookmark.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
                                 </div>
-                            </div>
-
-                            <CardTitle className="text-2xl">{bookmark.title}</CardTitle>
-                            {bookmark.description && (
-                                <CardDescription className="text-base mt-2">
-                                    {bookmark.description}
-                                </CardDescription>
+                            ) : (
+                                <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                                    <img
+                                        src={faviconUrl}
+                                        alt={`${bookmark.title} favicon`}
+                                        className="w-16 h-16 object-contain"
+                                    />
+                                </div>
                             )}
-                        </CardHeader>
 
-                        <CardContent className="space-y-6">
-                            {/* URL */}
-                            <a
-                                href={bookmark.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-primary hover:underline"
-                            >
-                                <ExternalLink className="h-4 w-4" />
-                                {bookmark.url}
-                            </a>
-
-                            {/* Category and Date */}
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                                <Badge variant="secondary">{bookmark.category}</Badge>
-                                <div className="flex items-center gap-1">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>{new Date(bookmark.createdAt).toLocaleDateString()}</span>
+                            <CardHeader className="pb-4">
+                                {/* Shared By */}
+                                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-border/50">
+                                    <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+                                        <AvatarImage src={bookmark.sharedBy?.avatar} />
+                                        <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                                            {bookmark.sharedBy?.name?.charAt(0)?.toUpperCase() || "U"}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <p className="text-sm font-medium">{bookmark.sharedBy?.name || "Unknown User"}</p>
+                                        <p className="text-xs text-muted-foreground">Shared this bookmark</p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Tags */}
-                            {tagsArray.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                    {tagsArray.map((tag, index) => (
-                                        <Badge key={index} variant="outline" className="flex items-center gap-1">
-                                            <Tag className="h-3 w-3" />
-                                            {tag}
+                                {/* Title */}
+                                <CardTitle className="text-xl md:text-3xl font-bold leading-tight">
+                                    {bookmark.title}
+                                </CardTitle>
+
+                                {/* Description */}
+                                {bookmark.description && (
+                                    <CardDescription className="text-base md:text-lg mt-4 text-muted-foreground leading-relaxed">
+                                        {bookmark.description}
+                                    </CardDescription>
+                                )}
+                            </CardHeader>
+
+                            <CardContent className="space-y-6 pt-0 pb-8">
+                                {/* URL */}
+                                <a
+                                    href={bookmark.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-start gap-3 text-sm text-primary hover:underline break-all p-4 rounded-xl bg-primary/5 border border-primary/10 transition-colors hover:bg-primary/10"
+                                >
+                                    <Link2 className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                                    <span className="line-clamp-2 font-medium">{bookmark.url}</span>
+                                </a>
+
+                                {/* Category and Date */}
+                                <div className="flex flex-wrap items-center justify-between gap-4 py-2 border-y border-border/40">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</span>
+                                        <Badge variant="secondary" className="font-medium px-3">
+                                            {bookmark.category}
                                         </Badge>
-                                    ))}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <Calendar className="h-3.5 w-3.5" />
+                                        <span>{new Date(bookmark.createdAt).toLocaleDateString(undefined, {
+                                            dateStyle: 'medium'
+                                        })}</span>
+                                    </div>
                                 </div>
-                            )}
 
-                            {/* Visit Button */}
-                            <a
-                                href={bookmark.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Button className="w-full" size="lg">
-                                    <ExternalLink className="mr-2 h-4 w-4" />
-                                    Visit Bookmark
-                                </Button>
-                            </a>
-                        </CardContent>
-                    </Card>
+                                {/* Tags */}
+                                {tagsArray.length > 0 && (
+                                    <div className="space-y-2">
+                                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tags</span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {tagsArray.map((tag, index) => (
+                                                <Badge
+                                                    key={index}
+                                                    variant="outline"
+                                                    className="px-3 py-1 font-normal bg-background/50"
+                                                >
+                                                    <Tag className="h-3 w-3 mr-1.5 opacity-70" />
+                                                    {tag}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Visit Button */}
+                                <a
+                                    href={bookmark.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block pt-4"
+                                >
+                                    <Button className="w-full gap-2 h-14 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-shadow" size="lg">
+                                        <ExternalLink className="h-5 w-5" />
+                                        Visit Website
+                                    </Button>
+                                </a>
+                            </CardContent>
+                        </Card>
+
+                        {/* Mobile CTA */}
+                        <div className="lg:hidden mt-12 p-6 rounded-2xl border border-border bg-gradient-to-br from-primary/5 via-background to-background text-center">
+                            <h3 className="text-lg font-bold mb-2">Save links like this?</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Join Markify to organize your digital life.
+                            </p>
+                            <Link to="/signup">
+                                <Button className="w-full">Get Started Free</Button>
+                            </Link>
+                        </div>
+
+                        {/* Powered by footer */}
+                        <p className="text-center text-xs text-muted-foreground mt-8 opacity-60 hover:opacity-100 transition-opacity">
+                            Shared via <span className="font-semibold text-primary">Markify</span> — The smart bookmark manager
+                        </p>
+                    </div>
+
+                    {/* RIGHT COLUMN: SEO CTA - Sticky */}
+                    <div className="hidden lg:block w-72 sticky top-24 shrink-0 space-y-6">
+                        <div className="p-6 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm shadow-sm flex flex-col items-center text-center group hover:border-primary/30 transition-colors">
+                            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center mb-4 shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-transform">
+                                <Share2 className="h-6 w-6 text-white" />
+                            </div>
+
+                            <h3 className="text-lg font-bold mb-2 text-foreground">Never lose a link again</h3>
+                            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                                Join thousands of users who use <strong>Markify</strong> to organize, share, and collaborate on their favorite web content.
+                            </p>
+
+                            <div className="w-full space-y-3">
+                                <Link to="/signup">
+                                    <Button className="w-full font-semibold shadow-md">
+                                        Join Markify for Free
+                                    </Button>
+                                </Link>
+                                <Link to="/">
+                                    <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-foreground">
+                                        Learn More
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Features List Mini */}
+                        <div className="p-5 rounded-xl border border-border/40 bg-muted/20">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Why Markify?</p>
+                            <ul className="text-sm space-y-2.5">
+                                <li className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                                    Smart Categorization
+                                </li>
+                                <li className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                                    Beautiful Previews
+                                </li>
+                                <li className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+                                    Share & Collaborate
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </main>
             <Footer />
