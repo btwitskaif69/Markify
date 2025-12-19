@@ -17,6 +17,24 @@ const clearBlogCache = async () => {
   }
 };
 
+// Helper: Generate Unique Slug
+const generateUniqueSlug = async (title) => {
+  let slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric chars with hyphens
+    .replace(/(^-|-$)+/g, ""); // Remove leading/trailing hyphens
+
+  let uniqueSlug = slug;
+  let count = 1;
+
+  while (await prisma.blogPost.findUnique({ where: { slug: uniqueSlug } })) {
+    uniqueSlug = `${slug}-${count}`;
+    count++;
+  }
+
+  return uniqueSlug;
+};
+
 exports.getPublishedPosts = async (req, res) => {
   try {
     const posts = await prisma.blogPost.findMany({
