@@ -13,4 +13,8 @@ router.post('/sync-local', protect, bookmarkController.syncLocalBookmarks);
 router.post('/bulk-delete', protect, bookmarkController.bulkDeleteBookmarks);
 router.post('/extract-metadata', protect, bookmarkController.extractUrlMetadata);
 
+// Share routes
+router.post('/:bookmarkId/share', protect, bookmarkController.toggleShareBookmark);
+router.get('/shared/:shareId', bookmarkController.getSharedBookmark); // Public - no auth
+
 module.exports = router;

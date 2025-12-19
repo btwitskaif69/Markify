@@ -16,6 +16,7 @@ import { usePreview } from "../../hooks/usePreview";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
 import CollectionFormDialog from "@/components/Collections/CollectionFormDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
+import ShareDialog from "./ShareDialog";
 import Bookmarks from "./Bookmarks";
 import CmdK from "./CmdK";
 import WelcomeDialog from "./WelcomeDialog";
@@ -84,6 +85,11 @@ export default function Dashboard() {
   const [editingBookmark, setEditingBookmark] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
 
+  // Share dialog state
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareItem, setShareItem] = useState(null);
+  const [shareType, setShareType] = useState("bookmark"); // "bookmark" or "collection"
+
   const handleAddClick = () => {
     setEditingBookmark(null);
     setFormData({ ...INITIAL_FORM_STATE });
@@ -117,6 +123,32 @@ export default function Dashboard() {
     debouncedFetch(newUrl, setFormData);
   };
 
+  // Share handlers
+  const handleShareBookmark = (bookmark) => {
+    setShareItem(bookmark);
+    setShareType("bookmark");
+    setIsShareDialogOpen(true);
+  };
+
+  const handleShareCollection = (collection) => {
+    setShareItem(collection);
+    setShareType("collection");
+    setIsShareDialogOpen(true);
+  };
+
+  const handleShareToggle = (updatedItem) => {
+    if (shareType === "bookmark") {
+      setAllBookmarks((prev) =>
+        prev.map((b) => (b.id === updatedItem.id ? updatedItem : b))
+      );
+    } else {
+      setCollections((prev) =>
+        prev.map((c) => (c.id === updatedItem.id ? updatedItem : c))
+      );
+    }
+    setShareItem(updatedItem);
+  };
+
   if (isAuthLoading) {
     return <div className="flex justify-center items-center h-screen">Authenticating...</div>;
   }
@@ -128,6 +160,7 @@ export default function Dashboard() {
         onCreateCollection={handleCreateCollectionClick}
         onRenameCollection={handleRenameCollectionClick}
         onDeleteCollection={openDeleteConfirm}
+        onShareCollection={handleShareCollection}
       />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
@@ -210,10 +243,20 @@ export default function Dashboard() {
           onBulkDelete={handleBulkDelete}
           onToggleFavorite={handleToggleFavorite}
           onMove={handleMoveBookmark}
+          onShare={handleShareBookmark}
         />
 
         <CmdK bookmarks={allBookmarks} />
       </SidebarInset>
+
+      <ShareDialog
+        open={isShareDialogOpen}
+        setOpen={setIsShareDialogOpen}
+        item={shareItem}
+        type={shareType}
+        authFetch={authFetch}
+        onShareToggle={handleShareToggle}
+      />
 
       <WelcomeDialog
         open={showWelcome}

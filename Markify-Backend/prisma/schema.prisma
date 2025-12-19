@@ -58,6 +58,7 @@ model Collection {
   user      User       @relation(fields: [userId], references: [id])
   userId    String
   bookmarks Bookmark[]
+  shareId   String?    @unique  // Unique share token for public access
 
   @@unique([userId, name]) // A user cannot have two collections with the same name
 }
@@ -74,6 +75,7 @@ model Bookmark {
   isFavorite    Boolean     @default(false)
   previewImage  String?
   favicon       String?
+  shareId       String?     @unique  // Unique share token for public access
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 

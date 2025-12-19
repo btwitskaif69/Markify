@@ -15,7 +15,7 @@ import {
 import ImportExport from "./ImportExport";
 import logo from "@/assets/logo.svg"
 
-export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, ...props }) {
+export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, onShareCollection, ...props }) {
   const { user, logout } = useAuth();
 
   return (
@@ -44,6 +44,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
           onCreate={onCreateCollection}
           onRename={onRenameCollection}
           onDelete={onDeleteCollection}
+          onShare={onShareCollection}
         />
         <ImportExport />
       </SidebarContent>

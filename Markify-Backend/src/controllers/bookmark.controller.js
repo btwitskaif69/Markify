@@ -535,3 +535,90 @@ exports.extractUrlMetadata = async (req, res) => {
     res.status(500).json({ message: "Failed to extract metadata." });
   }
 };
+
+/**
+ * Toggles sharing for a bookmark.
+ * If shareId exists, removes it (makes private).
+ * If shareId is null, generates a new one (makes public).
+ */
+exports.toggleShareBookmark = async (req, res) => {
+  try {
+    const { bookmarkId } = req.params;
+
+    // Get the bookmark
+    const bookmark = await prisma.bookmark.findUnique({
+      where: { id: bookmarkId },
+    });
+
+    if (!bookmark) {
+      return res.status(404).json({ message: "Bookmark not found." });
+    }
+
+    // Check if user owns this bookmark
+    if (bookmark.userId !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized." });
+    }
+
+    // Toggle shareId
+    const newShareId = bookmark.shareId ? null : require('crypto').randomUUID();
+
+    const updatedBookmark = await prisma.bookmark.update({
+      where: { id: bookmarkId },
+      data: { shareId: newShareId },
+    });
+
+    res.status(200).json({
+      message: newShareId ? "Sharing enabled." : "Sharing disabled.",
+      bookmark: updatedBookmark,
+      shareId: newShareId,
+    });
+  } catch (error) {
+    console.error("Toggle share error:", error);
+    res.status(500).json({ message: "Failed to toggle sharing." });
+  }
+};
+
+/**
+ * Gets a publicly shared bookmark by its shareId.
+ * No authentication required.
+ */
+exports.getSharedBookmark = async (req, res) => {
+  try {
+    const { shareId } = req.params;
+
+    const bookmark = await prisma.bookmark.findUnique({
+      where: { shareId: shareId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          }
+        }
+      }
+    });
+
+    if (!bookmark) {
+      return res.status(404).json({ message: "Shared bookmark not found." });
+    }
+
+    // Return bookmark data (exclude sensitive user info)
+    res.status(200).json({
+      id: bookmark.id,
+      title: bookmark.title,
+      url: bookmark.url,
+      description: bookmark.description,
+      category: bookmark.category,
+      tags: bookmark.tags,
+      previewImage: bookmark.previewImage,
+      createdAt: bookmark.createdAt,
+      sharedBy: {
+        name: bookmark.user.name,
+        avatar: bookmark.user.avatar,
+      }
+    });
+  } catch (error) {
+    console.error("Get shared bookmark error:", error);
+    res.status(500).json({ message: "Failed to get shared bookmark." });
+  }
+};

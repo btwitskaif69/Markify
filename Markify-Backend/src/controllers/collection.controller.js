@@ -47,7 +47,7 @@ exports.deleteCollection = async (req, res) => {
     if (!collection || collection.userId !== req.user.id) {
       return res.status(404).json({ message: "Collection not found or you don't have permission." });
     }
-    
+
     // This transaction first unlinks all bookmarks from the collection, then deletes it.
     await prisma.$transaction([
       prisma.bookmark.updateMany({
@@ -89,5 +89,100 @@ exports.renameCollection = async (req, res) => {
     }
     console.error("Error renaming collection:", error);
     res.status(500).json({ message: 'Failed to rename collection.' });
+  }
+};
+
+/**
+ * Toggles sharing for a collection.
+ * If shareId exists, removes it (makes private).
+ * If shareId is null, generates a new one (makes public).
+ */
+exports.toggleShareCollection = async (req, res) => {
+  try {
+    const { collectionId } = req.params;
+
+    // Get the collection
+    const collection = await prisma.collection.findUnique({
+      where: { id: collectionId },
+    });
+
+    if (!collection) {
+      return res.status(404).json({ message: "Collection not found." });
+    }
+
+    // Check if user owns this collection
+    if (collection.userId !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized." });
+    }
+
+    // Toggle shareId
+    const newShareId = collection.shareId ? null : require('crypto').randomUUID();
+
+    const updatedCollection = await prisma.collection.update({
+      where: { id: collectionId },
+      data: { shareId: newShareId },
+    });
+
+    res.status(200).json({
+      message: newShareId ? "Sharing enabled." : "Sharing disabled.",
+      collection: updatedCollection,
+      shareId: newShareId,
+    });
+  } catch (error) {
+    console.error("Toggle share error:", error);
+    res.status(500).json({ message: "Failed to toggle sharing." });
+  }
+};
+
+/**
+ * Gets a publicly shared collection with its bookmarks by shareId.
+ * No authentication required.
+ */
+exports.getSharedCollection = async (req, res) => {
+  try {
+    const { shareId } = req.params;
+
+    const collection = await prisma.collection.findUnique({
+      where: { shareId: shareId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          }
+        },
+        bookmarks: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            title: true,
+            url: true,
+            description: true,
+            category: true,
+            tags: true,
+            previewImage: true,
+            createdAt: true,
+          }
+        }
+      }
+    });
+
+    if (!collection) {
+      return res.status(404).json({ message: "Shared collection not found." });
+    }
+
+    // Return collection data with bookmarks
+    res.status(200).json({
+      id: collection.id,
+      name: collection.name,
+      bookmarks: collection.bookmarks,
+      sharedBy: {
+        name: collection.user.name,
+        avatar: collection.user.avatar,
+      }
+    });
+  } catch (error) {
+    console.error("Get shared collection error:", error);
+    res.status(500).json({ message: "Failed to get shared collection." });
   }
 };

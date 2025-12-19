@@ -18,7 +18,8 @@ export default function Bookmarks({
   onDelete,
   onToggleFavorite,
   onMove,
-  onBulkDelete
+  onBulkDelete,
+  onShare
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -184,6 +185,7 @@ export default function Bookmarks({
                 onToggleFavorite={onToggleFavorite}
                 collections={collections}
                 onMove={onMove}
+                onShare={onShare}
                 // Selection mode props
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.has(bookmark.id)}

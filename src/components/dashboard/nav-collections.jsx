@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders } from "lucide-react";
+import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders, Share2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-export function NavCollections({ collections = [], onCreate, onRename, onDelete }) {
+export function NavCollections({ collections = [], onCreate, onRename, onDelete, onShare }) {
   const { userId, collectionId: activeCollectionId } = useParams();
 
   return (
@@ -78,6 +78,10 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete 
                   <DropdownMenuItem onSelect={() => onRename(collection)} className="cursor-pointer">
                     <Edit className="mr-2 h-4 w-4" />
                     <span>Rename</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => onShare?.(collection)} className="cursor-pointer">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    <span>Share</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => onDelete(collection.id)} className="cursor-pointer text-red-500 focus:text-red-500">

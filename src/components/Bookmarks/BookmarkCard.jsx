@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical, FolderSymlink, CheckSquare } from "lucide-react"
+import { ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical, FolderSymlink, CheckSquare, Share2 } from "lucide-react"
 import placeholder from "@/assets/placeholder.svg"
 
 import {
@@ -27,6 +27,7 @@ export default function BookmarkCard({
   onEdit,
   onDelete,
   onToggleFavorite,
+  onShare,
   // Selection mode props
   isSelectionMode = false,
   isSelected = false,
@@ -218,6 +219,12 @@ export default function BookmarkCard({
                   className="cursor-pointer">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Visit
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onShare?.(bookmark); }}
+                  className="cursor-pointer">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
