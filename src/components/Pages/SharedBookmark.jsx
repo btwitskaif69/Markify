@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink, Calendar, Tag, ArrowLeft, Share2 } from "lucide-react";
-import Navbar from "@/components/home/Navbar";
-import Footer from "@/components/home/Footer";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
