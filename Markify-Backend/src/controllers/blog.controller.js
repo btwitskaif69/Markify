@@ -3,9 +3,8 @@ const prisma = require("../db/prismaClient");
 
 // ... (existing imports and helpers)
 
-// Helper to clear blog cache
 const clearBlogCache = async () => {
-  if (!process.env.UPSTASH_REDIS_REST_URL) return;
+  if (!process.env.UPSTASH_REDIS_REST_URL || !redis) return;
   try {
     // We need to clear the list of posts
     // Since our cache key is dynamic (cache:/api/blog), we can try to delete that specific key
@@ -151,7 +150,7 @@ exports.updatePost = async (req, res) => {
     // Invalidate cache
     await clearBlogCache();
     // Also invalidate individual post cache if we cached by slug (optional, if we add that later)
-    if (process.env.UPSTASH_REDIS_REST_URL) {
+    if (process.env.UPSTASH_REDIS_REST_URL && redis) {
       await redis.del(`cache:/api/blog/${existing.slug}`);
       if (slug !== existing.slug) {
         await redis.del(`cache:/api/blog/${slug}`);

@@ -107,7 +107,7 @@ export default function AdminPanel() {
   const fetchPosts = async () => {
     setIsPostsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/blog`);
+      const res = await authFetch(`${API_URL}/blog/me/list`);
       if (!res.ok) throw new Error("Failed to load blog posts.");
       const data = await res.json();
       setPosts(data);
@@ -315,7 +315,11 @@ export default function AdminPanel() {
               posts.map((post) => (
                 <TableRow key={post.id}>
                   <TableCell className="font-medium">{post.title}</TableCell>
-                  <TableCell>Published</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {post.published ? "Published" : "Draft"}
+                    </span>
+                  </TableCell>
                   <TableCell>{new Date(post.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -408,34 +412,34 @@ export default function AdminPanel() {
       <SidebarProvider>
         <AppSidebar collections={[]} onCreateCollection={() => { }} onRenameCollection={() => { }} onDeleteCollection={() => { }} />
         <SidebarInset className="flex flex-col min-h-screen bg-background">
-        <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4 border-b border-border bg-card/60 backdrop-blur">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink asChild><Link to={user ? `/dashboard/${user.id}` : "/login"}>Dashboard</Link></BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem><BreadcrumbLink>Admin</BreadcrumbLink></BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span className="hidden sm:inline">Signed in as</span>
-            <span className="font-medium text-foreground">{user?.email}</span>
-          </div>
-        </header>
+          <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4 border-b border-border bg-card/60 backdrop-blur">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink asChild><Link to={user ? `/dashboard/${user.id}` : "/login"}>Dashboard</Link></BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem><BreadcrumbLink>Admin</BreadcrumbLink></BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span className="hidden sm:inline">Signed in as</span>
+              <span className="font-medium text-foreground">{user?.email}</span>
+            </div>
+          </header>
 
-        <main className="flex-1 p-6">
-          <section className="max-w-6xl mx-auto space-y-6">
-            {activeView === 'overview' && renderOverview()}
-            {activeView === 'blog' && renderBlogManager()}
-            {activeView === 'reviews' && renderReviewManager()}
-            {activeView === 'bookmarks' && <BookmarkManager onClose={() => setActiveView("overview")} />}
-          </section>
-        </main>
+          <main className="flex-1 p-6">
+            <section className="max-w-6xl mx-auto space-y-6">
+              {activeView === 'overview' && renderOverview()}
+              {activeView === 'blog' && renderBlogManager()}
+              {activeView === 'reviews' && renderReviewManager()}
+              {activeView === 'bookmarks' && <BookmarkManager onClose={() => setActiveView("overview")} />}
+            </section>
+          </main>
         </SidebarInset>
       </SidebarProvider>
     </>

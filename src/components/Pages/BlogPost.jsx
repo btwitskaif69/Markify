@@ -21,30 +21,35 @@ const renderContent = (content) => {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     // Headers
-    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold mt-4 mb-2">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold mt-6 mb-3 border-b pb-1">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-extrabold mt-8 mb-4">$1</h1>')
     // Bold and Italic
     .replace(/\*\*\*(.*?)\*\*\*/gim, "<strong><em>$1</em></strong>")
     .replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/gim, "<em>$1</em>")
+    .replace(/__(.*?)__/gim, '<strong>$1</strong>')
+    .replace(/_(.*?)_/gim, '<em>$1</em>')
+    .replace(/~~(.*?)~~/gim, '<del>$1</del>')
     // Links
     .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$1</a>')
     // Code blocks
-    .replace(/```([\s\S]*?)```/gim, "<pre><code>$1</code></pre>")
+    .replace(/```([\s\S]*?)```/gim, '<pre class="bg-muted p-4 rounded-md my-4 overflow-x-auto"><code>$1</code></pre>')
     // Inline code
-    .replace(/`([^`]+)`/gim, "<code>$1</code>")
+    .replace(/`([^`]+)`/gim, '<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">$1</code>')
     // Blockquotes
-    .replace(/^> (.*$)/gim, "<blockquote>$1</blockquote>")
+    .replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 py-1 my-4 italic text-muted-foreground">$1</blockquote>')
     // Unordered lists
-    .replace(/^\* (.*$)/gim, "<li>$1</li>")
-    .replace(/^- (.*$)/gim, "<li>$1</li>")
+    .replace(/^\* (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
+    .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc">$1</li>')
+    // Ordered lists (handle basic digits)
+    .replace(/^\s*\d+\.\s+(.*$)/gim, '<li class="ml-4 list-decimal">$1</li>')
     // Horizontal rule
-    .replace(/^---$/gim, "<hr />")
+    .replace(/^---$/gim, "<hr class='my-6 border-border' />")
     // Paragraphs (double newlines)
-    .replace(/\n\n/gim, "</p><p>")
-    // Single newlines to <br>
-    .replace(/\n/gim, "<br />");
+    .replace(/\n\n/gim, '<br/><br/>')
+    // Single newlines
+    .replace(/\n/gim, '<br/>');
 
   // Wrap in paragraph
   html = `<p>${html}</p>`;

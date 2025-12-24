@@ -48,7 +48,7 @@ const SimpleMarkdownRenderer = ({ content }) => {
     return { __html: html };
   };
 
-  return <div className="prose dark:prose-invert max-w-none p-4" dangerouslySetInnerHTML={renderContent(content)} />;
+  return <div className="prose dark:prose-invert max-w-none p-8 break-words break-all" dangerouslySetInnerHTML={renderContent(content)} />;
 };
 
 const BlogEditor = () => {
@@ -88,6 +88,7 @@ const BlogEditor = () => {
 
       let count = 0;
       const newContent = content.replace(regex, (match) => {
+        if (count >= 3) return match;
         count++;
         return `[${match}](${linkUrl})`;
       });
@@ -137,7 +138,7 @@ const BlogEditor = () => {
     if (isEditMode) loadPost();
   }, [isEditMode, slug, user, navigate]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, isDraft = false) => {
     e.preventDefault();
     if (!title.trim()) return toast.error("Title is required.");
 
@@ -148,6 +149,7 @@ const BlogEditor = () => {
         content: content.trim(),
         excerpt: excerpt.trim() || undefined,
         coverImage: coverImage ? coverImage.trim() : undefined,
+        published: !isDraft,
       };
 
       const method = isEditMode ? "PATCH" : "POST";
@@ -156,7 +158,7 @@ const BlogEditor = () => {
       const res = await authFetch(url, { method, body: JSON.stringify(payload) });
       if (!res.ok) throw new Error("Failed to save post.");
 
-      toast.success(isEditMode ? "Post updated." : "Post published!");
+      toast.success(isDraft ? "Draft saved successfully." : (isEditMode ? "Post updated." : "Post published!"));
       navigate(`/dashboard/${user.id}/admin`);
     } catch (err) {
       toast.error(err.message || "Failed to save post.");
@@ -249,7 +251,7 @@ const BlogEditor = () => {
         description="Create or update a Markify blog post."
         noindex
       />
-      <div className="container mx-auto max-w-5xl">
+      <div className="container mx-auto max-w-[1600px]">
         <div className="mb-6 flex items-center justify-between">
           <Link to={`/dashboard/${user?.id}/admin`} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
             <ChevronLeft className="h-4 w-4" /> Back to Dashboard
@@ -257,7 +259,7 @@ const BlogEditor = () => {
           <h1 className="text-2xl font-bold tracking-tight">{isEditMode ? "Edit Post" : "New Post"}</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-6">
           {/* Metadata Section */}
           <div className="grid gap-6 md:grid-cols-3">
             <div className="md:col-span-2 space-y-4">
@@ -293,9 +295,9 @@ const BlogEditor = () => {
           <Separator />
 
           {/* Editor Section */}
-          <div className="border rounded-lg overflow-hidden bg-card shadow-sm h-[600px] flex flex-col">
+          <div className="border rounded-lg overflow-hidden bg-card shadow-sm min-h-[750px] flex flex-col">
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-1 p-2 border-b bg-muted/30">
+            <div className="flex flex-wrap items-center gap-1 p-3 border-b bg-muted/30">
               <Button type="button" variant="ghost" size="icon" onClick={() => applyPrefix("# ")}><Heading1 className="h-4 w-4" /></Button>
               <Button type="button" variant="ghost" size="icon" onClick={() => applyPrefix("## ")}><Heading2 className="h-4 w-4" /></Button>
               <Separator orientation="vertical" className="h-6 mx-1" />
@@ -366,7 +368,7 @@ const BlogEditor = () => {
                   ref={contentRef}
                   value={content}
                   onChange={e => setContent(e.target.value)}
-                  className="w-full h-full resize-none border-none focus-visible:ring-0 p-4 font-mono text-sm leading-relaxed rounded-none"
+                  className="w-full h-full resize-none border-none focus-visible:ring-0 p-8 font-mono text-base leading-loose rounded-none"
                   placeholder="Write in markdown..."
                 />
               </ResizablePanel>
@@ -374,9 +376,9 @@ const BlogEditor = () => {
               <ResizablePanel defaultSize={50} minSize={30}>
                 <div className="h-full bg-muted/10 border-l flex flex-col">
                   <div className="text-[10px] uppercase font-bold text-muted-foreground px-4 py-2 bg-muted/30 border-b">Preview</div>
-                  <ScrollArea className="flex-1">
+                  <div className="flex-1 overflow-y-auto custom-scrollbar">
                     <SimpleMarkdownRenderer content={content} />
-                  </ScrollArea>
+                  </div>
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -384,9 +386,12 @@ const BlogEditor = () => {
 
           <div className="flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => navigate(`/dashboard/${user?.id}/admin`)}>Cancel</Button>
+            <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting}>
+              Save Draft
+            </Button>
             <Button type="submit" className="min-w-[120px]" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Rocket className="h-4 w-4 mr-2" />}
-              {isEditMode ? "Update Post" : "Publish Post"}
+              {isEditMode ? "Update & Publish" : "Publish Post"}
             </Button>
           </div>
         </form>
