@@ -61,18 +61,20 @@ const Hero = () => {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
             <Link to="/signup">
-              <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto cursor-pointer text-black font-semibold">
+              <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto cursor-pointer text-black dark:text-white font-semibold">
                 Get Started
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="lg"
-              aria-label="Learn more about Markify bookmark manager"
-              className="text-lg rounded-full border-foreground/20 hover:bg-foreground/10 w-full sm:w-auto"
-            >
-              Learn More
-            </Button>
+            <Link to="/about">
+              <Button
+                variant="outline"
+                size="lg"
+                aria-label="Learn more about Markify bookmark manager"
+                className="text-lg rounded-full border-foreground/20 hover:bg-foreground/10 w-full sm:w-auto"
+              >
+                About Markify
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
