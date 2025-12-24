@@ -20,7 +20,6 @@ const DashboardPreview = () => {
             fetchpriority="high"
             decoding="async"
             loading="eager"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1160px"
           />
         </div>
       </div>
