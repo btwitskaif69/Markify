@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Heading1, Heading2, Heading3, List, ListOrdered, Code, Quote,
   Strikethrough, Bold, Italic, Underline, Link2, Sparkles, Loader2,
@@ -15,6 +15,7 @@ import { API_BASE_URL } from "@/lib/apiConfig";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import SEO from "@/components/SEO/SEO";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
@@ -243,6 +244,11 @@ const BlogEditor = () => {
 
   return (
     <main className="bg-background min-h-screen py-10 px-4">
+      <SEO
+        title={isEditMode ? "Edit blog post" : "New blog post"}
+        description="Create or update a Markify blog post."
+        noindex
+      />
       <div className="container mx-auto max-w-5xl">
         <div className="mb-6 flex items-center justify-between">
           <Link to={`/dashboard/${user?.id}/admin`} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">

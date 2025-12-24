@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import SEO from "@/components/SEO/SEO";
 
 const API_URL = `${API_BASE_URL}/users/forgot-password`;
 
@@ -41,6 +42,11 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <SEO
+        title="Forgot password"
+        description="Reset your Markify password."
+        noindex
+      />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Forgot Your Password?</CardTitle>

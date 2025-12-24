@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -10,8 +10,6 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { useAuth } from "@/context/AuthContext";
-import { Loader2 } from "lucide-react";
 import { Spotlight } from "../ui/spotlight-new";
 import { SkeletonCard } from "../ui/SkeletonCard";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
@@ -65,17 +63,28 @@ const TiltCard = ({ children, className }) => {
   );
 };
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } },
+};
+
 const Blog = () => {
-  const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-
-
     const fetchPosts = async () => {
-      console.log("Fetching blog posts from:", `${API_URL}/blog`);
       try {
         const res = await secureFetch(`${API_URL}/blog`);
         if (!res.ok) throw new Error("Failed to load blog posts.");
@@ -91,21 +100,6 @@ const Blog = () => {
 
     fetchPosts();
   }, []);
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } },
-  };
 
   return (
     <>
@@ -164,11 +158,15 @@ const Blog = () => {
               <Link to="/about" className="text-primary hover:underline">
                 Learn More About Markify
               </Link>
-              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground" aria-hidden="true">|</span>
+              <Link to="/solutions" className="text-primary hover:underline">
+                Browse Solutions
+              </Link>
+              <span className="text-muted-foreground" aria-hidden="true">|</span>
               <Link to="/pricing" className="text-primary hover:underline">
                 Pricing Plans
               </Link>
-              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground" aria-hidden="true">|</span>
               <Link to="/contact" className="text-primary hover:underline">
                 Contact Us
               </Link>

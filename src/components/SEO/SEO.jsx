@@ -1,58 +1,111 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import PropTypes from 'prop-types';
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
+import {
+  SITE_CONFIG,
+  getCanonicalUrl,
+  getFullTitle,
+  toAbsoluteUrl,
+} from "@/lib/seo";
 
 const SEO = ({
-    title,
-    description,
-    canonical,
-    type = 'website',
-    name = 'Markify',
-    image = 'https://assets.markify.tech/assets/markify%20og%20image.png',
-    structuredData
+  title,
+  description,
+  canonical,
+  path,
+  type = "website",
+  name = SITE_CONFIG.name,
+  image = SITE_CONFIG.defaultImage,
+  imageAlt,
+  structuredData,
+  noindex = false,
+  robots,
+  keywords,
+  twitterHandle = SITE_CONFIG.twitterHandle,
+  publishedTime,
+  modifiedTime,
+  author,
+  themeColor = SITE_CONFIG.themeColor,
 }) => {
-    const siteUrl = 'https://www.markify.tech';
-    const fullTitle = `${title} | ${name}`;
+  const location = useLocation();
+  const canonicalUrl =
+    canonical || getCanonicalUrl(path || location.pathname);
+  const metaDescription = description || SITE_CONFIG.defaultDescription;
+  const fullTitle = getFullTitle(title, name);
+  const resolvedImage = toAbsoluteUrl(image);
+  const resolvedImageAlt = imageAlt || title || SITE_CONFIG.name;
+  const robotsValue = robots || (noindex ? "noindex, nofollow" : "index, follow");
 
-    return (
-        <Helmet>
-            {/* Standard metadata */}
-            <title>{fullTitle}</title>
-            <meta name="description" content={description} />
-            <link rel="canonical" href={canonical || siteUrl} />
+  return (
+    <Helmet>
+      {/* Standard metadata */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={metaDescription} />
+      <meta name="robots" content={robotsValue} />
+      <meta name="googlebot" content={robotsValue} />
+      {keywords?.length ? <meta name="keywords" content={keywords.join(", ")} /> : null}
+      <meta name="theme-color" content={themeColor} />
+      <link rel="canonical" href={canonicalUrl} />
 
-            {/* Open Graph / Facebook */}
-            <meta property="og:type" content={type} />
-            <meta property="og:url" content={canonical || siteUrl} />
-            <meta property="og:title" content={fullTitle} />
-            <meta property="og:description" content={description} />
-            <meta property="og:image" content={image} />
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={metaDescription} />
+      <meta property="og:image" content={resolvedImage} />
+      <meta property="og:image:alt" content={resolvedImageAlt} />
+      <meta property="og:site_name" content={SITE_CONFIG.name} />
+      <meta property="og:locale" content={SITE_CONFIG.locale} />
 
-            {/* Twitter */}
-            <meta property="twitter:card" content="summary_large_image" />
-            <meta property="twitter:url" content={canonical || siteUrl} />
-            <meta property="twitter:title" content={fullTitle} />
-            <meta property="twitter:description" content={description} />
-            <meta property="twitter:image" content={image} />
+      {/* Twitter */}
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content={canonicalUrl} />
+      <meta property="twitter:title" content={fullTitle} />
+      <meta property="twitter:description" content={metaDescription} />
+      <meta property="twitter:image" content={resolvedImage} />
+      <meta property="twitter:image:alt" content={resolvedImageAlt} />
+      {twitterHandle ? <meta name="twitter:site" content={twitterHandle} /> : null}
+      {twitterHandle ? <meta name="twitter:creator" content={twitterHandle} /> : null}
 
-            {/* Structured Data */}
-            {structuredData && (
-                <script type="application/ld+json">
-                    {JSON.stringify(structuredData)}
-                </script>
-            )}
-        </Helmet>
-    );
+      {/* Article metadata */}
+      {type === "article" && publishedTime ? (
+        <meta property="article:published_time" content={publishedTime} />
+      ) : null}
+      {type === "article" && modifiedTime ? (
+        <meta property="article:modified_time" content={modifiedTime} />
+      ) : null}
+      {type === "article" && author ? (
+        <meta property="article:author" content={author} />
+      ) : null}
+
+      {/* Structured Data */}
+      {structuredData ? (
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      ) : null}
+    </Helmet>
+  );
 };
 
 SEO.propTypes = {
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    canonical: PropTypes.string,
-    type: PropTypes.string,
-    name: PropTypes.string,
-    image: PropTypes.string,
-    structuredData: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  canonical: PropTypes.string,
+  path: PropTypes.string,
+  type: PropTypes.string,
+  name: PropTypes.string,
+  image: PropTypes.string,
+  imageAlt: PropTypes.string,
+  structuredData: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  noindex: PropTypes.bool,
+  robots: PropTypes.string,
+  keywords: PropTypes.arrayOf(PropTypes.string),
+  twitterHandle: PropTypes.string,
+  publishedTime: PropTypes.string,
+  modifiedTime: PropTypes.string,
+  author: PropTypes.string,
+  themeColor: PropTypes.string,
 };
 
 export default SEO;

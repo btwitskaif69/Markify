@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import SEO from "@/components/SEO/SEO";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const API_URL = API_BASE_URL;
 
@@ -17,6 +19,7 @@ export default function SharedCollection() {
     const [collection, setCollection] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const canonical = getCanonicalUrl(`/shared/collection/${shareId}`);
 
     useEffect(() => {
         const fetchCollection = async () => {
@@ -37,6 +40,24 @@ export default function SharedCollection() {
         fetchCollection();
     }, [shareId]);
 
+    const structuredData = useMemo(() => {
+        if (!collection) return null;
+        const breadcrumb = buildBreadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Shared Collection", path: `/shared/collection/${shareId}` },
+        ]);
+        const webPage = {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: collection.name,
+            description:
+                collection.description ||
+                `Shared collection from ${collection.sharedBy?.name || "a Markify user"}.`,
+            url: canonical,
+        };
+        return [webPage, breadcrumb].filter(Boolean);
+    }, [collection, canonical, shareId, buildBreadcrumbSchema]);
+
     if (isLoading) {
         return <LoadingSpinner />;
     }
@@ -44,6 +65,12 @@ export default function SharedCollection() {
     if (error || !collection) {
         return (
             <>
+                <SEO
+                    title="Collection not found"
+                    description="This shared collection is no longer available."
+                    canonical={canonical}
+                    noindex
+                />
                 <Navbar />
                 <div className="min-h-screen flex flex-col items-center justify-center p-4">
                     <Card className="max-w-md w-full text-center p-8">
@@ -68,6 +95,16 @@ export default function SharedCollection() {
     return (
         <>
             <Navbar />
+            <SEO
+                title={collection.name}
+                description={
+                    collection.description ||
+                    `Shared collection from ${collection.sharedBy?.name || "a Markify user"}.`
+                }
+                canonical={canonical}
+                structuredData={structuredData}
+                noindex
+            />
             <main className="min-h-screen py-16 md:py-24 px-4 md:px-8 bg-background">
                 <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row items-start justify-center gap-8 relative">
                     {/* LEFT COLUMN: Back Link */}
@@ -158,7 +195,7 @@ export default function SharedCollection() {
 
                         {/* Powered by footer */}
                         <p className="text-center text-xs text-muted-foreground mt-12 mb-8 opacity-60 hover:opacity-100 transition-opacity">
-                            Shared via <span className="font-semibold text-primary">Markify</span> — The smart bookmark manager
+                            Shared via <span className="font-semibold text-primary">Markify</span> - The smart bookmark manager
                         </p>
                     </div>
 

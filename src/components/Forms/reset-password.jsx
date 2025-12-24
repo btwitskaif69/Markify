@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import SEO from "@/components/SEO/SEO";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -49,6 +50,11 @@ export default function ResetPassword() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <SEO
+        title="Reset password"
+        description="Set a new Markify password."
+        noindex
+      />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Reset Your Password</CardTitle>

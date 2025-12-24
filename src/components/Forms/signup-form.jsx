@@ -16,6 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
 import { secureFetch } from "@/lib/secureApi";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import SEO from "@/components/SEO/SEO";
 
 // API URL to initiate signup endpoint
 const API_URL = `${API_BASE_URL}/users/initiate-signup`;
@@ -65,6 +66,11 @@ export function SignupForm({ className, ...props }) {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <SEO
+        title="Sign up"
+        description="Create your Markify account."
+        noindex
+      />
       <Card className={cn("w-full max-w-md", className)} {...props}>
         <CardHeader>
           <CardTitle className="text-2xl">Create an account</CardTitle>
@@ -109,7 +115,7 @@ export function SignupForm({ className, ...props }) {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="||||||||"
                     value={formData.password}
                     onChange={handleChange}
                     disabled={isLoading}
@@ -159,3 +165,4 @@ export function SignupForm({ className, ...props }) {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -74,7 +74,7 @@ const BlogPost = () => {
       setScrollProgress(Math.min(progress, 1));
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -110,19 +110,29 @@ const BlogPost = () => {
     fetchData();
   }, [slug]);
 
+  const renderedContent = useMemo(
+    () => renderContent(post?.content),
+    [post?.content]
+  );
+
   // Construct structured data if post exists
-  const articleSchema = post ? {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": post.title,
-    "image": post.coverImage ? [post.coverImage] : [],
-    "datePublished": post.createdAt,
-    "dateModified": post.updatedAt || post.createdAt,
-    "author": [{
-      "@type": "Person",
-      "name": post.author?.name || "Markify Team"
-    }]
-  } : null;
+  const articleSchema = useMemo(() => {
+    if (!post) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      image: post.coverImage ? [post.coverImage] : [],
+      datePublished: post.createdAt,
+      dateModified: post.updatedAt || post.createdAt,
+      author: [
+        {
+          "@type": "Person",
+          name: post.author?.name || "Markify Team",
+        },
+      ],
+    };
+  }, [post]);
 
   return (
     <>
@@ -135,6 +145,10 @@ const BlogPost = () => {
           canonical={`https://www.markify.tech/blog/${post.slug}`}
           type="article"
           image={post.coverImage}
+          imageAlt={post.title}
+          publishedTime={post.createdAt}
+          modifiedTime={post.updatedAt || post.createdAt}
+          author={post.author?.name || "Markify Team"}
           structuredData={articleSchema}
         />
       )}
@@ -229,7 +243,7 @@ const BlogPost = () => {
                 <div className="min-w-0">
                   <div
                     className="prose prose-lg dark:prose-invert max-w-none"
-                    dangerouslySetInnerHTML={renderContent(post.content)}
+                    dangerouslySetInnerHTML={renderedContent}
                   />
 
                   <hr className="my-12 border-border" />
@@ -253,15 +267,19 @@ const BlogPost = () => {
                         <Link to="/about" className="text-primary hover:underline">
                           About Markify
                         </Link>
-                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground" aria-hidden="true">|</span>
+                        <Link to="/solutions" className="text-primary hover:underline">
+                          Browse Solutions
+                        </Link>
+                        <span className="text-muted-foreground" aria-hidden="true">|</span>
                         <Link to="/pricing" className="text-primary hover:underline">
                           View Pricing
                         </Link>
-                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground" aria-hidden="true">|</span>
                         <Link to="/signup" className="text-primary hover:underline">
                           Sign Up Free
                         </Link>
-                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground" aria-hidden="true">|</span>
                         <Link to="/contact" className="text-primary hover:underline">
                           Contact Us
                         </Link>
@@ -366,3 +384,4 @@ const BlogPost = () => {
 };
 
 export default BlogPost;
+

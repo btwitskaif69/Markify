@@ -37,6 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import SEO from "@/components/SEO/SEO";
 import {
   SidebarInset,
   SidebarProvider,
@@ -398,9 +399,15 @@ export default function AdminPanel() {
   );
 
   return (
-    <SidebarProvider>
-      <AppSidebar collections={[]} onCreateCollection={() => { }} onRenameCollection={() => { }} onDeleteCollection={() => { }} />
-      <SidebarInset className="flex flex-col min-h-screen bg-background">
+    <>
+      <SEO
+        title="Admin panel"
+        description="Review and manage Markify content."
+        noindex
+      />
+      <SidebarProvider>
+        <AppSidebar collections={[]} onCreateCollection={() => { }} onRenameCollection={() => { }} onDeleteCollection={() => { }} />
+        <SidebarInset className="flex flex-col min-h-screen bg-background">
         <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4 border-b border-border bg-card/60 backdrop-blur">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
@@ -429,7 +436,8 @@ export default function AdminPanel() {
             {activeView === 'bookmarks' && <BookmarkManager onClose={() => setActiveView("overview")} />}
           </section>
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }

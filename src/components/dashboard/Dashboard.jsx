@@ -20,6 +20,7 @@ import ShareDialog from "./ShareDialog";
 import Bookmarks from "./Bookmarks";
 import CmdK from "./CmdK";
 import WelcomeDialog from "./WelcomeDialog";
+import SEO from "@/components/SEO/SEO";
 
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
@@ -154,7 +155,13 @@ export default function Dashboard() {
   }
 
   return (
-    <SidebarProvider>
+    <>
+      <SEO
+        title="Dashboard"
+        description="Manage your Markify collections and bookmarks."
+        noindex
+      />
+      <SidebarProvider>
       <AppSidebar
         collections={collections}
         onCreateCollection={handleCreateCollectionClick}
@@ -263,6 +270,7 @@ export default function Dashboard() {
         onOpenChange={setShowWelcome}
         userName={user?.name}
       />
-    </SidebarProvider>
+      </SidebarProvider>
+    </>
   );
 }

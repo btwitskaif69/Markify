@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import { secureFetch } from "@/lib/secureApi";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import { Mail, RefreshCw } from "lucide-react";
+import SEO from "@/components/SEO/SEO";
 
 const VERIFY_URL = `${API_BASE_URL}/users/verify-email`;
 const RESEND_URL = `${API_BASE_URL}/users/resend-verification`;
@@ -155,6 +156,11 @@ export function VerifyEmail({ className, ...props }) {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
+            <SEO
+                title="Verify email"
+                description="Verify your Markify email address."
+                noindex
+            />
             <Card className={cn("w-full max-w-md", className)} {...props}>
                 <CardHeader className="text-center">
                     <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">

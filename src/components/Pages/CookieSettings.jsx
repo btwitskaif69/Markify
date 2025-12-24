@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import SEO from "../SEO/SEO";
 
 const CookieSettings = () => {
     const [settings, setSettings] = useState({
@@ -29,6 +30,10 @@ const CookieSettings = () => {
 
     return (
         <div className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+            <SEO
+                title="Cookie settings"
+                description="Manage your Markify cookie preferences."
+            />
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-4xl font-bold mb-4 text-foreground">Cookie Settings</h1>
                 <p className="text-muted-foreground mb-8">

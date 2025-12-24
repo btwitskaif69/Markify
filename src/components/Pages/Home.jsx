@@ -1,5 +1,5 @@
 // Home.jsx
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
@@ -91,7 +91,7 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Home"
+        title="Smart bookmark manager"
         description="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager."
         canonical="https://www.markify.tech/"
         structuredData={structuredData}

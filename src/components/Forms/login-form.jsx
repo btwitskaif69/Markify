@@ -16,6 +16,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Eye, EyeOff } from "lucide-react";
 import { secureFetch } from "@/lib/secureApi";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import SEO from "@/components/SEO/SEO";
 
 // The URL now includes the full path to the login endpoint
 const API_URL = `${API_BASE_URL}/users/login`;
@@ -65,6 +66,11 @@ export function LoginForm({ className, ...props }) {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <SEO
+        title="Log in"
+        description="Log in to your Markify account."
+        noindex
+      />
       <Card className={cn("w-full max-w-md bg-black border-zinc-800 text-white", className)} {...props}>
         <CardHeader>
           <CardTitle className="text-2xl text-white">Login to your account</CardTitle>

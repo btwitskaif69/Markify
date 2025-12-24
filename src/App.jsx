@@ -28,6 +28,8 @@ const CookieSettings = lazy(() => import('./components/Pages/CookieSettings'));
 const WhatIsMarkify = lazy(() => import('./components/Pages/WhatIsMarkify'));
 const SharedBookmark = lazy(() => import('./components/Pages/SharedBookmark'));
 const SharedCollection = lazy(() => import('./components/Pages/SharedCollection'));
+const Solutions = lazy(() => import('./components/Pages/Solutions'));
+const Solution = lazy(() => import('./components/Pages/Solution'));
 
 const App = () => {
   return (
@@ -57,6 +59,8 @@ const App = () => {
           <Route path="/refund-policy" element={<RefundPolicy />} />
           <Route path="/cookie-settings" element={<CookieSettings />} />
           <Route path="/what-is-markify" element={<WhatIsMarkify />} />
+          <Route path="/solutions" element={<Solutions />} />
+          <Route path="/solutions/:slug" element={<Solution />} />
           <Route path="/shared/bookmark/:shareId" element={<SharedBookmark />} />
           <Route path="/shared/collection/:shareId" element={<SharedCollection />} />
           <Route path="*" element={<NotFoundPage />} />
