@@ -64,7 +64,7 @@ const CTA = () => {
                   size="lg"
                   className="border-white/30 text-white hover:bg-white/10 text-lg px-8 rounded-full bg-transparent"
                 >
-                  Learn More
+                  About Markify
                 </Button>
               </Link>
             </div>

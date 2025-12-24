@@ -61,7 +61,7 @@ const Hero = () => {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
             <Link to="/signup">
-              <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto cursor-pointer">
+              <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto cursor-pointer text-black font-semibold">
                 Get Started
               </Button>
             </Link>
