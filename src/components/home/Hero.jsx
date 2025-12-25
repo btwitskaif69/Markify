@@ -49,7 +49,7 @@ const Hero = () => {
 
           {/* Heading */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-medium leading-tight tracking-tight text-foreground max-w-6xl">
-            Bookmark Manager to Save, Organize, and Access Your Links
+            Save, Organize, and Access Your Bookmarks Smarter
           </h1>
 
           {/* Subheading */}
