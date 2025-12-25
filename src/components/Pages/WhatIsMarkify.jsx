@@ -24,7 +24,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Spotlight } from "../ui/spotlight-new";
 import SEO from "../SEO/SEO";
-import { getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -115,6 +115,11 @@ const structuredData = {
 
 const WhatIsMarkify = () => {
     const [openFAQ, setOpenFAQ] = useState(null);
+    const breadcrumbs = buildBreadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "What is Markify", path: "/what-is-markify" },
+    ]);
+    const structuredDataList = [structuredData, breadcrumbs].filter(Boolean);
 
     return (
         <>
@@ -122,7 +127,7 @@ const WhatIsMarkify = () => {
                 title="What is Markify - Smart Bookmark Manager"
                 description="Discover what Markify is, how it works, and why thousands choose it over browser bookmarks. Learn about our features, compare with alternatives, and see if it's right for you."
                 canonical={getCanonicalUrl("/what-is-markify")}
-                structuredData={structuredData}
+                structuredData={structuredDataList}
             />
             <Navbar />
 

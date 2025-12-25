@@ -42,7 +42,13 @@ export const buildOrganizationSchema = () => ({
   "@type": "Organization",
   name: SITE_CONFIG.name,
   url: SITE_CONFIG.url,
-  logo: SITE_CONFIG.logo,
+  logo: {
+    "@type": "ImageObject",
+    url: SITE_CONFIG.logo,
+    width: 512,
+    height: 512,
+  },
+  image: [SITE_CONFIG.logo],
   sameAs: SITE_CONFIG.socialProfiles,
 });
 
@@ -52,6 +58,66 @@ export const buildWebsiteSchema = () => ({
   name: SITE_CONFIG.name,
   url: SITE_CONFIG.url,
 });
+
+export const buildWebApplicationSchema = ({
+  name = SITE_CONFIG.name,
+  description = SITE_CONFIG.defaultDescription,
+  url = SITE_CONFIG.url,
+  image = SITE_CONFIG.defaultImage,
+  applicationCategory = "ProductivityApplication",
+  operatingSystem = "All",
+  offers,
+} = {}) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name,
+    description,
+    url,
+    image: toAbsoluteUrl(image),
+    applicationCategory,
+    operatingSystem,
+  };
+  if (offers) {
+    schema.offers = offers;
+  }
+  return schema;
+};
+
+export const buildProductSchema = ({
+  name,
+  description,
+  image,
+  url,
+  price,
+  currency = "USD",
+  offers,
+} = {}) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    url,
+    image: image ? [toAbsoluteUrl(image)] : [SITE_CONFIG.defaultImage],
+    brand: {
+      "@type": "Organization",
+      name: SITE_CONFIG.name,
+    },
+  };
+  if (offers) {
+    schema.offers = offers;
+  } else if (price !== undefined && price !== null) {
+    schema.offers = {
+      "@type": "Offer",
+      price: String(price),
+      priceCurrency: currency,
+      availability: "https://schema.org/InStock",
+      url,
+    };
+  }
+  return schema;
+};
 
 export const buildWebPageSchema = ({
   title,

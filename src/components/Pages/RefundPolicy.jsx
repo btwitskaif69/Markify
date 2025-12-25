@@ -3,14 +3,20 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SEO from "../SEO/SEO";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const RefundPolicy = () => {
+    const breadcrumbs = buildBreadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "Refund Policy", path: "/refund-policy" },
+    ]);
     return (
         <>
             <SEO
                 title="Refund Policy"
                 description="Markify Refund Policy - Information about our refund and cancellation policies."
-                canonical="https://www.markify.tech/refund-policy"
+                canonical={getCanonicalUrl("/refund-policy")}
+                structuredData={breadcrumbs ? [breadcrumbs] : null}
             />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">

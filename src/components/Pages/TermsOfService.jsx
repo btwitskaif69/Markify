@@ -3,14 +3,20 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SEO from "../SEO/SEO";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const TermsOfService = () => {
+    const breadcrumbs = buildBreadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "Terms of Service", path: "/terms" },
+    ]);
     return (
         <>
             <SEO
                 title="Terms of Service"
                 description="Markify Terms of Service - Read our terms and conditions for using our services."
-                canonical="https://www.markify.tech/terms"
+                canonical={getCanonicalUrl("/terms")}
+                structuredData={breadcrumbs ? [breadcrumbs] : null}
             />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">

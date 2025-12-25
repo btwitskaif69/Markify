@@ -7,13 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spotlight } from "../ui/spotlight-new";
 import SEO from "../SEO/SEO";
-import { getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const Contact = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   };
 
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Contact", path: "/contact" },
+  ]);
   const quickLinks = [
     { label: "Explore features", to: "/features" },
     { label: "Browse solutions", to: "/solutions" },
@@ -30,6 +34,7 @@ const Contact = () => {
         canonical={getCanonicalUrl("/contact")}
         keywords={["contact Markify", "Markify support", "Markify help"]}
         webPageType="ContactPage"
+        structuredData={breadcrumbs ? [breadcrumbs] : null}
       />
       <Navbar />
 

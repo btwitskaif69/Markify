@@ -4,14 +4,20 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SEO from "../SEO/SEO";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const PrivacyPolicy = () => {
+    const breadcrumbs = buildBreadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "Privacy Policy", path: "/privacy" },
+    ]);
     return (
         <>
             <SEO
                 title="Privacy Policy"
                 description="Markify Privacy Policy - Learn how we collect, use, and protect your personal data."
-                canonical="https://www.markify.tech/privacy"
+                canonical={getCanonicalUrl("/privacy")}
+                structuredData={breadcrumbs ? [breadcrumbs] : null}
             />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">

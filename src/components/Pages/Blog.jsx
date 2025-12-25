@@ -16,7 +16,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import { secureFetch } from "@/lib/secureApi";
 import SEO from "../SEO/SEO";
-import { getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const API_URL = API_BASE_URL;
 
@@ -83,6 +83,10 @@ const Blog = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+  ]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -108,6 +112,7 @@ const Blog = () => {
         title="Blog"
         description="Read the latest updates, tips, and insights from the Markify team."
         canonical={getCanonicalUrl("/blog")}
+        structuredData={breadcrumbs ? [breadcrumbs] : null}
       />
       <Navbar />
 

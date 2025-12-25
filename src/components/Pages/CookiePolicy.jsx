@@ -3,14 +3,20 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SEO from "../SEO/SEO";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const CookiePolicy = () => {
+    const breadcrumbs = buildBreadcrumbSchema([
+        { name: "Home", path: "/" },
+        { name: "Cookie Policy", path: "/cookies" },
+    ]);
     return (
         <>
             <SEO
                 title="Cookie Policy"
                 description="Markify Cookie Policy - Understand how we use cookies to improve your experience."
-                canonical="https://www.markify.tech/cookies"
+                canonical={getCanonicalUrl("/cookies")}
+                structuredData={breadcrumbs ? [breadcrumbs] : null}
             />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">

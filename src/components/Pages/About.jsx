@@ -18,7 +18,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Spotlight } from "../ui/spotlight-new";
 import SEO from "../SEO/SEO";
-import { getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -35,12 +35,18 @@ const staggerContainer = {
 };
 
 const About = () => {
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+  ]);
+
   return (
     <>
       <SEO
         title="About Us - Markify"
         description="Discover the story behind Markify. We're on a mission to revolutionize how you organize and access the web."
         canonical={getCanonicalUrl("/about")}
+        structuredData={breadcrumbs ? [breadcrumbs] : null}
       />
       <Navbar />
 
@@ -307,4 +313,3 @@ const About = () => {
 };
 
 export default About;
-

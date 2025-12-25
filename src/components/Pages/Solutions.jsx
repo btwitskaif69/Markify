@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
-import { buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
 
 const solutionsItemListSchema = buildItemListSchema(
   SOLUTIONS.map((solution) => ({
@@ -23,13 +23,19 @@ const solutionsItemListSchema = buildItemListSchema(
 );
 
 const Solutions = () => {
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Solutions", path: "/solutions" },
+  ]);
+  const structuredData = [breadcrumbs, solutionsItemListSchema].filter(Boolean);
+
   return (
     <>
       <SEO
         title="Solutions"
         description="Explore how Markify helps researchers, designers, developers, students, and teams organize the web."
         canonical={getCanonicalUrl("/solutions")}
-        structuredData={solutionsItemListSchema ? [solutionsItemListSchema] : null}
+        structuredData={structuredData}
       />
       <Navbar />
 

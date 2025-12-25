@@ -4,12 +4,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "../ui/spotlight-new";
 import SEO from "../SEO/SEO";
-import { getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildProductSchema, getCanonicalUrl } from "@/lib/seo";
 
 const tiers = [
   {
     name: "Free",
-    price: "$0",
+    price: "0",
     description: "Perfect to get started with Markify.",
     features: [
       "Up to 3 collections",
@@ -22,7 +22,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "$9",
+    price: "9",
     description: "For power users and busy professionals.",
     features: [
       "Unlimited collections & bookmarks",
@@ -35,7 +35,7 @@ const tiers = [
   },
   {
     name: "Team",
-    price: "$19",
+    price: "19",
     description: "Collaborate on research and resources as a team.",
     features: [
       "Shared collections",
@@ -49,12 +49,29 @@ const tiers = [
 ];
 
 const PricingPage = () => {
+  const canonical = getCanonicalUrl("/pricing");
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Pricing", path: "/pricing" },
+  ]);
+  const productSchemas = tiers.map(tier =>
+    buildProductSchema({
+      name: `Markify ${tier.name}`,
+      description: tier.description,
+      price: tier.price.replace('$', ''),
+      currency: 'USD',
+      url: canonical,
+    })
+  );
+  const structuredData = [breadcrumbs, ...productSchemas].filter(Boolean);
+
   return (
     <>
       <SEO
         title="Pricing"
         description="Choose the perfect Markify plan for your needs. Simple, transparent pricing with no hidden fees. Free, Pro, and Team plans available."
-        canonical={getCanonicalUrl("/pricing")}
+        canonical={canonical}
+        structuredData={structuredData}
       />
       <Navbar />
 

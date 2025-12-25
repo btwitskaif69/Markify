@@ -6,7 +6,11 @@ import DashboardPreview from '../home/DashboardPreview';
 import Marquee from '../home/Marquee';
 import SEO from '../SEO/SEO';
 import LazySection from "@/components/LazySection";
-import { buildFaqSchema, getCanonicalUrl } from "@/lib/seo";
+import {
+  buildFaqSchema,
+  buildWebApplicationSchema,
+  getCanonicalUrl,
+} from "@/lib/seo";
 
 // Lazy load below-fold components
 const Features = lazy(() => import('../home/Features'));
@@ -55,13 +59,21 @@ const Home = () => {
     },
   ]);
 
+  const pageDescription =
+    "Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager.";
+  const webAppSchema = buildWebApplicationSchema({
+    description: pageDescription,
+    url: getCanonicalUrl("/"),
+  });
+  const structuredData = [faqSchema, webAppSchema].filter(Boolean);
+
   return (
     <>
       <SEO
         title="Smart bookmark manager"
-        description="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager."
+        description={pageDescription}
         canonical={getCanonicalUrl("/")}
-        structuredData={faqSchema ? [faqSchema] : null}
+        structuredData={structuredData}
       />
       <Navbar />
 
@@ -118,7 +130,7 @@ const Home = () => {
             <CTA />
           </Suspense>
         </LazySection>
-      </main>
+      </main >
 
       <LazySection>
         <Suspense fallback={null}>

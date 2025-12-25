@@ -13,7 +13,7 @@ import {
 import { ArrowRight } from "lucide-react";
 import { FEATURES, getFeaturePath } from "@/data/features";
 import { FEATURE_ICONS } from "@/data/featureIcons";
-import { buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
 
 const featuresItemListSchema = buildItemListSchema(
   FEATURES.map((feature) => ({
@@ -24,6 +24,12 @@ const featuresItemListSchema = buildItemListSchema(
 );
 
 const FeaturesPage = () => {
+  const breadcrumbs = buildBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Features", path: "/features" },
+  ]);
+  const structuredData = [breadcrumbs, featuresItemListSchema].filter(Boolean);
+
   return (
     <>
       <SEO
@@ -36,7 +42,7 @@ const FeaturesPage = () => {
           "organize bookmarks",
           "markify features",
         ]}
-        structuredData={featuresItemListSchema ? [featuresItemListSchema] : null}
+        structuredData={structuredData}
       />
       <Navbar />
 
