@@ -52,6 +52,7 @@ const App = () => {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/dashboard/:userId" element={<Dashboard />} />
+          <Route path="/dashboard/:userId/shared" element={<Dashboard />} />
           <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
           <Route path="/dashboard/:userId/admin" element={<AdminPanel />} />
           <Route path="/cmd" element={<CmdK />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useLocation } from "react-router-dom";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -18,6 +18,7 @@ import CollectionFormDialog from "@/components/Collections/CollectionFormDialog"
 import ConfirmationDialog from "./ConfirmationDialog";
 import ShareDialog from "./ShareDialog";
 import Bookmarks from "./Bookmarks";
+import SharedItems from "./SharedItems";
 import CmdK from "./CmdK";
 import WelcomeDialog from "./WelcomeDialog";
 import SEO from "@/components/SEO/SEO";
@@ -29,6 +30,8 @@ export default function Dashboard() {
   const { theme, setTheme } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showWelcome, setShowWelcome] = useState(false);
+  const location = useLocation();
+  const isSharedView = location.pathname.endsWith("/shared");
 
   // Check for welcome param (new user onboarding)
   useEffect(() => {
@@ -162,114 +165,140 @@ export default function Dashboard() {
         noindex
       />
       <SidebarProvider>
-      <AppSidebar
-        collections={collections}
-        onCreateCollection={handleCreateCollectionClick}
-        onRenameCollection={handleRenameCollectionClick}
-        onDeleteCollection={openDeleteConfirm}
-        onShareCollection={handleShareCollection}
-      />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink asChild>
-                    <Link to={user ? `/dashboard/${user.id}` : "/login"}>
-                      {user ? `${user.name}'s Bookmarks` : "Bookmarks"}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                {activeCollection && (
-                  <>
-                    <BreadcrumbSeparator className="hidden md:block" />
-                    <BreadcrumbItem className="hidden md:block">
-                      <BreadcrumbLink>{activeCollection.name}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                  </>
-                )}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-
-          <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
-
-          <div className="flex items-center gap-5">
-            <div
-              onClick={handleThemeToggle}
-              className={`flex items-end cursor-pointer transition-transform duration-1000 ${isDark ? "rotate-180" : "rotate-0"}`}
-            >
-              {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
+        <AppSidebar
+          collections={collections}
+          onCreateCollection={handleCreateCollectionClick}
+          onRenameCollection={handleRenameCollectionClick}
+          onDeleteCollection={openDeleteConfirm}
+          onShareCollection={handleShareCollection}
+        />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink asChild>
+                      <Link to={user ? `/dashboard/${user.id}` : "/login"}>
+                        {user ? `${user.name}'s Bookmarks` : "Bookmarks"}
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  {activeCollection && (
+                    <>
+                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbLink>{activeCollection.name}</BreadcrumbLink>
+                      </BreadcrumbItem>
+                    </>
+                  )}
+                  {isSharedView && (
+                    <>
+                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbLink>Shared</BreadcrumbLink>
+                      </BreadcrumbItem>
+                    </>
+                  )}
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
 
-            <BookmarkFormDialog
-              open={isBookmarkDialogOpen}
-              setOpen={setIsBookmarkDialogOpen}
-              formData={formData}
-              setFormData={setFormData}
-              onSubmit={(data) => handleSubmit(data, editingBookmark, previewData, () => setIsBookmarkDialogOpen(false))}
-              editingBookmark={editingBookmark}
-              previewData={previewData}
-              isFetchingPreview={isFetchingPreview}
-              previewError={previewError}
-              onUrlChange={handleUrlChange}
-              onAddClick={handleAddClick}
+            <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
+
+            <div className="flex items-center gap-5">
+              <div
+                onClick={handleThemeToggle}
+                className={`flex items-end cursor-pointer transition-transform duration-1000 ${isDark ? "rotate-180" : "rotate-0"}`}
+              >
+                {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
+              </div>
+
+              <BookmarkFormDialog
+                open={isBookmarkDialogOpen}
+                setOpen={setIsBookmarkDialogOpen}
+                formData={formData}
+                setFormData={setFormData}
+                onSubmit={(data) => handleSubmit(data, editingBookmark, previewData, () => setIsBookmarkDialogOpen(false))}
+                editingBookmark={editingBookmark}
+                previewData={previewData}
+                isFetchingPreview={isFetchingPreview}
+                previewError={previewError}
+                onUrlChange={handleUrlChange}
+                onAddClick={handleAddClick}
+                collections={collections}
+                isSubmitting={isSubmitting}
+              />
+            </div>
+          </header>
+
+          <ConfirmationDialog
+            open={isConfirmOpen}
+            onOpenChange={setIsConfirmOpen}
+            onConfirm={confirmDelete}
+            title="Delete Collection?"
+            description="Are you sure you want to delete this collection? Bookmarks within it will not be deleted."
+          />
+
+          <CollectionFormDialog
+            open={isCollectionDialogOpen}
+            setOpen={setIsCollectionDialogOpen}
+            onSubmit={handleCollectionSubmit}
+            editingCollection={editingCollection}
+            collectionName={collectionName}
+            setCollectionName={setCollectionName}
+          />
+
+          {isSharedView ? (
+            <SharedItems
+              bookmarks={allBookmarks}
               collections={collections}
-              isSubmitting={isSubmitting}
+              isLoading={isLoading}
+              error={error}
+              onEdit={handleEditClick}
+              onDelete={handleDelete}
+              onBulkDelete={handleBulkDelete}
+              onToggleFavorite={handleToggleFavorite}
+              onMove={handleMoveBookmark}
+              onShare={handleShareBookmark}
+              onRenameCollection={handleRenameCollectionClick}
+              onDeleteCollection={openDeleteConfirm}
+              onShareCollection={handleShareCollection}
             />
-          </div>
-        </header>
+          ) : (
+            <Bookmarks
+              bookmarks={bookmarks}
+              collections={collections}
+              isLoading={isLoading}
+              error={error}
+              onEdit={handleEditClick}
+              onDelete={handleDelete}
+              onBulkDelete={handleBulkDelete}
+              onToggleFavorite={handleToggleFavorite}
+              onMove={handleMoveBookmark}
+              onShare={handleShareBookmark}
+            />
+          )}
 
-        <ConfirmationDialog
-          open={isConfirmOpen}
-          onOpenChange={setIsConfirmOpen}
-          onConfirm={confirmDelete}
-          title="Delete Collection?"
-          description="Are you sure you want to delete this collection? Bookmarks within it will not be deleted."
+          <CmdK bookmarks={allBookmarks} />
+        </SidebarInset>
+
+        <ShareDialog
+          open={isShareDialogOpen}
+          setOpen={setIsShareDialogOpen}
+          item={shareItem}
+          type={shareType}
+          authFetch={authFetch}
+          onShareToggle={handleShareToggle}
         />
 
-        <CollectionFormDialog
-          open={isCollectionDialogOpen}
-          setOpen={setIsCollectionDialogOpen}
-          onSubmit={handleCollectionSubmit}
-          editingCollection={editingCollection}
-          collectionName={collectionName}
-          setCollectionName={setCollectionName}
+        <WelcomeDialog
+          open={showWelcome}
+          onOpenChange={setShowWelcome}
+          userName={user?.name}
         />
-
-        <Bookmarks
-          bookmarks={bookmarks}
-          collections={collections}
-          isLoading={isLoading}
-          error={error}
-          onEdit={handleEditClick}
-          onDelete={handleDelete}
-          onBulkDelete={handleBulkDelete}
-          onToggleFavorite={handleToggleFavorite}
-          onMove={handleMoveBookmark}
-          onShare={handleShareBookmark}
-        />
-
-        <CmdK bookmarks={allBookmarks} />
-      </SidebarInset>
-
-      <ShareDialog
-        open={isShareDialogOpen}
-        setOpen={setIsShareDialogOpen}
-        item={shareItem}
-        type={shareType}
-        authFetch={authFetch}
-        onShareToggle={handleShareToggle}
-      />
-
-      <WelcomeDialog
-        open={showWelcome}
-        onOpenChange={setShowWelcome}
-        userName={user?.name}
-      />
       </SidebarProvider>
     </>
   );
