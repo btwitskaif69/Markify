@@ -27,6 +27,10 @@ function Footer() {
                 <img
                   src={logo}
                   alt="Markify"
+                  width={40}
+                  height={40}
+                  loading="lazy"
+                  decoding="async"
                   className="h-10 w-10 brightness-0 invert dark:invert-0 opacity-100 hover:animate-spin"
                 />
               </div>
@@ -102,10 +106,12 @@ function Footer() {
               </h3>
               <div className="bg-muted p-2 rounded-xl w-fit mb-4 border border-border">
                 <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
-                    "https://markify.tech"
-                  )}&bgcolor=ffffff&color=000000&format=svg`}
+                  src="/images/markify-qr.svg"
                   alt="Markify quick start QR"
+                  width={80}
+                  height={80}
+                  loading="lazy"
+                  decoding="async"
                   className="h-20 w-20 mix-blend-multiply dark:mix-blend-screen dark:invert"
                 />
               </div>

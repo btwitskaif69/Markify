@@ -195,7 +195,13 @@ export const NavbarLogo = () => {
     <>
       <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full mr-2">
         {/* <BookMarked className="size-4" /> */}
-        <img src={logo} alt="Markify" className="h-5 w-5 transition-transform duration-500 ease-in-out hover:rotate-[360deg]" />
+        <img
+          src={logo}
+          alt="Markify"
+          width={20}
+          height={20}
+          className="h-5 w-5 transition-transform duration-500 ease-in-out hover:rotate-[360deg]"
+        />
       </div>
       <div className="grid flex-1 text-left text-sm leading-tight">
         <span className="truncate text-lg font-semibold">Markify</span>

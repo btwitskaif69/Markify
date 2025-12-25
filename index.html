@@ -5,10 +5,11 @@
   <!-- Preload Google Fonts for faster loading (eliminates render-blocking) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Preconnect to R2 CDN for faster image loading -->
-  <link rel="preconnect" href="https://assets.markify.tech" crossorigin />
   <!-- Preload LCP image (dashboard preview) for faster initial paint -->
-  <link rel="preload" as="image" type="image/webp" href="https://assets.markify.tech/assets/assets_preview-dark.webp" />
+  <link rel="preload" as="image" type="image/webp"
+    href="/images/dashboard-preview-dark-960.webp"
+    imagesrcset="/images/dashboard-preview-dark-360.webp 360w, /images/dashboard-preview-dark-640.webp 640w, /images/dashboard-preview-dark-960.webp 960w, /images/dashboard-preview-dark-1160.webp 1160w"
+    imagesizes="(max-width: 768px) 90vw, (max-width: 1200px) 80vw, 1160px" />
   <link rel="preload" as="style"
     href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" />
   <link rel="stylesheet"
@@ -19,14 +20,35 @@
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" />
   </noscript>
 
-  <!-- Google tag (gtag.js) - loaded async/defer for performance -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-T60SCR2ZW0"></script>
+  <!-- Google tag (gtag.js) - deferred to reduce main-thread work -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-T60SCR2ZW0');
+    (function () {
+      var gtagId = "G-T60SCR2ZW0";
+      function loadAnalytics() {
+        if (window.gtagLoaded) return;
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag("js", new Date());
+        gtag("config", gtagId);
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=" + gtagId;
+        document.head.appendChild(script);
+        window.gtagLoaded = true;
+      }
+      var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      var saveData = connection && connection.saveData;
+      var slow = connection && /(^|\\s)(slow-2g|2g)($|\\s)/.test(connection.effectiveType || "");
+      if (saveData || slow) return;
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(loadAnalytics, { timeout: 2000 });
+      } else {
+        window.addEventListener("load", function () {
+          setTimeout(loadAnalytics, 2000);
+        });
+      }
+    })();
   </script>
 
   <meta charset="UTF-8" />

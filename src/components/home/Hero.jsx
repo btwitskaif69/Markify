@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Spotlight } from "../ui/spotlight-new";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-import DashboardPreview from "./DashboardPreview";
 import ShinyText from "../ShinyText";
 
 const Hero = () => {

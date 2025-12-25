@@ -5,6 +5,7 @@ import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
 import Marquee from '../home/Marquee';
 import SEO from '../SEO/SEO';
+import LazySection from "@/components/LazySection";
 import { buildFaqSchema, getCanonicalUrl } from "@/lib/seo";
 
 // Lazy load below-fold components
@@ -76,40 +77,54 @@ const Home = () => {
         <Marquee />
 
         {/* Features Section */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <Features />
-        </Suspense>
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <Features />
+          </Suspense>
+        </LazySection>
 
         {/* How It Works */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <HowItWorks />
-        </Suspense>
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <HowItWorks />
+          </Suspense>
+        </LazySection>
 
         {/* Stats */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <Stats />
-        </Suspense>
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <Stats />
+          </Suspense>
+        </LazySection>
 
 
         {/* FAQ */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <FAQ />
-        </Suspense>
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <FAQ />
+          </Suspense>
+        </LazySection>
 
         {/* Reviews */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <ReviewsMarquee />
-        </Suspense>
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <ReviewsMarquee />
+          </Suspense>
+        </LazySection>
 
         {/* Final CTA */}
-        <Suspense fallback={<BelowFoldPlaceholder />}>
-          <CTA />
-        </Suspense>
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <CTA />
+          </Suspense>
+        </LazySection>
       </main>
 
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <LazySection>
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
+      </LazySection>
     </>
   );
 };

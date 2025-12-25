@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Marquee as FastMarquee } from "@/components/ui/marquee";
-import { useTheme } from "../theme-provider";
 
 // Import tech logos (light/dark)
 import ReactLight from "@/assets/react-light.svg";
@@ -15,11 +14,11 @@ import PrismaLight from "@/assets/prisma-light.svg";
 import PrismaDark from "@/assets/prisma-dark.svg";
 
 const logoData = [
-    { name: "React", light: ReactLight, dark: ReactDark },
-    { name: "Express", light: ExpressLight, dark: ExpressDark },
-    { name: "Tailwind", light: TailwindLight, dark: TailwindDark },
-    { name: "shadcn/ui", light: ShadcnLight, dark: ShadcnDark },
-    { name: "Prisma", light: PrismaLight, dark: PrismaDark },
+    { name: "React", light: ReactLight, dark: ReactDark, width: 600, height: 181 },
+    { name: "Express", light: ExpressLight, dark: ExpressDark, width: 64, height: 64 },
+    { name: "Tailwind", light: TailwindLight, dark: TailwindDark, width: 96790, height: 12000 },
+    { name: "shadcn/ui", light: ShadcnLight, dark: ShadcnDark, width: 256, height: 256 },
+    { name: "Prisma", light: PrismaLight, dark: PrismaDark, width: 25986, height: 10214 },
 ];
 
 const Marquee = () => {
@@ -76,6 +75,10 @@ const Marquee = () => {
                                 <img
                                     src={isDark ? logo.light : logo.dark}
                                     alt={`${logo.name} logo`}
+                                    width={logo.width}
+                                    height={logo.height}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="h-10 w-auto md:h-14 max-w-none object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
                                 />
                             </div>
