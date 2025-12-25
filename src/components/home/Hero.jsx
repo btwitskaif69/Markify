@@ -49,12 +49,12 @@ const Hero = () => {
 
           {/* Heading */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-medium leading-tight tracking-tight text-foreground max-w-6xl">
-            Save, Organize, and Access Your Bookmarks Smarter
+            Bookmark Manager to Save, Organize, and Access Your Links
           </h1>
 
           {/* Subheading */}
           <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl mb-5">
-            Keep every link organized, searchable, and accessible with Markify's clean, modern bookmark manager.
+            Keep every link organized, searchable, and accessible with Markify's fast, modern Bookmark Manager.
           </p>
 
           {/* Buttons */}

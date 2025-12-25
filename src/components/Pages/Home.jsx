@@ -60,7 +60,7 @@ const Home = () => {
   ]);
 
   const pageDescription =
-    "Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager.";
+    "Markify is a Bookmark Manager that helps you save, organize, and search links fast with smart collections.";
   const webAppSchema = buildWebApplicationSchema({
     description: pageDescription,
     url: getCanonicalUrl("/"),
@@ -70,10 +70,16 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Smart bookmark manager"
+        title="Bookmark Manager for Fast Search"
         description={pageDescription}
         canonical={getCanonicalUrl("/")}
         structuredData={structuredData}
+        keywords={[
+          "bookmark manager",
+          "save bookmarks",
+          "organize links",
+          "search bookmarks",
+        ]}
       />
       <Navbar />
 

@@ -3,7 +3,7 @@ export const SITE_CONFIG = {
   url: "https://www.markify.tech",
   defaultTitle: "Markify",
   defaultDescription:
-    "Markify is a smart bookmark manager for collections, fast search, and shareable knowledge.",
+    "Markify is a Bookmark Manager for smart collections, fast search, and shareable knowledge.",
   defaultImage: "https://assets.markify.tech/assets/markify%20og%20image.png",
   logo: "https://www.markify.tech/android-chrome-512x512.png",
   twitterHandle: "@markify",
