@@ -1,6 +1,20 @@
 {
   "routes": [
     {
+      "src": "^/Home/?$",
+      "status": 301,
+      "headers": {
+        "Location": "/"
+      }
+    },
+    {
+      "src": "^/home/?$",
+      "status": 301,
+      "headers": {
+        "Location": "/"
+      }
+    },
+    {
       "src": "/[^.]+",
       "dest": "/index.html",
       "status": 200
