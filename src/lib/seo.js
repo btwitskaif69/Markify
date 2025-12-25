@@ -52,12 +52,30 @@ export const buildOrganizationSchema = () => ({
   sameAs: SITE_CONFIG.socialProfiles,
 });
 
-export const buildWebsiteSchema = () => ({
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE_CONFIG.name,
-  url: SITE_CONFIG.url,
-});
+export const buildWebsiteSchema = ({
+  includeSearchAction = true,
+  searchPath = "/search",
+} = {}) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+  };
+
+  if (includeSearchAction) {
+    schema.potentialAction = {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_CONFIG.url}${searchPath}?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    };
+  }
+
+  return schema;
+};
 
 export const buildWebApplicationSchema = ({
   name = SITE_CONFIG.name,
