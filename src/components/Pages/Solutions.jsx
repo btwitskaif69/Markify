@@ -85,6 +85,9 @@ const Solutions = () => {
               <Button asChild variant="outline">
                 <Link to="/pricing">View pricing</Link>
               </Button>
+              <Button asChild variant="outline">
+                <Link to="/features">Explore features</Link>
+              </Button>
               <Button asChild variant="ghost">
                 <Link to="/blog">Read the blog</Link>
               </Button>

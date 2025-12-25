@@ -2,29 +2,13 @@ import { Link } from "react-router-dom";
 import { Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import logo from "@/assets/logo.svg";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
+import {
+  GET_STARTED_LINKS,
+  PRODUCT_LINKS,
+  RESOURCE_LINKS,
+} from "@/data/siteLinks";
 
 function Footer() {
-  const productLinks = [
-    { label: "Solutions", to: "/solutions" },
-    { label: "Pricing", to: "/pricing" },
-    { label: "What is Markify?", to: "/what-is-markify" },
-    { label: "Blog", to: "/blog" },
-  ];
-
-  const resourceLinks = [
-    { label: "About", to: "/about" },
-    { label: "Contact", to: "/contact" },
-    { label: "Privacy Policy", to: "/privacy" },
-    { label: "Terms of Service", to: "/terms" },
-    { label: "Refund Policy", to: "/refund-policy" },
-  ];
-
-  const getStartedLinks = [
-    { label: "Sign Up Free", to: "/signup" },
-    { label: "Log In", to: "/login" },
-    { label: "Pricing Plans", to: "/pricing" },
-  ];
-
   const solutionLinks = SOLUTIONS.slice(0, 4).map((solution) => ({
     label: solution.title,
     to: getSolutionPath(solution.slug),
@@ -60,7 +44,7 @@ function Footer() {
                 Product
               </h3>
               <ul className="space-y-4 text-sm text-muted-foreground">
-                {productLinks.map((link) => (
+                {PRODUCT_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
@@ -98,7 +82,7 @@ function Footer() {
                 Resources
               </h3>
               <ul className="space-y-4 text-sm text-muted-foreground">
-                {resourceLinks.map((link) => (
+                {RESOURCE_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}
@@ -126,7 +110,7 @@ function Footer() {
                 />
               </div>
               <ul className="space-y-4 text-sm text-muted-foreground">
-                {getStartedLinks.map((link) => (
+                {GET_STARTED_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
                       to={link.to}

@@ -17,15 +17,7 @@ import { useThemeToggle } from "../hooks/useThemeToggle";
 import { AnimationStyles } from "./theme-animations";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
-
-const navItems = [
-  { name: "Home", link: "/" },
-  { name: "About", link: "/about" },
-  { name: "Solutions", link: "/solutions" },
-  { name: "Pricing", link: "/pricing" },
-  { name: "Contact", link: "/contact" },
-  { name: "Blog", link: "/blog" },
-];
+import { NAV_LINKS } from "@/data/siteLinks";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,7 +39,7 @@ const Navbar = () => {
       {/* Desktop Navbar */}
       <NavBody>
         <NavbarLogo />
-        <NavItems items={navItems} onItemClick={closeMobileMenu} />
+        <NavItems items={NAV_LINKS} onItemClick={closeMobileMenu} />
         <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
         <button
           onClick={handleThemeToggle}
@@ -88,7 +80,7 @@ const Navbar = () => {
         </MobileNavHeader>
 
         <MobileNavMenu isOpen={mobileOpen} onClose={closeMobileMenu}>
-          {navItems.map((item, idx) => (
+          {NAV_LINKS.map((item, idx) => (
             <Link
               key={`mobile-link-${idx}`}
               to={item.link}

@@ -8,6 +8,11 @@ import { Loader2, ArrowLeft, Calendar, User, Clock } from "lucide-react";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import { secureFetch } from "@/lib/secureApi";
 import SEO from "../SEO/SEO";
+import {
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+  getCanonicalUrl,
+} from "@/lib/seo";
 
 const API_URL = API_BASE_URL;
 
@@ -121,22 +126,24 @@ const BlogPost = () => {
   );
 
   // Construct structured data if post exists
-  const articleSchema = useMemo(() => {
+  const structuredData = useMemo(() => {
     if (!post) return null;
-    return {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      headline: post.title,
-      image: post.coverImage ? [post.coverImage] : [],
+    const canonicalUrl = getCanonicalUrl(`/blog/${post.slug}`);
+    const articleSchema = buildArticleSchema({
+      title: post.title,
+      description: post.excerpt,
+      image: post.coverImage,
+      url: canonicalUrl,
       datePublished: post.createdAt,
       dateModified: post.updatedAt || post.createdAt,
-      author: [
-        {
-          "@type": "Person",
-          name: post.author?.name || "Markify Team",
-        },
-      ],
-    };
+      authorName: post.author?.name || "Markify Team",
+    });
+    const breadcrumbs = buildBreadcrumbSchema([
+      { name: "Home", path: "/" },
+      { name: "Blog", path: "/blog" },
+      { name: post.title, path: `/blog/${post.slug}` },
+    ]);
+    return [articleSchema, breadcrumbs].filter(Boolean);
   }, [post]);
 
   return (
@@ -147,14 +154,14 @@ const BlogPost = () => {
         <SEO
           title={post.title}
           description={post.excerpt || `Read ${post.title} on Markify Blog.`}
-          canonical={`https://www.markify.tech/blog/${post.slug}`}
+          canonical={getCanonicalUrl(`/blog/${post.slug}`)}
           type="article"
           image={post.coverImage}
           imageAlt={post.title}
           publishedTime={post.createdAt}
           modifiedTime={post.updatedAt || post.createdAt}
           author={post.author?.name || "Markify Team"}
-          structuredData={articleSchema}
+          structuredData={structuredData}
         />
       )}
 
@@ -277,6 +284,10 @@ const BlogPost = () => {
                           Browse Solutions
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
+                        <Link to="/features" className="text-primary hover:underline">
+                          Explore Features
+                        </Link>
+                        <span className="text-muted-foreground" aria-hidden="true">|</span>
                         <Link to="/pricing" className="text-primary hover:underline">
                           View Pricing
                         </Link>
@@ -389,4 +400,3 @@ const BlogPost = () => {
 };
 
 export default BlogPost;
-

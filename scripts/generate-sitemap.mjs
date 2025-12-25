@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { SITE_CONFIG, getCanonicalUrl } from "../src/lib/seo.js";
+import { FEATURES, getFeaturePath } from "../src/data/features.js";
 import { SOLUTIONS, getSolutionPath } from "../src/data/solutions.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -14,6 +15,7 @@ const STATIC_ROUTES = [
   { path: "/", changefreq: "daily", priority: 1.0 },
   { path: "/about", changefreq: "monthly", priority: 0.8 },
   { path: "/solutions", changefreq: "weekly", priority: 0.8 },
+  { path: "/features", changefreq: "monthly", priority: 0.8 },
   { path: "/pricing", changefreq: "monthly", priority: 0.8 },
   { path: "/blog", changefreq: "weekly", priority: 0.8 },
   { path: "/contact", changefreq: "monthly", priority: 0.7 },
@@ -74,9 +76,19 @@ const generateSitemap = async () => {
     changefreq: "weekly",
     priority: 0.7,
   }));
+  const featureRoutes = FEATURES.map((feature) => ({
+    path: getFeaturePath(feature.slug),
+    changefreq: "monthly",
+    priority: 0.6,
+  }));
   const blogRoutes = await fetchBlogPosts();
 
-  const allRoutes = [...STATIC_ROUTES, ...solutionRoutes, ...blogRoutes];
+  const allRoutes = [
+    ...STATIC_ROUTES,
+    ...solutionRoutes,
+    ...featureRoutes,
+    ...blogRoutes,
+  ];
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

@@ -1,67 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import {
-    Search,
-    FolderOpen,
-    Star,
-    Upload,
-    Tags,
-    Moon,
-    Zap,
-    Shield
-} from "lucide-react";
-
-const features = [
-    {
-        icon: Search,
-        title: "Lightning Search",
-        description: "Find any bookmark instantly with Cmd+K. Search by title, URL, tags, or description.",
-        className: "md:col-span-2 md:row-span-1",
-        gradient: "from-orange-500/20 to-red-500/20",
-    },
-    {
-        icon: FolderOpen,
-        title: "Smart Collections",
-        description: "Organize bookmarks into custom collections for easy access.",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-blue-500/20 to-cyan-500/20",
-    },
-    {
-        icon: Star,
-        title: "Quick Favorites",
-        description: "Star your most important links for instant access.",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-yellow-500/20 to-orange-500/20",
-    },
-    {
-        icon: Upload,
-        title: "Import & Export",
-        description: "Easily import from Chrome, Firefox, or export in JSON, CSV, HTML formats.",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-green-500/20 to-emerald-500/20",
-    },
-    {
-        icon: Tags,
-        title: "Auto-Tagging",
-        description: "AI-powered tag suggestions to keep your bookmarks organized automatically.",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-purple-500/20 to-pink-500/20",
-    },
-    {
-        icon: Shield,
-        title: "Privacy First",
-        description: "Your data stays yours. No tracking, no selling, just bookmarks.",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-slate-500/20 to-zinc-500/20",
-    },
-    {
-        icon: Moon,
-        title: "Beautiful Dark Mode",
-        description: "Easy on the eyes with a stunning dark theme that looks great.",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-indigo-500/20 to-violet-500/20",
-    },
-];
+import { Zap } from "lucide-react";
+import { FEATURES } from "@/data/features";
+import { FEATURE_ICONS } from "@/data/featureIcons";
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -117,34 +58,39 @@ const Features = () => {
                     viewport={{ once: true, amount: 0.2 }}
                     className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
                 >
-                    {features.map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            variants={itemVariants}
-                            className={`group relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 hover:border-primary/50 transition-all duration-300 ${feature.className}`}
-                        >
-                            {/* Gradient Background */}
-                            <div
-                                className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                            />
+                    {FEATURES.map((feature, index) => {
+                        const Icon = FEATURE_ICONS[feature.iconKey];
+                        return (
+                            <motion.div
+                                key={index}
+                                variants={itemVariants}
+                                className={`group relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 hover:border-primary/50 transition-all duration-300 ${feature.layout}`}
+                            >
+                                {/* Gradient Background */}
+                                <div
+                                    className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                                />
 
-                            {/* Content */}
-                            <div className="relative z-10">
-                                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                                    <feature.icon className="w-6 h-6 text-primary" />
+                                {/* Content */}
+                                <div className="relative z-10">
+                                    {Icon ? (
+                                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                                            <Icon className="w-6 h-6 text-primary" />
+                                        </div>
+                                    ) : null}
+                                    <h3 className="text-xl font-semibold text-foreground mb-2">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-muted-foreground">
+                                        {feature.description}
+                                    </p>
                                 </div>
-                                <h3 className="text-xl font-semibold text-foreground mb-2">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-muted-foreground">
-                                    {feature.description}
-                                </p>
-                            </div>
 
-                            {/* Hover Glow Effect */}
-                            <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                        </motion.div>
-                    ))}
+                                {/* Hover Glow Effect */}
+                                <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                            </motion.div>
+                        );
+                    })}
                 </motion.div>
             </div>
         </section>

@@ -5,6 +5,7 @@ import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
 import Marquee from '../home/Marquee';
 import SEO from '../SEO/SEO';
+import { buildFaqSchema, getCanonicalUrl } from "@/lib/seo";
 
 // Lazy load below-fold components
 const Features = lazy(() => import('../home/Features'));
@@ -20,81 +21,46 @@ const Footer = lazy(() => import('@/components/Footer'));
 const BelowFoldPlaceholder = () => <div className="min-h-[200px]" />;
 
 const Home = () => {
-  const structuredData = [
+  const faqSchema = buildFaqSchema([
     {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Markify",
-      "url": "https://www.markify.tech",
-      "logo": "https://www.markify.tech/android-chrome-512x512.png",
-      "sameAs": [
-        "https://twitter.com/markify",
-        "https://github.com/markify"
-      ]
+      question: "Is Markify free to use?",
+      answer:
+        "Yes! Markify offers a generous free tier with unlimited bookmarks, collections, and search. Premium features like AI-powered tagging and advanced analytics are available with our Pro plan.",
     },
     {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is Markify free to use?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes! Markify offers a generous free tier with unlimited bookmarks, collections, and search. Premium features like AI-powered tagging and advanced analytics are available with our Pro plan."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I import my bookmarks from Chrome or Firefox?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Absolutely! Markify supports importing bookmarks from Chrome, Firefox, Safari, and Edge. You can import via HTML export file or use our browser extension for seamless sync."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is my data secure?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Security is our top priority. All data is encrypted at rest and in transit. We never sell your data or show you ads. Your bookmarks are 100% private."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I access my bookmarks on multiple devices?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes! Your bookmarks sync across all your devices automatically. Access them from your desktop, laptop, tablet, or phone wherever you go."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does the AI tagging work?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "When you save a bookmark, our AI analyzes the page content and suggests relevant tags. You can accept, modify, or add your own tags. The more you use Markify, the smarter it gets!"
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I share collections with others?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes! You can create public share links for any collection. Perfect for sharing resources with teammates, students, or friends. You control who can access what."
-          }
-        }
-      ]
-    }
-  ];
+      question: "Can I import my bookmarks from Chrome or Firefox?",
+      answer:
+        "Absolutely! Markify supports importing bookmarks from Chrome, Firefox, Safari, and Edge. You can import via HTML export file or use our browser extension for seamless sync.",
+    },
+    {
+      question: "Is my data secure?",
+      answer:
+        "Security is our top priority. All data is encrypted at rest and in transit. We never sell your data or show you ads. Your bookmarks are 100% private.",
+    },
+    {
+      question: "Can I access my bookmarks on multiple devices?",
+      answer:
+        "Yes! Your bookmarks sync across all your devices automatically. Access them from your desktop, laptop, tablet, or phone wherever you go.",
+    },
+    {
+      question: "How does the AI tagging work?",
+      answer:
+        "When you save a bookmark, our AI analyzes the page content and suggests relevant tags. You can accept, modify, or add your own tags. The more you use Markify, the smarter it gets!",
+    },
+    {
+      question: "Can I share collections with others?",
+      answer:
+        "Yes! You can create public share links for any collection. Perfect for sharing resources with teammates, students, or friends. You control who can access what.",
+    },
+  ]);
 
   return (
     <>
       <SEO
         title="Smart bookmark manager"
         description="Markify - Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager."
-        canonical="https://www.markify.tech/"
-        structuredData={structuredData}
+        canonical={getCanonicalUrl("/")}
+        structuredData={faqSchema ? [faqSchema] : null}
       />
       <Navbar />
 

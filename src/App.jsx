@@ -30,6 +30,8 @@ const SharedBookmark = lazy(() => import('./components/Pages/SharedBookmark'));
 const SharedCollection = lazy(() => import('./components/Pages/SharedCollection'));
 const Solutions = lazy(() => import('./components/Pages/Solutions'));
 const Solution = lazy(() => import('./components/Pages/Solution'));
+const FeaturesPage = lazy(() => import('./components/Pages/Features'));
+const Feature = lazy(() => import('./components/Pages/Feature'));
 
 const App = () => {
   return (
@@ -61,6 +63,8 @@ const App = () => {
           <Route path="/what-is-markify" element={<WhatIsMarkify />} />
           <Route path="/solutions" element={<Solutions />} />
           <Route path="/solutions/:slug" element={<Solution />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/features/:slug" element={<Feature />} />
           <Route path="/shared/bookmark/:shareId" element={<SharedBookmark />} />
           <Route path="/shared/collection/:shareId" element={<SharedCollection />} />
           <Route path="*" element={<NotFoundPage />} />

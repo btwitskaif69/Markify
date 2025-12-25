@@ -16,6 +16,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import { secureFetch } from "@/lib/secureApi";
 import SEO from "../SEO/SEO";
+import { getCanonicalUrl } from "@/lib/seo";
 
 const API_URL = API_BASE_URL;
 
@@ -106,7 +107,7 @@ const Blog = () => {
       <SEO
         title="Blog"
         description="Read the latest updates, tips, and insights from the Markify team."
-        canonical="https://www.markify.tech/blog"
+        canonical={getCanonicalUrl("/blog")}
       />
       <Navbar />
 
@@ -157,6 +158,10 @@ const Blog = () => {
             >
               <Link to="/about" className="text-primary hover:underline">
                 Learn More About Markify
+              </Link>
+              <span className="text-muted-foreground" aria-hidden="true">|</span>
+              <Link to="/features" className="text-primary hover:underline">
+                Explore Features
               </Link>
               <span className="text-muted-foreground" aria-hidden="true">|</span>
               <Link to="/solutions" className="text-primary hover:underline">

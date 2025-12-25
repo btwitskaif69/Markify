@@ -4,6 +4,12 @@ export const SOLUTIONS = [
     title: "Bookmark manager for researchers",
     description:
       "Collect papers, datasets, and references in organized collections for every project.",
+    keywords: [
+      "bookmark manager for researchers",
+      "research bookmarks",
+      "academic collections",
+      "share reading lists",
+    ],
     hero: {
       eyebrow: "For Research Teams",
       heading: "Organize sources without losing context",
@@ -47,6 +53,12 @@ export const SOLUTIONS = [
     title: "Bookmark manager for designers",
     description:
       "Save inspiration, UI patterns, and brand references without losing the thread.",
+    keywords: [
+      "bookmark manager for designers",
+      "design inspiration bookmarks",
+      "creative reference library",
+      "visual collections",
+    ],
     hero: {
       eyebrow: "For Designers",
       heading: "A visual library for your best ideas",
@@ -90,6 +102,12 @@ export const SOLUTIONS = [
     title: "Bookmark manager for product teams",
     description:
       "Centralize competitive research, user insights, and roadmap references.",
+    keywords: [
+      "bookmark manager for product teams",
+      "product research bookmarks",
+      "competitive analysis links",
+      "roadmap resources",
+    ],
     hero: {
       eyebrow: "For Product Teams",
       heading: "Keep product research organized and shareable",
@@ -133,6 +151,12 @@ export const SOLUTIONS = [
     title: "Bookmark manager for students",
     description:
       "Track readings, course resources, and study guides in one organized space.",
+    keywords: [
+      "bookmark manager for students",
+      "study resources",
+      "course bookmarks",
+      "student reading lists",
+    ],
     hero: {
       eyebrow: "For Students",
       heading: "Your study hub for everything you save",
@@ -176,6 +200,12 @@ export const SOLUTIONS = [
     title: "Bookmark manager for developers",
     description:
       "Save docs, snippets, and references so you can find them fast during builds.",
+    keywords: [
+      "bookmark manager for developers",
+      "developer documentation organizer",
+      "code reference bookmarks",
+      "tech resources",
+    ],
     hero: {
       eyebrow: "For Developers",
       heading: "Keep documentation close at hand",
@@ -219,6 +249,12 @@ export const SOLUTIONS = [
     title: "Bookmark manager for marketers",
     description:
       "Track campaigns, competitor insights, and content ideas in one searchable place.",
+    keywords: [
+      "bookmark manager for marketers",
+      "marketing research links",
+      "campaign inspiration",
+      "content ideas",
+    ],
     hero: {
       eyebrow: "For Marketers",
       heading: "Capture campaign inspiration and move faster",

@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import {
   SITE_CONFIG,
+  buildOrganizationSchema,
+  buildWebsiteSchema,
+  buildWebPageSchema,
   getCanonicalUrl,
   getFullTitle,
   toAbsoluteUrl,
@@ -26,6 +29,9 @@ const SEO = ({
   modifiedTime,
   author,
   themeColor = SITE_CONFIG.themeColor,
+  includeSiteSchema = true,
+  includeWebPageSchema = true,
+  webPageType = "WebPage",
 }) => {
   const location = useLocation();
   const canonicalUrl =
@@ -35,6 +41,24 @@ const SEO = ({
   const resolvedImage = toAbsoluteUrl(image);
   const resolvedImageAlt = imageAlt || title || SITE_CONFIG.name;
   const robotsValue = robots || (noindex ? "noindex, nofollow" : "index, follow");
+  const shouldIndex = !robotsValue.toLowerCase().includes("noindex");
+  const resolvedStructuredData = [
+    includeSiteSchema ? buildOrganizationSchema() : null,
+    includeSiteSchema ? buildWebsiteSchema() : null,
+    includeWebPageSchema && shouldIndex
+      ? buildWebPageSchema({
+        title: title || SITE_CONFIG.defaultTitle,
+        description: metaDescription,
+        url: canonicalUrl,
+        type: webPageType,
+      })
+      : null,
+    ...(structuredData
+      ? Array.isArray(structuredData)
+        ? structuredData
+        : [structuredData]
+      : []),
+  ].filter(Boolean);
 
   return (
     <Helmet>
@@ -43,6 +67,7 @@ const SEO = ({
       <meta name="description" content={metaDescription} />
       <meta name="robots" content={robotsValue} />
       <meta name="googlebot" content={robotsValue} />
+      {author ? <meta name="author" content={author} /> : null}
       {keywords?.length ? <meta name="keywords" content={keywords.join(", ")} /> : null}
       <meta name="theme-color" content={themeColor} />
       <link rel="canonical" href={canonicalUrl} />
@@ -79,9 +104,9 @@ const SEO = ({
       ) : null}
 
       {/* Structured Data */}
-      {structuredData ? (
+      {resolvedStructuredData.length ? (
         <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
+          {JSON.stringify(resolvedStructuredData)}
         </script>
       ) : null}
     </Helmet>
@@ -106,6 +131,9 @@ SEO.propTypes = {
   modifiedTime: PropTypes.string,
   author: PropTypes.string,
   themeColor: PropTypes.string,
+  includeSiteSchema: PropTypes.bool,
+  includeWebPageSchema: PropTypes.bool,
+  webPageType: PropTypes.string,
 };
 
 export default SEO;
