@@ -220,8 +220,11 @@ const Blog = () => {
                               <img
                                 src={post.coverImage}
                                 alt={post.title}
+                                width={640}
+                                height={360}
                                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 loading="lazy"
+                                decoding="async"
                               />
                             ) : (
                               <div className="h-full w-full flex items-center justify-center text-muted-foreground bg-muted/50">

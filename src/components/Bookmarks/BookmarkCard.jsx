@@ -87,15 +87,21 @@ export default function BookmarkCard({
               <img
                 src={bookmark.previewImage || placeholder}
                 alt={bookmark.title}
+                width={640}
+                height={400}
                 className="object-cover h-full w-full"
-                loading="lazy" // ✅ Lazy load
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <img
                 src={faviconUrl}
                 alt={`${bookmark.title} favicon`}
+                width={64}
+                height={64}
                 className="w-16 h-16 object-contain"
-                loading="lazy" // ✅ Lazy load
+                loading="lazy"
+                decoding="async"
                 onError={(e) =>
                 (e.currentTarget.src =
                   'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>')

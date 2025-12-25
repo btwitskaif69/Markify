@@ -272,12 +272,20 @@ function BookmarkPreviewCard({ bookmark }) {
                         <img
                             src={bookmark.previewImage}
                             alt={bookmark.title}
+                            width={640}
+                            height={360}
+                            loading="lazy"
+                            decoding="async"
                             className="object-cover h-full w-full"
                         />
                     ) : (
                         <img
                             src={faviconUrl}
                             alt={`${bookmark.title} favicon`}
+                            width={48}
+                            height={48}
+                            loading="lazy"
+                            decoding="async"
                             className="w-12 h-12 object-contain"
                         />
                     )}

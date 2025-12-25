@@ -9,6 +9,8 @@ export const SITE_CONFIG = {
   twitterHandle: "@markify",
   locale: "en_US",
   themeColor: "#0f172a",
+  contactEmail: "hello@markify.tech",
+  supportEmail: "support@markify.tech",
   socialProfiles: [
     "https://twitter.com/markify",
     "https://github.com/markify",
@@ -37,20 +39,36 @@ export const getFullTitle = (title, siteName = SITE_CONFIG.name) => {
   return `${trimmed} | ${siteName}`;
 };
 
-export const buildOrganizationSchema = () => ({
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: SITE_CONFIG.name,
-  url: SITE_CONFIG.url,
-  logo: {
-    "@type": "ImageObject",
-    url: SITE_CONFIG.logo,
-    width: 512,
-    height: 512,
-  },
-  image: [SITE_CONFIG.logo],
-  sameAs: SITE_CONFIG.socialProfiles,
-});
+export const buildOrganizationSchema = () => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+    email: SITE_CONFIG.contactEmail,
+    logo: {
+      "@type": "ImageObject",
+      url: SITE_CONFIG.logo,
+      width: 512,
+      height: 512,
+    },
+    image: [SITE_CONFIG.logo],
+    sameAs: SITE_CONFIG.socialProfiles,
+  };
+  const contactEmail = SITE_CONFIG.supportEmail || SITE_CONFIG.contactEmail;
+  if (contactEmail) {
+    schema.contactPoint = [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: contactEmail,
+        availableLanguage: ["English"],
+        url: SITE_CONFIG.url,
+      },
+    ];
+  }
+  return schema;
+};
 
 export const buildWebsiteSchema = ({
   includeSearchAction = true,

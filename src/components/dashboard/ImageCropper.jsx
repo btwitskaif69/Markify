@@ -143,6 +143,10 @@ export default function ImageCropper({ open, setOpen, imageSrc, onCropComplete }
                                     ref={imgRef}
                                     src={imageSrc}
                                     alt="Crop preview"
+                                    width={300}
+                                    height={300}
+                                    loading="lazy"
+                                    decoding="async"
                                     onLoad={onImageLoad}
                                     style={{
                                         transform: `scale(${scale}) rotate(${rotate}deg)`,
@@ -179,7 +183,7 @@ export default function ImageCropper({ open, setOpen, imageSrc, onCropComplete }
                                 onClick={handleRotate}
                             >
                                 <RotateCcw className="h-4 w-4 mr-2" />
-                                Rotate 90°
+                                Rotate 90 deg
                             </Button>
                         </div>
                     </div>

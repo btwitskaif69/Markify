@@ -81,7 +81,15 @@ export default function BookmarkFormDialog({
           )}
           {previewData && previewData.image && (
             <div className="mt-4 border rounded-md overflow-hidden">
-              <img src={previewData.image} alt="Link preview" className="object-cover w-full aspect-video" />
+              <img
+                src={previewData.image}
+                alt="Link preview"
+                width={640}
+                height={360}
+                loading="lazy"
+                decoding="async"
+                className="object-cover w-full aspect-video"
+              />
               <div className="p-3 bg-muted/20">
                 <h4 className="font-semibold truncate">{previewData.title}</h4>
                 <p className="text-sm text-muted-foreground line-clamp-2">{previewData.description}</p>
@@ -153,9 +161,9 @@ export default function BookmarkFormDialog({
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center animate-spin mr-2">
-                    <img src={logo} alt="" className="w-4 h-4" />
-                  </div>
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center animate-spin mr-2">
+                    <img src={logo} alt="" width={16} height={16} className="w-4 h-4" />
+                </div>
                   {editingBookmark ? "Updating..." : "Adding..."}
                 </>
               ) : (

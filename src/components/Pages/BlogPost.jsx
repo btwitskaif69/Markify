@@ -200,6 +200,10 @@ const BlogPost = () => {
                 <img
                   src={post.coverImage}
                   alt={post.title}
+                  width={1600}
+                  height={900}
+                  fetchpriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -322,6 +326,10 @@ const BlogPost = () => {
                                   <img
                                     src={latest.coverImage}
                                     alt={latest.title}
+                                    width={640}
+                                    height={360}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                   />
                                 ) : (
@@ -366,6 +374,10 @@ const BlogPost = () => {
                               <img
                                 src={latest.coverImage}
                                 alt={latest.title}
+                                width={640}
+                                height={360}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               />
                             ) : (

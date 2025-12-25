@@ -374,7 +374,15 @@ export default function AdminPanel() {
                 <TableRow key={review.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <img src={review.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user?.name || 'User')}&background=random`} alt={review.user?.name} className="h-8 w-8 rounded-full object-cover" />
+                      <img
+                        src={review.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user?.name || 'User')}&background=random`}
+                        alt={review.user?.name}
+                        width={32}
+                        height={32}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
                       <div><div className="font-medium">{review.user?.name}</div><div className="text-xs text-muted-foreground">{review.user?.email}</div></div>
                     </div>
                   </TableCell>

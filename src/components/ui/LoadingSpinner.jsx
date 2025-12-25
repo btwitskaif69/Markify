@@ -8,6 +8,9 @@ const LoadingSpinner = ({ size = "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14" }) 
                 <img
                     src={logo}
                     alt="Loading..."
+                    width={32}
+                    height={32}
+                    decoding="async"
                     className="w-2/3 h-2/3"
                 />
             </div>

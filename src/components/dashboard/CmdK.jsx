@@ -83,6 +83,10 @@ useEffect(() => {
         <img 
           src={previewBookmark.previewImage} 
           alt="Bookmark preview"
+          width={640}
+          height={360}
+          loading="lazy"
+          decoding="async"
           className="rounded-md object-cover w-full aspect-video"
         />
       ) : (

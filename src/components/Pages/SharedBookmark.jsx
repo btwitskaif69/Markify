@@ -148,6 +148,9 @@ export default function SharedBookmark() {
                                     <img
                                         src={bookmark.previewImage}
                                         alt={bookmark.title}
+                                        width={1200}
+                                        height={675}
+                                        decoding="async"
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                 </div>
@@ -156,6 +159,10 @@ export default function SharedBookmark() {
                                     <img
                                         src={faviconUrl}
                                         alt={`${bookmark.title} favicon`}
+                                        width={64}
+                                        height={64}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-16 h-16 object-contain"
                                     />
                                 </div>

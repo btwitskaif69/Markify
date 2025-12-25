@@ -279,7 +279,15 @@ const BlogEditor = () => {
             <div className="space-y-2">
               <div className="border border-dashed rounded-lg h-[132px] flex flex-col items-center justify-center text-muted-foreground relative overflow-hidden group hover:border-primary transition-colors bg-muted/20">
                 {coverImage ? (
-                  <img src={coverImage} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
+                  <img
+                    src={coverImage}
+                    alt="Cover"
+                    width={640}
+                    height={360}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 ) : (
                   <>
                     <ImageIcon className="h-6 w-6 mb-2" />

@@ -219,11 +219,18 @@ const About = () => {
                   {/* Image Column */}
                   <div className="flex-shrink-0 relative">
                     <div className="w-48 h-48 rounded-2xl overflow-hidden border-2 border-white/10 shadow-2xl relative z-10 rotate-3 group-hover:rotate-0 transition-all duration-500 ease-out">
-                      <img
-                        src="/images/mohd-kaif.jpg"
-                        alt="Mohd Kaif"
-                        className="w-full h-full object-cover"
-                      />
+                      <picture className="block w-full h-full">
+                        <source srcSet="/images/mohd-kaif.webp" type="image/webp" />
+                        <img
+                          src="/images/mohd-kaif.jpg"
+                          alt="Mohd Kaif"
+                          width={192}
+                          height={192}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover"
+                        />
+                      </picture>
                     </div>
                     {/* Image backdrop */}
                     <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-xl transform translate-y-4 scale-90 -z-10" />
@@ -241,7 +248,7 @@ const About = () => {
                     </div>
 
                     <p className="text-lg text-muted-foreground/90 leading-relaxed font-light">
-                      "I created Markify to solve my own problem of organizing scattered digital resources. What started as a weekend project has grown into a powerful tool that helps thousands of people tame the chaos of the web. I run the entire project solo—from writing the code to designing the pixels."
+                      "I created Markify to solve my own problem of organizing scattered digital resources. What started as a weekend project has grown into a powerful tool that helps thousands of people tame the chaos of the web. I run the entire project solo - from writing the code to designing the pixels."
                     </p>
 
                     <div className="flex items-center justify-center md:justify-start gap-6 pt-2">

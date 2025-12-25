@@ -293,6 +293,10 @@ export default function BookmarkManager({ onClose }) {
                                             <img
                                                 src={formData.previewImage}
                                                 alt="Preview"
+                                                width={640}
+                                                height={360}
+                                                loading="lazy"
+                                                decoding="async"
                                                 className="w-full h-full object-cover"
                                                 onError={(e) => { e.target.style.display = 'none' }}
                                             />
@@ -362,6 +366,10 @@ export default function BookmarkManager({ onClose }) {
                                                 <img
                                                     src={bookmark.previewImage}
                                                     alt=""
+                                                    width={64}
+                                                    height={40}
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     className="h-full w-full object-cover"
                                                     onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.classList.add('flex', 'items-center', 'justify-center'); }}
                                                 />

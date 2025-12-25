@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spotlight } from "../ui/spotlight-new";
 import SEO from "../SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
+import { SITE_CONFIG, buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const Contact = () => {
   const handleSubmit = (event) => {
@@ -18,6 +18,8 @@ const Contact = () => {
     { name: "Home", path: "/" },
     { name: "Contact", path: "/contact" },
   ]);
+  const contactEmail = SITE_CONFIG.contactEmail;
+  const supportEmail = SITE_CONFIG.supportEmail || SITE_CONFIG.contactEmail;
   const quickLinks = [
     { label: "Explore features", to: "/features" },
     { label: "Browse solutions", to: "/solutions" },
@@ -69,11 +71,15 @@ const Contact = () => {
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>
                 <span className="font-medium text-foreground">Email:</span>{" "}
-                hello@example.com
+                <a className="hover:underline" href={`mailto:${contactEmail}`}>
+                  {contactEmail}
+                </a>
               </p>
               <p>
-                <span className="font-medium text-foreground">Address:</span>{" "}
-                123 Innovation Street, Tech City
+                <span className="font-medium text-foreground">Support:</span>{" "}
+                <a className="hover:underline" href={`mailto:${supportEmail}`}>
+                  {supportEmail}
+                </a>
               </p>
             </div>
             <div className="mt-8 rounded-2xl border border-border bg-card/60 p-6">

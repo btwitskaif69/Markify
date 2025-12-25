@@ -163,7 +163,7 @@ const WhatIsMarkify = () => {
                             What is Markify?
                         </motion.h1>
                         <motion.p variants={fadeIn} className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                            Markify is a modern bookmark manager that helps you save, organize, and rediscover the content that matters most—without the chaos of browser bookmarks.
+                            Markify is a modern bookmark manager that helps you save, organize, and rediscover the content that matters most - without the chaos of browser bookmarks.
                         </motion.p>
                     </motion.div>
                 </section>
@@ -268,7 +268,7 @@ const WhatIsMarkify = () => {
                                     step: "04",
                                     icon: Cloud,
                                     title: "Access Anywhere",
-                                    desc: "Your bookmarks sync across all devices. Web, mobile, or extension—always in sync."
+                                    desc: "Your bookmarks sync across all devices. Web, mobile, or extension - always in sync."
                                 }
                             ].map((item, idx) => (
                                 <motion.div
@@ -303,7 +303,7 @@ const WhatIsMarkify = () => {
                             >
                                 <h2 className="text-3xl md:text-5xl font-bold mb-6">Who Uses Markify?</h2>
                                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                    Built for anyone who saves content from the web—and wants to actually find it later.
+                                    Built for anyone who saves content from the web - and wants to actually find it later.
                                 </p>
                             </motion.div>
 
@@ -420,7 +420,7 @@ const WhatIsMarkify = () => {
                             >
                                 <h2 className="text-3xl md:text-5xl font-bold mb-6">Markify vs Raindrop.io & Pinboard</h2>
                                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                    An honest comparison with popular bookmark managers. All are solid choices—here's how they differ.
+                                    An honest comparison with popular bookmark managers. All are solid choices - here's how they differ.
                                 </p>
                             </motion.div>
 
