@@ -1,20 +1,40 @@
 import { Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
 
 export function Error404() {
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  function handleMouseMove({ currentTarget, clientX, clientY }) {
+    const { left, top } = currentTarget.getBoundingClientRect()
+    mouseX.set(clientX - left)
+    mouseY.set(clientY - top)
+  }
+
   return (
-    <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center relative overflow-hidden font-sans selection:bg-orange-500/30">
+    <div
+      className="min-h-screen w-full bg-[#050505] flex items-center justify-center relative overflow-hidden font-sans selection:bg-orange-500/30"
+      onMouseMove={handleMouseMove}
+    >
 
       {/* Background Elements */}
       <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
-        {/* Ambient Glow */}
-        <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[120px]" />
-
-        {/* Large 404 Text Outline */}
+        {/* Large 404 Text - Base Layer (Dim) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[24rem] md:text-[64rem] font-bold text-transparent [-webkit-text-stroke:_1px_rgba(255,255,255,0.05)] select-none z-0 tracking-tighter leading-none font-sans">
           404
         </div>
+
+        {/* Large 404 Text - Highlight Layer (Spotlight) */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[24rem] md:text-[64rem] font-bold text-transparent [-webkit-text-stroke:_1px_var(--color-primary)] select-none z-0 tracking-tighter leading-none font-sans pointer-events-none"
+          style={{
+            maskImage: useMotionTemplate`radial-gradient(300px circle at ${mouseX}px ${mouseY}px, black, transparent)`
+          }}
+        >
+          404
+        </motion.div>
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center p-6 text-center">
