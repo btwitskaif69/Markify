@@ -20,49 +20,12 @@
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" />
   </noscript>
 
-  <!-- Google tag (gtag.js) - deferred to reduce main-thread work -->
-  <script>
-    (function () {
-      var gtagId = "G-T60SCR2ZW0";
-      function loadAnalytics() {
-        if (window.gtagLoaded) return;
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag("js", new Date());
-        gtag("config", gtagId);
-        var script = document.createElement("script");
-        script.async = true;
-        script.src = "https://www.googletagmanager.com/gtag/js?id=" + gtagId;
-        document.head.appendChild(script);
-        window.gtagLoaded = true;
-      }
-      var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      var saveData = connection && connection.saveData;
-      var slow = connection && /(^|\\s)(slow-2g|2g)($|\\s)/.test(connection.effectiveType || "");
-      if (saveData || slow) return;
-      if ("requestIdleCallback" in window) {
-        requestIdleCallback(loadAnalytics, { timeout: 2000 });
-      } else {
-        window.addEventListener("load", function () {
-          setTimeout(loadAnalytics, 2000);
-        });
-      }
-    })();
-  </script>
-
   <meta charset="UTF-8" />
   <!-- Favicon and App Icons -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="canonical" href="https://www.markify.tech/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bookmark Manager for Fast Search | Markify</title>
   <meta name="description"
@@ -150,6 +113,36 @@
     </main>
   </div>
   <script type="module" src="/src/main.jsx"></script>
+  <!-- Google tag (gtag.js) - deferred to reduce main-thread work -->
+  <script>
+    (function () {
+      var gtagId = "G-T60SCR2ZW0";
+      function loadAnalytics() {
+        if (window.gtagLoaded) return;
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag("js", new Date());
+        gtag("config", gtagId);
+        var script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.googletagmanager.com/gtag/js?id=" + gtagId;
+        document.head.appendChild(script);
+        window.gtagLoaded = true;
+      }
+      var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      var saveData = connection && connection.saveData;
+      var slow = connection && /(^|\\s)(slow-2g|2g)($|\\s)/.test(connection.effectiveType || "");
+      if (saveData || slow) return;
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(loadAnalytics, { timeout: 2000 });
+      } else {
+        window.addEventListener("load", function () {
+          setTimeout(loadAnalytics, 2000);
+        });
+      }
+    })();
+  </script>
 </body>
 
 </html>

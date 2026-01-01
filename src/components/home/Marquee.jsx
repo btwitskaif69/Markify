@@ -14,11 +14,11 @@ import PrismaLight from "@/assets/prisma-light.svg";
 import PrismaDark from "@/assets/prisma-dark.svg";
 
 const logoData = [
-    { name: "React", light: ReactLight, dark: ReactDark, width: 600, height: 181 },
+    { name: "React", light: ReactLight, dark: ReactDark, width: 180, height: 54 },
     { name: "Express", light: ExpressLight, dark: ExpressDark, width: 64, height: 64 },
-    { name: "Tailwind", light: TailwindLight, dark: TailwindDark, width: 96790, height: 12000 },
-    { name: "shadcn/ui", light: ShadcnLight, dark: ShadcnDark, width: 256, height: 256 },
-    { name: "Prisma", light: PrismaLight, dark: PrismaDark, width: 25986, height: 10214 },
+    { name: "Tailwind", light: TailwindLight, dark: TailwindDark, width: 320, height: 40 },
+    { name: "shadcn/ui", light: ShadcnLight, dark: ShadcnDark, width: 56, height: 56 },
+    { name: "Prisma", light: PrismaLight, dark: PrismaDark, width: 102, height: 40 },
 ];
 
 const Marquee = () => {

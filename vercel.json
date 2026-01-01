@@ -35,6 +35,45 @@
       }
     },
     {
+      "handle": "filesystem"
+    },
+    {
+      "src": "^/$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/(about|pricing|contact|blog|login|signup|forgot-password|verify-email|privacy|terms|cookies|refund-policy|cookie-settings|what-is-markify|solutions|features|search|cmd)/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/reset-password/[^/]+/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/blog/[^/]+/edit/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/blog/[^/]+/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/dashboard/[^/]+(?:/.*)?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/shared/(bookmark|collection)/[^/]+/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/solutions/[^/]+/?$",
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/features/[^/]+/?$",
+      "dest": "/index.html"
+    },
+    {
       "src": "/[^.]+",
       "dest": "/index.html",
       "status": 200

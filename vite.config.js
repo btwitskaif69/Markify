@@ -4,11 +4,37 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import viteCompression from "vite-plugin-compression"
 
+const asyncCssPlugin = () => ({
+  name: "async-css",
+  transformIndexHtml(html) {
+    const cssLinks = []
+    const updatedHtml = html.replace(
+      /<link rel="stylesheet"([^>]*?)href="([^"]+\\.css)"([^>]*)>/g,
+      (match, preAttrs, href, postAttrs) => {
+        if (!href.includes("/assets/")) return match
+        const attrs = `${preAttrs}${postAttrs}`
+        const crossorigin = /crossorigin/.test(attrs) ? " crossorigin" : ""
+        cssLinks.push({ href, crossorigin })
+        return `<link rel="preload"${crossorigin} as="style" href="${href}">\n  <link rel="stylesheet"${crossorigin} href="${href}" media="print" onload="this.media='all'">`
+      }
+    )
+
+    if (!cssLinks.length) return html
+
+    const noscriptLinks = cssLinks
+      .map(({ href, crossorigin }) => `    <link rel="stylesheet"${crossorigin} href="${href}">`)
+      .join("\n")
+
+    return updatedHtml.replace("</head>", `  <noscript>\n${noscriptLinks}\n  </noscript>\n</head>`)
+  },
+})
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    asyncCssPlugin(),
     // Gzip compression
     viteCompression({
       algorithm: 'gzip',
@@ -36,21 +62,23 @@ export default defineConfig({
         drop_debugger: true,
       },
     },
-    cssCodeSplit: true, // Split CSS for better caching
+    cssCodeSplit: false, // Reduce extra CSS requests for the initial load
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         manualChunks: {
-          // Core React
-          'react-core': ['react', 'react-dom'],
-          // Router
-          'router': ['react-router-dom'],
-          // UI Framework
-          'ui-radix': ['@radix-ui/react-slot', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-          // Utilities
-          'utils': ['class-variance-authority', 'clsx', 'tailwind-merge'],
-          // Icons
-          'icons': ['lucide-react'],
+          vendor: [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            'class-variance-authority',
+            'clsx',
+            'tailwind-merge',
+            'lucide-react',
+          ],
         },
       },
     },
