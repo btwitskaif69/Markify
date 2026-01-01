@@ -72,9 +72,9 @@ const App = () => {
           <Route path="/shared/bookmark/:shareId" element={<SharedBookmark />} />
           <Route path="/shared/collection/:shareId" element={<SharedCollection />} />
           <Route path="*" element={<Error404 />} />
-        </Routes>
-      </Suspense>
-    </ThemeProvider>
+        </Routes >
+      </Suspense >
+    </ThemeProvider >
   );
 };
 

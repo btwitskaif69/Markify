@@ -46,7 +46,7 @@ export function Error404() {
               Page Not Found
             </h1>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed whitespace-nowrap">
-              The page you are looking for doesn't exist or has been moved.
+              The page you are looking for doesn&apos;t exist or has been moved.
             </p>
           </div>
 
