@@ -15,7 +15,7 @@ const BlogEditor = lazy(() => import('./components/Pages/BlogEditor'));
 const AdminPanel = lazy(() => import('./components/dashboard/AdminPanel'));
 const LoginForm = lazy(() => import('./components/Forms/login-form').then(module => ({ default: module.LoginForm })));
 const SignupForm = lazy(() => import('./components/Forms/signup-form').then(module => ({ default: module.SignupForm })));
-const NotFoundPage = lazy(() => import('./components/NotFoundPage'));
+
 const ForgotPassword = lazy(() => import('./components/Forms/forgot-password'));
 const ResetPassword = lazy(() => import('./components/Forms/reset-password'));
 const VerifyEmail = lazy(() => import('./components/Forms/verify-email'));
@@ -34,6 +34,7 @@ const FeaturesPage = lazy(() => import('./components/Pages/Features'));
 const Feature = lazy(() => import('./components/Pages/Feature'));
 const SearchPage = lazy(() => import('./components/Pages/Search'));
 
+import { Error404 } from './components/pixeleted-404-not-found';
 const App = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -70,7 +71,7 @@ const App = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/shared/bookmark/:shareId" element={<SharedBookmark />} />
           <Route path="/shared/collection/:shareId" element={<SharedCollection />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </Suspense>
     </ThemeProvider>

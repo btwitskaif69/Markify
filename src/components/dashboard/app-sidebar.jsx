@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Link } from "react-router-dom";
 import { NavMain } from "@/components/dashboard/nav-main"
-import { NavShared } from "@/components/dashboard/NavShared"
+
 import { NavCollections } from "@/components/dashboard/nav-collections"
 import { NavUser } from "@/components/dashboard/nav-user"
 import { useAuth } from "@/context/AuthContext"
@@ -37,7 +37,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
-        <NavShared />
+
         <NavCollections
           collections={collections}
           onCreate={onCreateCollection}

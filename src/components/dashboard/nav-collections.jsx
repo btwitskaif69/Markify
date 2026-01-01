@@ -1,5 +1,5 @@
-import { Link, useParams } from 'react-router-dom';
-import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders, Share2 } from "lucide-react";
+import { Link, useParams, useLocation } from 'react-router-dom';
+import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders, Share2, Globe } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +13,30 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
 export function NavCollections({ collections = [], onCreate, onRename, onDelete, onShare }) {
   const { userId, collectionId: activeCollectionId } = useParams();
+  const location = useLocation();
 
   return (
     <SidebarGroup>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <Link to={`/dashboard/${userId}/shared`}>
+            <SidebarMenuButton
+              tooltip="Shared"
+              isActive={location.pathname === `/dashboard/${userId}/shared`}
+              className="data-[active=true]:bg-primary data-[active=true]:text-white mb-2"
+            >
+              <Globe className="h-4 w-4" />
+              <span>Shared</span>
+            </SidebarMenuButton>
+          </Link>
+        </SidebarMenuItem>
+      </SidebarMenu>
       <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
         <SidebarGroupLabel className="text-sm text-foreground">
           <div className="flex items-center gap-2">

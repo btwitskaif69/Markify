@@ -152,6 +152,7 @@
   --shadow-2xl: var(--shadow-2xl);
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-spin-slow: spin-slow 8s linear infinite;
 
   @keyframes marquee {
     from {
@@ -170,6 +171,16 @@
 
     to {
       transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
     }
   }
 }
@@ -250,4 +261,20 @@ input:-webkit-autofill:active {
 
 .animate-shine {
   animation: shine 2s linear infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
