@@ -26,6 +26,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
+  <link rel="canonical" href="https://www.markify.tech/" data-rh="true" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bookmark Manager for Fast Search | Markify</title>
   <meta name="description"
@@ -72,10 +73,42 @@
       font-size: 1.5rem;
       margin: 2rem 0 0.75rem;
     }
+    .seo-fallback h3 {
+      font-size: 1.125rem;
+      margin: 1.5rem 0 0.5rem;
+    }
     .seo-fallback p {
       margin: 0 0 1rem;
       line-height: 1.6;
       color: #475569;
+    }
+    .seo-fallback a {
+      color: #ea580c;
+      text-decoration: none;
+    }
+    .seo-fallback a:hover {
+      text-decoration: underline;
+    }
+    .seo-fallback ul {
+      margin: 0 0 1.25rem;
+      padding-left: 1.25rem;
+      color: #475569;
+      line-height: 1.6;
+    }
+    .seo-fallback figure {
+      margin: 1.5rem 0;
+    }
+    .seo-fallback img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    }
+    .seo-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      margin-top: 1rem;
     }
     .js .seo-fallback {
       display: none;
@@ -101,15 +134,61 @@
         Markify is a Bookmark Manager designed to help you save, organize, and search the web without losing track of
         important pages. Collect links, tag them, and find anything fast with smart search and clean collections.
       </p>
+      <p>
+        Built for makers, students, and teams, Markify gives you a calm, focused space to keep research, reading lists,
+        and project resources in one place. Instead of dozens of messy browser folders, you get a searchable library
+        that stays consistent across devices. Save a link, add context, and return later with confidence that it will
+        still be easy to find.
+      </p>
+      <figure>
+        <img
+          src="/images/dashboard-preview-dark-960.webp"
+          alt="Markify dashboard preview showing organized bookmark collections"
+          width="960"
+          height="540"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
       <h2>Save, organize, and search the web</h2>
       <p>
         Use Markify as your daily bookmark manager to keep research, reading lists, and project resources in one place.
         Import bookmarks from any browser, add notes, and share curated collections when you need to collaborate.
       </p>
       <p>
+        Markify supports fast tagging, flexible collections, and instant search so you can retrieve what you need in
+        seconds. Whether you are planning a launch, compiling study material, or running a content library, your links
+        stay tidy and easy to navigate. You can also share public collections for teams, clients, or communities when
+        collaboration matters.
+      </p>
+      <h3>What you can do with Markify</h3>
+      <ul>
+        <li>Create smart collections for projects, research, and inspiration.</li>
+        <li>Add notes and tags to keep every saved link searchable.</li>
+        <li>Share curated collections with teammates, students, or clients.</li>
+        <li>Access your bookmark library anywhere, on any device.</li>
+      </ul>
+      <p>
         As a lightweight bookmark manager, Markify keeps your links in sync across devices so your library is always
         ready when you are.
       </p>
+      <p>
+        We take privacy seriously. Your content stays private, and you remain in control of what you share. Learn more
+        about how bookmarks work in popular browsers from
+        <a href="https://support.google.com/chrome/answer/188842"> Google Chrome help</a> or
+        <a href="https://support.mozilla.org/en-US/kb/bookmarks-firefox"> Mozilla Firefox support</a>.
+      </p>
+      <h2>Explore Markify</h2>
+      <p>
+        Dive deeper into what Markify offers and find the best plan for your workflow.
+      </p>
+      <div class="seo-links">
+        <a href="/features">Features</a>
+        <a href="/pricing">Pricing</a>
+        <a href="/about">About</a>
+        <a href="/blog">Blog</a>
+        <a href="/contact">Contact</a>
+      </div>
     </main>
   </div>
   <script type="module" src="/src/main.jsx"></script>

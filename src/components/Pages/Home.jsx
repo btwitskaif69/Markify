@@ -1,5 +1,6 @@
 // Home.jsx
 import { lazy, Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
@@ -93,6 +94,58 @@ const Home = () => {
         </section>
 
         <Marquee />
+
+        <section className="py-16">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="max-w-3xl mx-auto text-center space-y-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Explore Markify
+              </h2>
+              <p className="text-muted-foreground text-base md:text-lg">
+                Dive into product details, compare plans, and learn how to get more value from your
+                bookmark library.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4 text-sm font-medium">
+                <Link to="/features" className="text-primary hover:underline">
+                  Features
+                </Link>
+                <Link to="/pricing" className="text-primary hover:underline">
+                  Pricing
+                </Link>
+                <Link to="/about" className="text-primary hover:underline">
+                  About
+                </Link>
+                <Link to="/blog" className="text-primary hover:underline">
+                  Blog
+                </Link>
+                <Link to="/contact" className="text-primary hover:underline">
+                  Contact
+                </Link>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Need background on how bookmarks work? See the official guidance from
+                <a
+                  href="https://support.google.com/chrome/answer/188842"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-1 text-primary hover:underline"
+                >
+                  Google Chrome
+                </a>
+                <span className="mx-1">and</span>
+                <a
+                  href="https://support.mozilla.org/en-US/kb/bookmarks-firefox"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Mozilla Firefox
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Features Section */}
         <LazySection fallback={<BelowFoldPlaceholder />}>
