@@ -20,6 +20,9 @@ import SEO from "@/components/SEO/SEO";
 
 // The URL now includes the full path to the login endpoint
 const API_URL = `${API_BASE_URL}/users/login`;
+const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
+
+import { signInWithGoogle } from "@/lib/firebase";
 
 export function LoginForm({ className, ...props }) {
   const { login } = useAuth();
@@ -34,6 +37,41 @@ export function LoginForm({ className, ...props }) {
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      const firebaseUser = await signInWithGoogle();
+      const idToken = await firebaseUser.getIdToken();
+
+      const response = await secureFetch(GOOGLE_AUTH_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Google Login failed.");
+      }
+
+      toast.success("Logged in with Google successfully!");
+      toast.success("Logged in with Google successfully!");
+      login(data.user, data.token);
+
+      if (data.isNewUser) {
+        navigate(`/dashboard/${data.user.id}?welcome=true`);
+      } else {
+        navigate(`/dashboard/${data.user.id}`);
+      }
+    } catch (error) {
+      console.error("Google Login error:", error);
+      toast.error(error.message || "Failed to login with Google.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -131,7 +169,13 @@ export function LoginForm({ className, ...props }) {
                 <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white border-none" disabled={isLoading}>
                   {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
-                <Button variant="outline" className="w-full bg-black border-zinc-800 text-white hover:bg-zinc-900 hover:text-white" disabled={isLoading}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full bg-black border-zinc-800 text-white hover:bg-zinc-900 hover:text-white"
+                  disabled={isLoading}
+                  onClick={handleGoogleLogin}
+                >
                   Login with Google
                 </Button>
               </div>

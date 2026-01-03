@@ -11,6 +11,7 @@ router.post('/resend-verification', userController.resendVerificationCode);
 router.post('/login', userController.loginUser);
 router.post('/forgot-password', userController.forgotPassword);
 router.post('/reset-password/:token', userController.resetPassword);
+router.post('/google-auth', userController.googleAuth);
 
 // --- Protected Routes (Token is required) ---
 router.get('/profile', protect, userController.getUserProfile);

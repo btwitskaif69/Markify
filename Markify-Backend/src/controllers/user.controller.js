@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // 1. Import jsonwebtoken
 const crypto = require('crypto'); // 1. Import the built-in crypto module
 const { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } = require('../services/email.service'); // 2. Import your email service
+const admin = require('../config/firebase'); // Import Firebase Admin
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -364,5 +365,80 @@ exports.updateUserProfile = async (req, res) => {
     console.error("updateUserProfile error:", error.message);
     console.error("Full error:", error);
     res.status(500).json({ message: error.message || "Internal Server Error" });
+  }
+};
+
+/**
+ * Handles Google Login/Signup.
+ */
+exports.googleAuth = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ message: "ID Token is required." });
+    }
+
+    // Verify the ID token via Firebase Admin
+    let decodedToken;
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken);
+    } catch (error) {
+      console.error("Firebase ID Token verification failed:", error);
+      return res.status(401).json({ message: "Invalid or expired token." });
+    }
+
+    const { email, name, picture, uid } = decodedToken;
+
+    // Check if user exists
+    let user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      // Create new user (using a random password since they use Google)
+      const randomPassword = crypto.randomBytes(16).toString('hex');
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: name || "Google User",
+          password: hashedPassword,
+          avatar: picture,
+          isVerified: true, // Verification trusted from Google
+        },
+      });
+
+      // Optionally send welcome email
+      sendWelcomeEmail(user.email, user.name).catch(err => console.error('Failed to send welcome email:', err));
+    } else {
+      // User exists - check if they have an avatar, if not and Google provides one, update it
+      if (!user.avatar && picture) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { avatar: picture },
+        });
+      }
+    }
+
+    // Generate App JWT
+    const token = generateToken(user.id);
+
+    // Return User and Token
+    const userResponse = { ...user };
+    delete userResponse.password;
+
+    res.status(200).json({
+      message: "Google Login successful",
+      user: userResponse,
+      token,
+      isNewUser: !user.createdAt || (new Date() - new Date(user.createdAt) < 10000) // Simple check if created in last 10s
+    });
+
+  } catch (error) {
+    console.error("googleAuth error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

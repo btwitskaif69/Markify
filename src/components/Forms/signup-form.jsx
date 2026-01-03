@@ -37,6 +37,41 @@ export function SignupForm({ className, ...props }) {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      const firebaseUser = await signInWithGoogle();
+      const idToken = await firebaseUser.getIdToken();
+
+      const response = await secureFetch(GOOGLE_AUTH_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Google Signup failed.");
+      }
+
+      toast.success("Signed up with Google successfully!");
+      toast.success("Signed up with Google successfully!");
+      login(data.user, data.token);
+
+      if (data.isNewUser) {
+        navigate(`/dashboard/${data.user.id}?welcome=true`);
+      } else {
+        navigate(`/dashboard/${data.user.id}`);
+      }
+    } catch (error) {
+      console.error("Google Signup error:", error);
+      toast.error(error.message || "Failed to sign up with Google.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -147,6 +182,7 @@ export function SignupForm({ className, ...props }) {
                   className="w-full bg-background"
                   disabled={isLoading}
                   type="button"
+                  onClick={handleGoogleLogin}
                 >
                   Sign up with Google
                 </Button>
