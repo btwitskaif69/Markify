@@ -10,6 +10,12 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+const missingKeys = Object.keys(firebaseConfig).filter(key => !firebaseConfig[key]);
+if (missingKeys.length > 0) {
+    console.error(`Firebase initialization failed! Missing keys: ${missingKeys.join(', ')}`);
+    console.error('Make sure these environment variables are set in your .env file or deployment settings (e.g., Vercel).');
+}
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
