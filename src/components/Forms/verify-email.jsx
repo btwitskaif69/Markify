@@ -155,7 +155,7 @@ export function VerifyEmail({ className, ...props }) {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background p-4">
+        <div className="flex items-center justify-center min-h-screen bg-background! p-4">
             <SEO
                 title="Verify email"
                 description="Verify your Markify email address."

@@ -395,6 +395,8 @@ exports.googleAuth = async (req, res) => {
       where: { email },
     });
 
+    let isNewUser = false;
+
     if (!user) {
       // Create new user (using a random password since they use Google)
       const randomPassword = crypto.randomBytes(16).toString('hex');
@@ -410,6 +412,8 @@ exports.googleAuth = async (req, res) => {
           isVerified: true, // Verification trusted from Google
         },
       });
+
+      isNewUser = true;
 
       // Optionally send welcome email
       sendWelcomeEmail(user.email, user.name).catch(err => console.error('Failed to send welcome email:', err));
@@ -434,7 +438,7 @@ exports.googleAuth = async (req, res) => {
       message: "Google Login successful",
       user: userResponse,
       token,
-      isNewUser: !user.createdAt || (new Date() - new Date(user.createdAt) < 10000) // Simple check if created in last 10s
+      isNewUser // Explicit flag
     });
 
   } catch (error) {

@@ -41,7 +41,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex items-center justify-center min-h-screen bg-background! p-4">
       <SEO
         title="Forgot password"
         description="Reset your Markify password."

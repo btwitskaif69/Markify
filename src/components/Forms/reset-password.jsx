@@ -38,7 +38,7 @@ export default function ResetPassword() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-      
+
       toast.success(data.message);
       navigate('/login');
     } catch (error) {
@@ -49,7 +49,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex items-center justify-center min-h-screen bg-background! p-4">
       <SEO
         title="Reset password"
         description="Set a new Markify password."
