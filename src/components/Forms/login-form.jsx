@@ -142,7 +142,7 @@ export function LoginForm({ className, ...props }) {
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password" className="text-white">Password</Label>
-                  <Link to="/forgot-password" className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-zinc-400 hover:text-white">
+                  <Link to="/forgot-password" className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-zinc-400 hover:text-primary">
                     Forgot your password?
                   </Link>
                 </div>
@@ -176,6 +176,13 @@ export function LoginForm({ className, ...props }) {
                 <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white border-none" disabled={isLoading}>
                   {isLoading ? 'Logging in...' : 'Login'}
                 </Button>
+
+                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-zinc-800">
+                  <span className="relative z-10 bg-black px-2 text-zinc-400">
+                    Or continue with
+                  </span>
+                </div>
+
                 <Button
                   type="button"
                   variant="outline"
@@ -189,10 +196,22 @@ export function LoginForm({ className, ...props }) {
                   Login with Google
                 </Button>
               </div>
+
+              <div className="text-center text-xs text-zinc-400 mt-4 text-balance">
+                By clicking continue, you agree to our{" "}
+                <a href="/terms" className="underline underline-offset-4 hover:text-white">
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a href="/privacy" className="underline underline-offset-4 hover:text-white">
+                  Privacy Policy
+                </a>
+                .
+              </div>
             </div>
             <div className="mt-4 text-center text-sm text-zinc-400">
               Don't have an account?{" "}
-              <Link to="/signup" className="underline underline-offset-4 hover:text-white text-white">
+              <Link to="/signup" className="underline underline-offset-4 hover:text-primary text-white">
                 Sign up
               </Link>
             </div>

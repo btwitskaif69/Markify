@@ -167,6 +167,13 @@ export function SignupForm({ className, ...props }) {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Creating account..." : "Create Account"}
                 </Button>
+
+                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+                  <span className="relative z-10 bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+
                 <Button
                   variant="outline"
                   className="w-full bg-background"
@@ -182,9 +189,21 @@ export function SignupForm({ className, ...props }) {
               </div>
             </div>
 
+            <div className="text-center text-xs text-muted-foreground mt-4 text-balance">
+              By clicking continue, you agree to our{" "}
+              <a href="/terms" className="underline underline-offset-4 hover:text-primary">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="/privacy" className="underline underline-offset-4 hover:text-primary">
+                Privacy Policy
+              </a>
+              .
+            </div>
+
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link to="/login" className="underline underline-offset-4">
+              <Link to="/login" className="underline underline-offset-4 hover:text-primary">
                 Log in
               </Link>
             </div>
