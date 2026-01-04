@@ -22,11 +22,12 @@ import SEO from "@/components/SEO/SEO";
 const API_URL = `${API_BASE_URL}/users/login`;
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
 
-import { signInWithGoogle } from "@/lib/firebase";
+import { signInWithGoogle, initializationError } from "@/lib/firebase";
 
 export function LoginForm({ className, ...props }) {
   const { login } = useAuth();
   const navigate = useNavigate();
+  // ... existing state ...
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,68 +40,9 @@ export function LoginForm({ className, ...props }) {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      const firebaseUser = await signInWithGoogle();
-      const idToken = await firebaseUser.getIdToken();
+  // ... handleGoogleLogin ...
 
-      const response = await secureFetch(GOOGLE_AUTH_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Google Login failed.");
-      }
-
-      toast.success("Logged in with Google successfully!");
-      toast.success("Logged in with Google successfully!");
-      login(data.user, data.token);
-
-      if (data.isNewUser) {
-        navigate(`/dashboard/${data.user.id}?welcome=true`);
-      } else {
-        navigate(`/dashboard/${data.user.id}`);
-      }
-    } catch (error) {
-      console.error("Google Login error:", error);
-      toast.error(error.message || "Failed to login with Google.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await secureFetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed. Please try again.");
-      }
-
-      toast.success("Logged in successfully!");
-      login(data.user, data.token);
-      navigate(`/dashboard/${data.user.id}`);
-    } catch (error) {
-      console.error("Login error:", error);
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // ... handleSubmit ...
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -111,6 +53,13 @@ export function LoginForm({ className, ...props }) {
       />
       <Card className={cn("w-full max-w-md bg-black border-zinc-800 text-white", className)} {...props}>
         <CardHeader>
+          {initializationError && (
+            <div className="mb-4 p-3 rounded-md bg-red-950/50 border border-red-900 text-red-200 text-sm">
+              <p className="font-semibold mb-1">Configuration Error</p>
+              <p>{initializationError}</p>
+              <p className="mt-1 text-xs text-red-300">Check your environment variables.</p>
+            </div>
+          )}
           <CardTitle className="text-2xl text-white">Login to your account</CardTitle>
           <CardDescription className="text-zinc-400">
             Enter your email and password below to login.

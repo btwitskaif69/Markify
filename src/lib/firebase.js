@@ -11,8 +11,10 @@ const firebaseConfig = {
 };
 
 const missingKeys = Object.keys(firebaseConfig).filter(key => !firebaseConfig[key]);
-if (missingKeys.length > 0) {
-    console.error(`Firebase initialization failed! Missing keys: ${missingKeys.join(', ')}`);
+export const initializationError = missingKeys.length > 0 ? `Missing keys: ${missingKeys.join(', ')}` : null;
+
+if (initializationError) {
+    console.error(`Firebase initialization failed! ${initializationError}`);
     console.error('Make sure these environment variables are set in your .env file or deployment settings (e.g., Vercel).');
 }
 
