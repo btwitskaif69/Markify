@@ -40,9 +40,67 @@ export function LoginForm({ className, ...props }) {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // ... handleGoogleLogin ...
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      const firebaseUser = await signInWithGoogle();
+      const idToken = await firebaseUser.getIdToken();
 
-  // ... handleSubmit ...
+      const response = await secureFetch(GOOGLE_AUTH_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Google Login failed.");
+      }
+
+      toast.success("Logged in with Google successfully!");
+      login(data.user, data.token);
+
+      if (data.isNewUser) {
+        navigate(`/dashboard/${data.user.id}?welcome=true`);
+      } else {
+        navigate(`/dashboard/${data.user.id}`);
+      }
+    } catch (error) {
+      console.error("Google Login error:", error);
+      toast.error(error.message || "Failed to login with Google.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await secureFetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed. Please try again.");
+      }
+
+      toast.success("Logged in successfully!");
+      login(data.user, data.token);
+      navigate(`/dashboard/${data.user.id}`);
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
