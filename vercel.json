@@ -24,6 +24,17 @@
   ],
   "redirects": [
     {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "markify.tech"
+        }
+      ],
+      "destination": "https://www.markify.tech/$1",
+      "permanent": true
+    },
+    {
       "source": "/Home",
       "destination": "/",
       "permanent": true
