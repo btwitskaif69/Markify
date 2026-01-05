@@ -192,6 +192,14 @@ const parseNumber = (value, fallback) => {
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const resolveHeadlessMode = (value) => {
+  if (typeof value === "boolean") return { rendererHeadless: value };
+  if (typeof value === "string" && value.length) {
+    return { rendererHeadless: true, launchHeadless: value };
+  }
+  return { rendererHeadless: true };
+};
+
 const prerender = async () => {
   if (process.env.SKIP_PRERENDER === "true") {
     console.log("Prerender skipped (SKIP_PRERENDER=true).");
@@ -221,17 +229,21 @@ const prerender = async () => {
   const args = serverlessChromium?.args?.length
     ? Array.from(new Set([...serverlessChromium.args, ...fallbackArgs]))
     : fallbackArgs;
+  const headlessConfig = resolveHeadlessMode(serverlessChromium?.headless);
   const launchOptions = {};
   if (serverlessChromium?.executablePath) {
     launchOptions.executablePath = serverlessChromium.executablePath;
   } else if (executablePath) {
     launchOptions.executablePath = executablePath;
   }
+  if (headlessConfig.launchHeadless) {
+    launchOptions.headless = headlessConfig.launchHeadless;
+  }
 
   const prerenderer = new Prerenderer({
     staticDir: DIST_DIR,
     renderer: new PuppeteerRenderer({
-      headless: serverlessChromium?.headless ?? true,
+      headless: headlessConfig.rendererHeadless,
       renderAfterTime,
       maxConcurrentRoutes,
       timeout,
