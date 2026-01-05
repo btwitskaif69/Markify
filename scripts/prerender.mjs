@@ -118,23 +118,50 @@ const ensureDist = async () => {
   }
 };
 
-const ensureChromiumDeps = () => {
-  if (process.platform !== "linux") return;
-  if (!process.env.VERCEL && !process.env.CI) return;
-  if (process.env.SKIP_CHROMIUM_DEPS === "true") return;
+const resolveAptGetPath = async () => {
+  const candidates = [
+    process.env.APT_GET_PATH,
+    "/usr/bin/apt-get",
+    "/bin/apt-get",
+    "/usr/local/bin/apt-get",
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) return candidate;
+  }
+
   try {
-    execSync("command -v apt-get", { stdio: "ignore" });
+    execSync("apt-get --version", { stdio: "ignore" });
+    return "apt-get";
   } catch (error) {
+    return null;
+  }
+};
+
+const ensureChromiumDeps = async () => {
+  if (process.platform !== "linux") return true;
+  if (!process.env.VERCEL && !process.env.CI) return true;
+  if (process.env.SKIP_CHROMIUM_DEPS === "true") return true;
+
+  const aptGetPath = await resolveAptGetPath();
+  if (!aptGetPath) {
     console.warn("apt-get not available; skipping Chromium dependency install.");
-    return;
+    return !process.env.VERCEL;
   }
 
   console.log("Installing Chromium system dependencies...");
-  execSync("apt-get update", { stdio: "inherit" });
-  execSync(
-    `apt-get install -y --no-install-recommends ${CHROMIUM_LINUX_DEPS.join(" ")}`,
-    { stdio: "inherit" }
-  );
+  const env = { ...process.env, DEBIAN_FRONTEND: "noninteractive" };
+  try {
+    execSync(`${aptGetPath} update`, { stdio: "inherit", env });
+    execSync(
+      `${aptGetPath} install -y --no-install-recommends ${CHROMIUM_LINUX_DEPS.join(" ")}`,
+      { stdio: "inherit", env }
+    );
+    return true;
+  } catch (error) {
+    console.warn("Chromium dependency install failed:", error.message);
+    return !process.env.VERCEL;
+  }
 };
 
 const fileExists = async (filePath) => {
@@ -261,7 +288,13 @@ const prerender = async () => {
     return;
   }
 
-  ensureChromiumDeps();
+  const depsReady = await ensureChromiumDeps();
+  if (!depsReady) {
+    console.warn(
+      "Skipping prerender because Chromium dependencies are unavailable in this environment."
+    );
+    return;
+  }
   await ensureDist();
   const routes = await buildRoutes();
 
