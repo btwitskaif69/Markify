@@ -164,6 +164,29 @@ const resolveChromeExecutablePath = async () => {
   return null;
 };
 
+const resolveServerlessChromium = async () => {
+  const isServerless =
+    process.env.VERCEL ||
+    process.env.AWS_EXECUTION_ENV ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME;
+  if (!isServerless) return null;
+
+  try {
+    const chromiumModule = await import("@sparticuz/chromium");
+    const chromium = chromiumModule.default || chromiumModule;
+    const executablePath = await chromium.executablePath();
+    if (!executablePath) return null;
+    return {
+      executablePath,
+      args: chromium.args || [],
+      headless: chromium.headless ?? true,
+    };
+  } catch (error) {
+    console.warn("Serverless Chromium unavailable:", error.message);
+    return null;
+  }
+};
+
 const parseNumber = (value, fallback) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -192,17 +215,28 @@ const prerender = async () => {
     4
   );
   const timeout = parseNumber(process.env.PRERENDER_TIMEOUT_MS, 60000);
+  const serverlessChromium = await resolveServerlessChromium();
   const executablePath = await resolveChromeExecutablePath();
+  const fallbackArgs = ["--no-sandbox", "--disable-setuid-sandbox"];
+  const args = serverlessChromium?.args?.length
+    ? Array.from(new Set([...serverlessChromium.args, ...fallbackArgs]))
+    : fallbackArgs;
+  const launchOptions = {};
+  if (serverlessChromium?.executablePath) {
+    launchOptions.executablePath = serverlessChromium.executablePath;
+  } else if (executablePath) {
+    launchOptions.executablePath = executablePath;
+  }
 
   const prerenderer = new Prerenderer({
     staticDir: DIST_DIR,
     renderer: new PuppeteerRenderer({
-      headless: true,
+      headless: serverlessChromium?.headless ?? true,
       renderAfterTime,
       maxConcurrentRoutes,
       timeout,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      launchOptions: executablePath ? { executablePath } : undefined,
+      args,
+      launchOptions: Object.keys(launchOptions).length ? launchOptions : undefined,
     }),
   });
 
