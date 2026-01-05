@@ -11,7 +11,20 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
   const { userId, collectionId: activeCollectionId } = useParams();
   const navigate = useNavigate();
 
-  const [allBookmarks, setAllBookmarks] = useState([]);
+  const [allBookmarks, setAllBookmarks] = useState(() => {
+    // Try to load from cache
+    if (user?.id) {
+      const cached = localStorage.getItem(`bookmarks_cache_${user.id}`);
+      if (cached) {
+        try {
+          return JSON.parse(cached);
+        } catch (e) {
+          console.error("Failed to parse bookmark cache", e);
+        }
+      }
+    }
+    return [];
+  });
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,6 +49,10 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
           // First load
           if (Array.isArray(data)) {
             setAllBookmarks(data);
+            // Update cache
+            if (user?.id) {
+              localStorage.setItem(`bookmarks_cache_${user.id}`, JSON.stringify(data));
+            }
           } else {
             console.error("Expected bookmarks to be an array, received:", data);
             setAllBookmarks([]);

@@ -66,6 +66,11 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete,
                 )}
 
                 <span className="group-data-[collapsible=icon]:hidden">{collection.name}</span>
+                {collection._count?.bookmarks > 0 && (
+                  <span className="ml-auto text-xs font-medium group-data-[active=true]:text-white group-data-[collapsible=icon]:hidden">
+                    {collection._count.bookmarks}
+                  </span>
+                )}
               </SidebarMenuButton>
             </Link>
 

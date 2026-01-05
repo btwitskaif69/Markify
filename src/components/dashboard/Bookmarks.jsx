@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import BookmarkFilters from "../Bookmarks/BookmarkFilters";
@@ -58,7 +58,7 @@ export default function Bookmarks({
   }, [isSelectionMode]);
 
   // Handle toggling selection of a bookmark
-  const handleToggleSelect = (bookmarkId) => {
+  const handleToggleSelect = useCallback((bookmarkId) => {
     setSelectedIds((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(bookmarkId)) {
@@ -68,10 +68,10 @@ export default function Bookmarks({
       }
       return newSet;
     });
-  };
+  }, []);
 
   // Handle select all visible bookmarks
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     if (selectedIds.size === filteredBookmarks.length) {
       // Deselect all
       setSelectedIds(new Set());
@@ -79,16 +79,16 @@ export default function Bookmarks({
       // Select all filtered bookmarks
       setSelectedIds(new Set(filteredBookmarks.map(b => b.id)));
     }
-  };
+  }, [selectedIds.size, filteredBookmarks]);
 
   // Open confirmation dialog before deleting
-  const handleDeleteSelectedClick = () => {
+  const handleDeleteSelectedClick = useCallback(() => {
     if (selectedIds.size === 0) return;
     setShowDeleteConfirm(true);
-  };
+  }, [selectedIds.size]);
 
   // Confirm and execute bulk delete
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     setShowDeleteConfirm(false);
     const idsToDelete = Array.from(selectedIds);
 
@@ -104,13 +104,13 @@ export default function Bookmarks({
     // Clear selection and exit selection mode
     setSelectedIds(new Set());
     setIsSelectionMode(false);
-  };
+  }, [selectedIds, onBulkDelete, onDelete]);
 
   // Enter selection mode and select the clicked bookmark
-  const handleEnterSelectionMode = (bookmarkId) => {
+  const handleEnterSelectionMode = useCallback((bookmarkId) => {
     setIsSelectionMode(true);
     setSelectedIds(new Set([bookmarkId]));
-  };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {

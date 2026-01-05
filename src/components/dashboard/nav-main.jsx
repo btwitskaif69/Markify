@@ -9,7 +9,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { Bookmark, Shield } from "lucide-react";
 
-export function NavMain() {
+export function NavMain({ totalBookmarks }) {
   const location = useLocation();
   const { user, isAdmin } = useAuth();
 
@@ -31,6 +31,11 @@ export function NavMain() {
             >
               <Bookmark className="h-4 w-4" />
               <span>All Bookmarks</span>
+              {totalBookmarks > 0 && (
+                <span className="ml-auto text-xs font-medium group-data-[active=true]:text-white">
+                  {totalBookmarks}
+                </span>
+              )}
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>

@@ -275,14 +275,19 @@ export default function ImportExport({ onRefetch }) {
       <SidebarMenu>
         {/* Import Dropdown */}
         <SidebarMenuItem>
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="w-full">
               <SidebarMenuButton tooltip="Import Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
                 <Upload className="h-4 w-4" />
                 <span>Import Data</span>
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuContent
+              align="start"
+              side="right"
+              sideOffset={4}
+              className="w-48"
+            >
               <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleImportClick('json')} className="cursor-pointer">
@@ -303,14 +308,19 @@ export default function ImportExport({ onRefetch }) {
 
         {/* Export Dropdown */}
         <SidebarMenuItem>
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger className="w-full">
               <SidebarMenuButton tooltip="Export Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
                 <Download className="h-4 w-4" />
                 <span>Export Data</span>
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuContent
+              align="start"
+              side="right"
+              sideOffset={4}
+              className="w-48"
+            >
               <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleExport('json')} className="cursor-pointer">

@@ -6,6 +6,11 @@ exports.getCollections = async (req, res) => {
     const collections = await prisma.collection.findMany({
       where: { userId: req.user.id },
       orderBy: { name: 'asc' },
+      include: {
+        _count: {
+          select: { bookmarks: true },
+        },
+      },
     });
     res.status(200).json(collections);
   } catch (error) {

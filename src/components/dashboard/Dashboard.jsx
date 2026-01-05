@@ -171,6 +171,7 @@ export default function Dashboard() {
           onRenameCollection={handleRenameCollectionClick}
           onDeleteCollection={openDeleteConfirm}
           onShareCollection={handleShareCollection}
+          totalBookmarks={allBookmarks.length}
         />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">

@@ -1,12 +1,12 @@
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 const API_URL = API_BASE_URL;
 
 export function useBookmarkActions(authFetch, user, setAllBookmarks, collections) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = async (bookmarkData, editingBookmark, previewData, closeDialog) => {
+  const handleSubmit = useCallback(async (bookmarkData, editingBookmark, previewData, closeDialog) => {
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null;
     const url = isEditing
@@ -41,9 +41,9 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [authFetch, user.id, setAllBookmarks]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
     let originalBookmarks;
     setAllBookmarks((prev) => {
       originalBookmarks = prev;
@@ -59,9 +59,9 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
         setAllBookmarks(originalBookmarks);
       }
     }
-  };
+  }, [authFetch, setAllBookmarks]);
 
-  const handleToggleFavorite = async (id, currentIsFavorite) => {
+  const handleToggleFavorite = useCallback(async (id, currentIsFavorite) => {
     let originalBookmarks;
     setAllBookmarks((prev) => {
       originalBookmarks = prev;
@@ -81,9 +81,9 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
         setAllBookmarks(originalBookmarks);
       }
     }
-  };
+  }, [authFetch, setAllBookmarks]);
 
-  const handleMoveBookmark = async (bookmarkId, collectionId) => {
+  const handleMoveBookmark = useCallback(async (bookmarkId, collectionId) => {
     try {
       const response = await authFetch(`${API_URL}/bookmarks/${bookmarkId}`, {
         method: "PATCH",
@@ -109,9 +109,9 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     } catch {
       toast.error("Failed to move bookmark.");
     }
-  };
+  }, [authFetch, setAllBookmarks, collections]);
 
-  const handleImportBookmarks = async (bookmarks) => {
+  const handleImportBookmarks = useCallback(async (bookmarks) => {
     try {
       const response = await authFetch(`${API_URL}/bookmarks/import`, {
         method: "POST",
@@ -130,12 +130,12 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
       toast.error(err.message);
       return false;
     }
-  };
+  }, [authFetch]);
 
   /**
    * Fetches preview for a single bookmark and updates the state
    */
-  const fetchSinglePreview = async (bookmarkId) => {
+  const fetchSinglePreview = useCallback(async (bookmarkId) => {
     try {
       const response = await authFetch(`${API_URL}/bookmarks/${bookmarkId}/fetch-preview`, {
         method: "POST",
@@ -155,13 +155,13 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     } catch {
       return false;
     }
-  };
+  }, [authFetch, setAllBookmarks]);
 
   /**
    * Syncs bookmarks by importing Chrome's exported bookmarks HTML file
    * User exports from Chrome: Bookmarks → Bookmark Manager → ⋮ → Export bookmarks
    */
-  const handleSyncLocalBookmarks = async () => {
+  const handleSyncLocalBookmarks = useCallback(async () => {
     return new Promise((resolve) => {
       // Create a file input to let user select the bookmarks HTML file
       const fileInput = document.createElement('input');
@@ -247,12 +247,12 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
 
       fileInput.click();
     });
-  };
+  }, [authFetch, user.id, setAllBookmarks]);
 
   /**
    * Deletes multiple bookmarks at once using the bulk delete endpoint
    */
-  const handleBulkDelete = async (ids) => {
+  const handleBulkDelete = useCallback(async (ids) => {
     if (!ids || ids.length === 0) return;
 
     // Optimistically remove from state
@@ -278,13 +278,13 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
         setAllBookmarks(originalBookmarks);
       }
     }
-  };
+  }, [authFetch, setAllBookmarks]);
 
   /**
    * Fetches previews for a list of bookmark IDs one at a time
    * This runs in the background and updates bookmarks as previews are fetched
    */
-  const fetchPreviewsInBackground = async (bookmarkIds) => {
+  const fetchPreviewsInBackground = useCallback(async (bookmarkIds) => {
     let successCount = 0;
     const total = bookmarkIds.length;
 
@@ -303,7 +303,7 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     if (successCount > 0) {
       toast.success(`Loaded ${successCount} preview images`);
     }
-  };
+  }, [fetchSinglePreview]);
 
   return { handleSubmit, handleDelete, handleBulkDelete, handleToggleFavorite, handleMoveBookmark, handleImportBookmarks, handleSyncLocalBookmarks, isSubmitting };
 }
