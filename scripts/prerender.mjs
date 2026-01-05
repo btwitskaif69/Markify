@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { execSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +11,41 @@ import { SOLUTIONS, getSolutionPath } from "../src/data/solutions.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DIST_DIR = path.join(ROOT_DIR, "dist");
+
+const CHROMIUM_LINUX_DEPS = [
+  "libasound2",
+  "libatk-bridge2.0-0",
+  "libatk1.0-0",
+  "libcairo2",
+  "libcups2",
+  "libdbus-1-3",
+  "libdrm2",
+  "libexpat1",
+  "libfontconfig1",
+  "libgbm1",
+  "libglib2.0-0",
+  "libgtk-3-0",
+  "libatspi2.0-0",
+  "libnspr4",
+  "libnss3",
+  "libpango-1.0-0",
+  "libpangocairo-1.0-0",
+  "libx11-6",
+  "libx11-xcb1",
+  "libxcb1",
+  "libxkbcommon0",
+  "libxcomposite1",
+  "libxcursor1",
+  "libxdamage1",
+  "libxext6",
+  "libxfixes3",
+  "libxshmfence1",
+  "libxi6",
+  "libxrandr2",
+  "libxrender1",
+  "libxss1",
+  "libxtst6",
+];
 
 const STATIC_ROUTES = [
   "/",
@@ -80,6 +116,25 @@ const ensureDist = async () => {
   } catch (error) {
     throw new Error("dist/ not found. Run the Vite build before prerendering.");
   }
+};
+
+const ensureChromiumDeps = () => {
+  if (process.platform !== "linux") return;
+  if (!process.env.VERCEL && !process.env.CI) return;
+  if (process.env.SKIP_CHROMIUM_DEPS === "true") return;
+  try {
+    execSync("command -v apt-get", { stdio: "ignore" });
+  } catch (error) {
+    console.warn("apt-get not available; skipping Chromium dependency install.");
+    return;
+  }
+
+  console.log("Installing Chromium system dependencies...");
+  execSync("apt-get update", { stdio: "inherit" });
+  execSync(
+    `apt-get install -y --no-install-recommends ${CHROMIUM_LINUX_DEPS.join(" ")}`,
+    { stdio: "inherit" }
+  );
 };
 
 const fileExists = async (filePath) => {
@@ -206,6 +261,7 @@ const prerender = async () => {
     return;
   }
 
+  ensureChromiumDeps();
   await ensureDist();
   const routes = await buildRoutes();
 
