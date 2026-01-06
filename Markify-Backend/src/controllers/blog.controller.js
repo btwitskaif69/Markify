@@ -206,7 +206,8 @@ exports.getMyPosts = async (req, res) => {
       where: { authorId: req.user.id },
       orderBy: { createdAt: "desc" },
     });
-
+    console.log(`Fetched ${posts.length} posts for user ${req.user.id}`);
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.status(200).json(posts);
   } catch (error) {
     console.error(error);

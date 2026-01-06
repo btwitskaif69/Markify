@@ -167,6 +167,51 @@ const BlogEditor = () => {
     }
   };
 
+  // --- Image Compression Utility ---
+  const compressImage = async (file, { maxWidth = 1920, quality = 0.8 } = {}) => {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.src = URL.createObjectURL(file);
+      image.onload = () => {
+        URL.revokeObjectURL(image.src);
+        const canvas = document.createElement('canvas');
+        let width = image.width;
+        let height = image.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Canvas is empty'));
+              return;
+            }
+            // created a new file with the compressed content
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg', // Force JPEG for better compression
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      image.onerror = (err) => {
+        URL.revokeObjectURL(image.src);
+        reject(err);
+      };
+    });
+  };
+
   const handleCoverImageUpload = async (event) => {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
@@ -179,14 +224,20 @@ const BlogEditor = () => {
 
     // Upload to R2
     try {
-      const formData = new FormData();
-      // Since the backend expects a JSON with base64, we need to convert it first or use FormData if backend supported it.
-      // My upload.controller expects JSON body { image, folder }.
+      const toastId = toast.loading("Compressing & uploading...");
 
-      // Let's rely on the base64 conversion we just did.
-      // Wait for reader? Or do it again.
+      // Compress image before upload
+      let fileToUpload = file;
+      try {
+        if (file.size > 1024 * 1024) { // Only compress if > 1MB
+          fileToUpload = await compressImage(file);
+          console.log(`Compressed image from ${(file.size / 1024 / 1024).toFixed(2)}MB to ${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB`);
+        }
+      } catch (e) {
+        console.error("Compression failed, trying original file:", e);
+      }
 
-      // Simpler: Just convert to base64 promise
+      // Convert to base64
       const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -194,9 +245,7 @@ const BlogEditor = () => {
         reader.onerror = error => reject(error);
       });
 
-      const base64Image = await toBase64(file);
-
-      const toastId = toast.loading("Uploading image...");
+      const base64Image = await toBase64(fileToUpload);
 
       const res = await authFetch(`${API_URL}/upload`, {
         method: 'POST',
@@ -206,16 +255,20 @@ const BlogEditor = () => {
         })
       });
 
-      if (!res.ok) throw new Error("Upload failed");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Upload failed");
+      }
 
       const data = await res.json();
       setCoverImage(data.url);
       toast.dismiss(toastId);
-      toast.success("Image uploaded to R2!");
+      toast.success("Image uploaded successfully!");
 
     } catch (error) {
       console.error(error);
-      toast.error("Failed to upload image to R2.");
+      toast.dismiss();
+      toast.error(`Upload failed: ${error.message}`);
     }
   };
 

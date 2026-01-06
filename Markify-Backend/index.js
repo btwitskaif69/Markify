@@ -62,8 +62,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/collections', collectionRoutes);
 
-// Apply caching to blog routes (cache for 60 seconds)
-app.use('/api/blog', cacheMiddleware(60), blogRoutes);
+// Apply caching to blog routes (MOVED TO ROUTER LEVEL)
+app.use('/api/blog', blogRoutes);
 
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/reviews', reviewRoutes);

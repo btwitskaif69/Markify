@@ -107,7 +107,7 @@ export default function AdminPanel() {
   const fetchPosts = async () => {
     setIsPostsLoading(true);
     try {
-      const res = await authFetch(`${API_URL}/blog/me/list`);
+      const res = await authFetch(`${API_URL}/blog/me/list?t=${Date.now()}`);
       if (!res.ok) throw new Error("Failed to load blog posts.");
       const data = await res.json();
       setPosts(data);
