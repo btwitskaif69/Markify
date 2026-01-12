@@ -57,7 +57,7 @@ const fetchBlogPosts = async () => {
     const posts = await response.json();
     if (!Array.isArray(posts)) return [];
     return posts
-      .filter((post) => post?.slug)
+      .filter((post) => post?.slug && post?.published !== false)
       .map((post) => ({
         path: `/blog/${post.slug}`,
         changefreq: "monthly",

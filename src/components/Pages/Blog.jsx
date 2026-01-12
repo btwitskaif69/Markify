@@ -20,6 +20,12 @@ import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const API_URL = API_BASE_URL;
 
+const getPrerenderedPosts = () => {
+  if (typeof window === "undefined") return [];
+  const payload = window.__PRERENDER_BLOG_LIST__;
+  return Array.isArray(payload) ? payload : [];
+};
+
 const TiltCard = ({ children, className }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -80,8 +86,10 @@ const item = {
 };
 
 const Blog = () => {
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const initialPosts = getPrerenderedPosts();
+  const hasPrerenderedPosts = initialPosts.length > 0;
+  const [posts, setPosts] = useState(initialPosts);
+  const [isLoading, setIsLoading] = useState(!hasPrerenderedPosts);
   const [error, setError] = useState(null);
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
@@ -89,6 +97,11 @@ const Blog = () => {
   ]);
 
   useEffect(() => {
+    if (hasPrerenderedPosts) {
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
     const fetchPosts = async () => {
       try {
         const res = await secureFetch(`${API_URL}/blog`);
@@ -104,7 +117,7 @@ const Blog = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [hasPrerenderedPosts]);
 
   return (
     <>

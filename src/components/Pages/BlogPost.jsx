@@ -16,6 +16,22 @@ import {
 
 const API_URL = API_BASE_URL;
 
+const getPrerenderedPost = (slug) => {
+  if (typeof window === "undefined") return null;
+  const payload = window.__PRERENDER_BLOG_POST__;
+  if (!payload || payload.slug !== slug) return null;
+  return payload;
+};
+
+const getPrerenderedLatestPosts = (slug) => {
+  if (typeof window === "undefined") return [];
+  const latest = window.__PRERENDER_BLOG_LATEST__;
+  if (Array.isArray(latest)) return latest;
+  const list = window.__PRERENDER_BLOG_LIST__;
+  if (!Array.isArray(list)) return [];
+  return list.filter((post) => post?.slug && post.slug !== slug).slice(0, 3);
+};
+
 // Helper function to render markdown-like content
 const renderContent = (content) => {
   if (!content) return { __html: "" };
@@ -69,9 +85,11 @@ const renderContent = (content) => {
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const [post, setPost] = useState(null);
-  const [latestPosts, setLatestPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const initialPost = getPrerenderedPost(slug);
+  const initialLatestPosts = getPrerenderedLatestPosts(slug);
+  const [post, setPost] = useState(initialPost);
+  const [latestPosts, setLatestPosts] = useState(initialLatestPosts);
+  const [isLoading, setIsLoading] = useState(!initialPost);
   const [error, setError] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -89,8 +107,22 @@ const BlogPost = () => {
   }, []);
 
   useEffect(() => {
+    const prerenderedPost = getPrerenderedPost(slug);
+    const prerenderedLatest = getPrerenderedLatestPosts(slug);
+    if (prerenderedPost) {
+      setPost(prerenderedPost);
+      setLatestPosts(prerenderedLatest);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setPost(null);
+    setLatestPosts(prerenderedLatest);
+    setError(null);
+    setIsLoading(true);
+
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         // Fetch current post
         const postRes = await secureFetch(`${API_URL}/blog/${slug}`);

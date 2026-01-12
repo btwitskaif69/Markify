@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -42,6 +43,7 @@ const SEO = ({
   const resolvedImageAlt = imageAlt || title || SITE_CONFIG.name;
   const robotsValue = robots || (noindex ? "noindex, nofollow" : "index, follow");
   const shouldIndex = !robotsValue.toLowerCase().includes("noindex");
+  const isPrerender = typeof window !== "undefined" && window.__PRERENDER_STATUS;
   const resolvedStructuredData = [
     includeSiteSchema ? buildOrganizationSchema() : null,
     includeSiteSchema ? buildWebsiteSchema() : null,
@@ -60,8 +62,18 @@ const SEO = ({
       : []),
   ].filter(Boolean);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (!isPrerender) return;
+    const notify = () => {
+      document.dispatchEvent(new Event("markify:prerender-ready"));
+    };
+    const raf = requestAnimationFrame(notify);
+    return () => cancelAnimationFrame(raf);
+  }, [isPrerender, canonicalUrl, fullTitle, metaDescription, robotsValue]);
+
   return (
-    <Helmet>
+    <Helmet defer={!isPrerender}>
       {/* Standard metadata */}
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />

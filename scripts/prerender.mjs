@@ -62,13 +62,14 @@ const STATIC_ROUTES = [
   "/refund-policy",
   "/cookie-settings",
 ];
+const PRERENDER_READY_EVENT = "markify:prerender-ready";
 
 const normalizeRoute = (route) => {
   if (!route) return null;
   return route.startsWith("/") ? route : `/${route}`;
 };
 
-const fetchBlogRoutes = async () => {
+const fetchBlogPosts = async () => {
   if (process.env.SKIP_BLOG_PRERENDER === "true") return [];
   const blogApi =
     process.env.PRERENDER_BLOG_API ||
@@ -81,24 +82,23 @@ const fetchBlogRoutes = async () => {
     }
     const posts = await response.json();
     if (!Array.isArray(posts)) return [];
-    return posts
-      .filter((post) => post?.slug)
-      .map((post) => normalizeRoute(`/blog/${post.slug}`))
-      .filter(Boolean);
+    return posts.filter((post) => post?.slug && post?.published !== false);
   } catch (error) {
     console.warn("Prerender blog fetch skipped:", error.message);
     return [];
   }
 };
 
-const buildRoutes = async () => {
+const buildRoutes = async (blogPosts = []) => {
   const solutionRoutes = SOLUTIONS.map((solution) =>
     normalizeRoute(getSolutionPath(solution.slug))
   ).filter(Boolean);
   const featureRoutes = FEATURES.map((feature) =>
     normalizeRoute(getFeaturePath(feature.slug))
   ).filter(Boolean);
-  const blogRoutes = await fetchBlogRoutes();
+  const blogRoutes = blogPosts
+    .map((post) => normalizeRoute(`/blog/${post.slug}`))
+    .filter(Boolean);
 
   return Array.from(
     new Set([
@@ -109,6 +109,16 @@ const buildRoutes = async () => {
     ])
   ).filter(Boolean);
 };
+
+const getBlogSlug = (route) => {
+  const path = (route || "").split("?")[0].split("#")[0];
+  const parts = path.split("/").filter(Boolean);
+  if (parts[0] !== "blog" || parts.length < 2) return null;
+  return parts[1];
+};
+
+const buildLatestPosts = (posts, currentId) =>
+  posts.filter((post) => post?.id !== currentId).slice(0, 3);
 
 const ensureDist = async () => {
   try {
@@ -296,7 +306,11 @@ const prerender = async () => {
     return;
   }
   await ensureDist();
-  const routes = await buildRoutes();
+  const blogPosts = await fetchBlogPosts();
+  const blogPostMap = new Map(
+    blogPosts.map((post) => [post.slug, post]).filter(([slug]) => slug)
+  );
+  const routes = await buildRoutes(blogPosts);
 
   if (!routes.length) {
     console.log("No routes to prerender.");
@@ -334,10 +348,30 @@ const prerender = async () => {
     renderer: new PuppeteerRenderer({
       headless: headlessConfig.rendererHeadless,
       renderAfterTime,
+      renderAfterDocumentEvent: PRERENDER_READY_EVENT,
       maxConcurrentRoutes,
       timeout,
       args,
       launchOptions: Object.keys(launchOptions).length ? launchOptions : undefined,
+      pageSetup: async (page, route) => {
+        if (!blogPosts.length) return;
+        const normalizedRoute = (route || "").split("?")[0].split("#")[0];
+        if (normalizedRoute === "/blog") {
+          await page.evaluateOnNewDocument((payload) => {
+            window.__PRERENDER_BLOG_LIST__ = payload;
+          }, blogPosts);
+          return;
+        }
+        const slug = getBlogSlug(normalizedRoute);
+        if (!slug) return;
+        const post = blogPostMap.get(slug);
+        if (!post) return;
+        const latestPosts = buildLatestPosts(blogPosts, post.id);
+        await page.evaluateOnNewDocument((payload) => {
+          window.__PRERENDER_BLOG_POST__ = payload.post;
+          window.__PRERENDER_BLOG_LATEST__ = payload.latest;
+        }, { post, latest: latestPosts });
+      },
     }),
   });
 
