@@ -15,7 +15,7 @@ function Footer() {
   }));
 
   return (
-    <footer className="relative bg-background text-foreground overflow-hidden pb-20 pt-24 border-t border-border/40">
+    <footer className="relative bg-background text-foreground overflow-hidden pb-8 pt-24 border-t border-border/40">
       {/* Content Container */}
       <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
         {/* Top Section: Logo & Links */}
@@ -31,7 +31,7 @@ function Footer() {
                   height={40}
                   loading="lazy"
                   decoding="async"
-                  className="h-10 w-10 brightness-0 invert dark:invert-0 opacity-100 hover:animate-spin"
+                  className="h-10 w-10 brightness-0 invert transition-transform duration-500 ease-out group-hover:rotate-[360deg]"
                 />
               </div>
               <span className="text-3xl font-bold tracking-tight text-foreground">
@@ -182,7 +182,7 @@ function Footer() {
 
         {/* Bottom Bar: Copyright & Legal */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-muted-foreground font-medium pt-8 border-t border-border/40">
-          <p>Ac 2025 Markify Inc. All rights reserved.</p>
+          <p>© 2026 Markify Inc. All rights reserved.</p>
           <div className="flex gap-8">
             <Link to="/privacy" className="hover:text-primary transition-colors duration-200">
               Privacy policy
@@ -205,7 +205,7 @@ function Footer() {
         className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none flex justify-center items-end"
         aria-hidden="true"
       >
-        <h1 className="text-[25vw] leading-[0.75] font-semibold text-foreground/5 tracking-tighter whitespace-nowrap transform translate-y-[20%]">
+        <h1 className="text-[25vw] leading-[0.75] font-semibold text-foreground/5 tracking-tight whitespace-nowrap transform translate-y-[20%]">
           Markify
         </h1>
       </div>

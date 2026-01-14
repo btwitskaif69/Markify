@@ -4,7 +4,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft, Calendar, User, Clock } from "lucide-react";
+import { ArrowLeft, Calendar, User, Clock } from "lucide-react";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import { secureFetch } from "@/lib/secureApi";
 import SEO from "../SEO/SEO";
@@ -211,11 +212,7 @@ const BlogPost = () => {
           <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)]"></div>
         </div>
 
-        {isLoading && (
-          <div className="flex justify-center items-center h-[50vh] relative z-10">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        )}
+        {isLoading && <LoadingSpinner />}
         {error && !isLoading && (
           <div className="container mx-auto px-4 py-20 text-center relative z-10">
             <p className="text-destructive text-lg mb-4">{error}</p>
