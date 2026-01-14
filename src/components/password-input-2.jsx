@@ -30,7 +30,7 @@ const STRENGTH_CONFIG = {
   }
 };
 
-const PasswordInput = ({ value, onChange, id = "password", placeholder = "Password" }) => {
+const PasswordInput = ({ value, onChange, id = "password", placeholder = "Password", maxLength = 64 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const calculateStrength = useMemo(() => {
@@ -55,6 +55,7 @@ const PasswordInput = ({ value, onChange, id = "password", placeholder = "Passwo
           value={value}
           onChange={onChange}
           placeholder={placeholder}
+          maxLength={maxLength}
           aria-invalid={calculateStrength.score < 4}
           aria-describedby='password-strength'
           className='w-full p-2 border rounded-md bg-background outline-none focus:ring-1 focus:ring-ring border-input pr-10'

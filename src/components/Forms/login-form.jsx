@@ -160,6 +160,7 @@ export function LoginForm({ className, ...props }) {
                     onChange={handleChange}
                     disabled={isLoading}
                     required
+                    maxLength={64}
                     className="bg-background!"
                   />
                   {formData.password.length > 0 && (
@@ -184,7 +185,7 @@ export function LoginForm({ className, ...props }) {
                   </Button>
                   {lastLoginMethod === 'email' && (
                     <span className="absolute -top-3 right-0 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 animate-in fade-in zoom-in duration-300">
-                      Last
+                      Last Used
                     </span>
                   )}
                 </div>
@@ -210,7 +211,7 @@ export function LoginForm({ className, ...props }) {
                   </Button>
                   {lastLoginMethod === 'google' && (
                     <span className="absolute -top-3 right-0 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10 animate-in fade-in zoom-in duration-300">
-                      Last
+                      Last used
                     </span>
                   )}
                 </div>

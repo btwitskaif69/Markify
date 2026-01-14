@@ -50,6 +50,10 @@ app.get('/', (req, res) => {
 const encryptResponse = require("./src/middleware/encryptionMiddleware");
 const rateLimitMiddleware = require("./src/middleware/rateLimitMiddleware");
 const cacheMiddleware = require("./src/middleware/cacheMiddleware");
+const wafMiddleware = require("./src/middleware/wafMiddleware");
+
+// Apply WAF protection to all API routes (must be before other middleware)
+app.use('/api', wafMiddleware);
 
 // Apply rate limiting to all API routes
 app.use('/api', rateLimitMiddleware);
