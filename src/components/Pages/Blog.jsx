@@ -70,19 +70,12 @@ const TiltCard = ({ children, className }) => {
   );
 };
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      duration: 0.2,
-    },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.15 } },
+// Animation for individual blog cards - matches BookmarkCard
+const cardAnimation = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: false, amount: 0.2 },
+  transition: { duration: 0.3, ease: "easeOut" },
 };
 
 const Blog = () => {
@@ -214,14 +207,15 @@ const Blog = () => {
             )}
 
             {!isLoading && !error && posts.length > 0 && (
-              <motion.div
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-              >
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {posts.map((post) => (
-                  <motion.article key={post.id} variants={item}>
+                  <motion.article
+                    key={post.id}
+                    initial={cardAnimation.initial}
+                    whileInView={cardAnimation.whileInView}
+                    viewport={cardAnimation.viewport}
+                    transition={cardAnimation.transition}
+                  >
                     <Link
                       to={`/blog/${post.slug}`}
                       className="group block h-full perspective-1000"
@@ -267,7 +261,7 @@ const Blog = () => {
                               </CardDescription>
                             )}
                           </CardContent>
-                          <CardFooter className="pt-0 pb-5 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity -translate-y-2 group-hover:translate-y-0">
+                          <CardFooter className="pt-0 pb-5 text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
                             Read article &rarr;
                           </CardFooter>
                         </Card>
@@ -275,7 +269,7 @@ const Blog = () => {
                     </Link>
                   </motion.article>
                 ))}
-              </motion.div>
+              </div>
             )}
           </div>
         </section>
