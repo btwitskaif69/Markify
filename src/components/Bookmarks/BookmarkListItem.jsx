@@ -1,10 +1,11 @@
+import { memo } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ExternalLink, Edit, Trash2, Star } from "lucide-react"
 
-export default function BookmarkListItem({
+function BookmarkListItem({
   bookmark,
   onEdit,
   onDelete,
@@ -106,3 +107,6 @@ export default function BookmarkListItem({
     </Card>
   )
 }
+
+// React.memo prevents re-renders when props haven't changed (rerender-memo)
+export default memo(BookmarkListItem)

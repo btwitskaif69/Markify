@@ -1,11 +1,19 @@
 // components/Bookmarks/BookmarkStats.jsx
+import { useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tag, Star, Filter } from "lucide-react"
 
 export default function BookmarkStats({ bookmarks }) {
-  const total = bookmarks.length
-  const favorites = bookmarks.filter((b) => b.isFavorite).length
-  const categories = new Set(bookmarks.map((b) => b.category)).size
+  // Single pass through bookmarks array (js-combine-iterations)
+  const { total, favorites, categories } = useMemo(() => {
+    let favCount = 0;
+    const categorySet = new Set();
+    for (const b of bookmarks) {
+      if (b.isFavorite) favCount++;
+      categorySet.add(b.category);
+    }
+    return { total: bookmarks.length, favorites: favCount, categories: categorySet.size };
+  }, [bookmarks]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">

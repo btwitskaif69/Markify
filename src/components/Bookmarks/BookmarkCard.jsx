@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, memo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -20,7 +20,7 @@ import {
   DropdownMenuSubContent
 } from "@/components/ui/dropdown-menu"
 
-export default function BookmarkCard({
+function BookmarkCard({
   bookmark,
   collections,
   onMove,
@@ -253,3 +253,6 @@ export default function BookmarkCard({
     </motion.div>
   )
 }
+
+// React.memo prevents re-renders when props haven't changed (rerender-memo)
+export default memo(BookmarkCard)
