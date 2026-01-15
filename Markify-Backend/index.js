@@ -10,6 +10,7 @@ const blogRoutes = require('./src/routes/blog.routes');
 const geminiRoutes = require('./src/routes/gemini.routes');
 const reviewRoutes = require('./src/routes/review.routes');
 const uploadRoutes = require('./src/routes/upload.routes');
+const contactRoutes = require('./src/routes/contact.routes');
 const errorHandler = require("./src/middleware/error.middleware");
 
 const app = express();
@@ -68,6 +69,7 @@ app.use('/api/collections', collectionRoutes);
 
 // Apply caching to blog routes (MOVED TO ROUTER LEVEL)
 app.use('/api/blog', blogRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use('/api/gemini', geminiRoutes);
 app.use('/api/reviews', reviewRoutes);

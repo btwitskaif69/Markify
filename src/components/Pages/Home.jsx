@@ -61,7 +61,7 @@ const Home = () => {
   ]);
 
   const pageDescription =
-    "Markify is a Bookmark Manager that helps you save, organize, and search links fast with smart collections.";
+    "Never lose a bookmark again. Save links in one click, organize them into smart collections, and find any bookmark with lightning-fast search. Markify is the 100% free bookmark manager designed for productivity.";
   const webAppSchema = buildWebApplicationSchema({
     description: pageDescription,
     url: getCanonicalUrl("/"),
@@ -71,7 +71,7 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="Bookmark Manager for Fast Search"
+        title="The Smarter Bookmark Manager | Save, Organize & Find Instantly"
         description={pageDescription}
         canonical={getCanonicalUrl("/")}
         structuredData={structuredData}
@@ -80,6 +80,9 @@ const Home = () => {
           "save bookmarks",
           "organize links",
           "search bookmarks",
+          "free bookmark manager",
+          "bookmark organizer",
+          "link manager",
         ]}
       />
       <Navbar />

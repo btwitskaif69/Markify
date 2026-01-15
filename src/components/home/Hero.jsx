@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "../ui/spotlight-new";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import SparklesIcon from "@/components/ui/sparkles-icon";
 import { Link } from "react-router-dom";
 import ShinyText from "../ShinyText";
 
 const Hero = () => {
+  const sparklesRef = useRef(null);
+
   return (
     <div className="relative w-full overflow-x-clip">
       {/* Grid background */}
@@ -35,8 +38,10 @@ const Hero = () => {
             <Button
               variant="outline"
               className="group border px-6 py-3 rounded-full inline-flex items-center gap-1 text-sm font-medium cursor-pointer bg-transparent!"
+              onMouseEnter={() => sparklesRef.current?.startAnimation()}
+              onMouseLeave={() => sparklesRef.current?.stopAnimation()}
             >
-              <Sparkles className="text-yellow-400 fill-yellow-400 w-5 h-5" />
+              <SparklesIcon ref={sparklesRef} size={25} color="#facc15" strokeWidth={2} className="fill-yellow-400" />
               <ShinyText
                 text="Never Lose a Bookmark Again!"
                 disabled={false}
@@ -48,13 +53,14 @@ const Hero = () => {
           </Link>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-medium leading-tight tracking-tight text-foreground max-w-6xl">
-            Save, Organize, and Access Your Bookmarks Smarter
+          <h1 className="mt-6 text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-semibold leading-[1.1] tracking-tight text-foreground">
+            <span className="block">The <span className="text-primary">Smarter</span> Bookmark Manager.</span>
+            <span className="block">Save. Organize. Find <span className="text-primary">Instantly.</span></span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl mb-5">
-            Keep every link organized, searchable, and accessible with Markify's fast, modern Bookmark Manager.
+          <p className="mt-6 text-lg md:text-2xl text-muted-foreground max-w-4xl mb-5">
+            Never lose a bookmark again. Save links in one click, organize them into smart collections, and find any bookmark with lightning-fast search. Markify is the 100% free bookmark manager designed for productivity.
           </p>
 
           {/* Buttons */}

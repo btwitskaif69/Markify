@@ -240,6 +240,7 @@ const WHITELISTED_ROUTES = [
     '/api/users/login',
     '/api/users/initiate-signup',
     '/api/users/google-auth',
+    '/api/contact',
 ];
 
 // Check if route is whitelisted
