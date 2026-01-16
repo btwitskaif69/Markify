@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider";
 import LoadingSpinner from './components/ui/LoadingSpinner';
+import PublicLayout from './components/layouts/PublicLayout';
 
 // Lazy load components
 const Dashboard = lazy(() => import('./components/dashboard/Dashboard'));
@@ -38,49 +39,59 @@ const UseCaseIntent = lazy(() => import('./components/Pages/UseCaseIntent'));
 const UseCaseDetail = lazy(() => import('./components/Pages/UseCaseDetail'));
 
 import { Error404 } from './components/pixeleted-404-not-found';
+
 const App = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/new" element={<BlogEditor />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/blog/:slug/edit" element={<BlogEditor />} />
+          {/* Public pages with Lenis smooth scroll */}
+          <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+          <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
+          <Route path="/pricing" element={<PublicLayout><PricingPage /></PublicLayout>} />
+          <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
+          <Route path="/blog" element={<PublicLayout><Blog /></PublicLayout>} />
+          <Route path="/blog/:slug" element={<PublicLayout><BlogPost /></PublicLayout>} />
+          <Route path="/solutions" element={<PublicLayout><Solutions /></PublicLayout>} />
+          <Route path="/solutions/:slug" element={<PublicLayout><Solution /></PublicLayout>} />
+          <Route path="/features" element={<PublicLayout><FeaturesPage /></PublicLayout>} />
+          <Route path="/features/:slug" element={<PublicLayout><Feature /></PublicLayout>} />
+          <Route path="/use-cases" element={<PublicLayout><UseCases /></PublicLayout>} />
+          <Route path="/use-cases/:intent" element={<PublicLayout><UseCaseIntent /></PublicLayout>} />
+          <Route path="/use-cases/:intent/:industry" element={<PublicLayout><UseCaseDetail /></PublicLayout>} />
+          <Route path="/what-is-markify" element={<PublicLayout><WhatIsMarkify /></PublicLayout>} />
+          <Route path="/privacy" element={<PublicLayout><PrivacyPolicy /></PublicLayout>} />
+          <Route path="/terms" element={<PublicLayout><TermsOfService /></PublicLayout>} />
+          <Route path="/cookies" element={<PublicLayout><CookiePolicy /></PublicLayout>} />
+          <Route path="/refund-policy" element={<PublicLayout><RefundPolicy /></PublicLayout>} />
+          <Route path="/cookie-settings" element={<PublicLayout><CookieSettings /></PublicLayout>} />
+          <Route path="/search" element={<PublicLayout><SearchPage /></PublicLayout>} />
+          <Route path="/shared/bookmark/:shareId" element={<PublicLayout><SharedBookmark /></PublicLayout>} />
+          <Route path="/shared/collection/:shareId" element={<PublicLayout><SharedCollection /></PublicLayout>} />
+
+          {/* Auth pages - no smooth scroll needed */}
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+
+          {/* Dashboard/Admin pages - native scroll for complex interactions */}
           <Route path="/dashboard/:userId" element={<Dashboard />} />
           <Route path="/dashboard/:userId/shared" element={<Dashboard />} />
           <Route path="/dashboard/:userId/collections/:collectionId" element={<Dashboard />} />
           <Route path="/dashboard/:userId/admin" element={<AdminPanel />} />
           <Route path="/cmd" element={<CmdK />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/cookies" element={<CookiePolicy />} />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
-          <Route path="/cookie-settings" element={<CookieSettings />} />
-          <Route path="/what-is-markify" element={<WhatIsMarkify />} />
-          <Route path="/solutions" element={<Solutions />} />
-          <Route path="/solutions/:slug" element={<Solution />} />
-          <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/features/:slug" element={<Feature />} />
-          <Route path="/use-cases" element={<UseCases />} />
-          <Route path="/use-cases/:intent" element={<UseCaseIntent />} />
-          <Route path="/use-cases/:intent/:industry" element={<UseCaseDetail />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/shared/bookmark/:shareId" element={<SharedBookmark />} />
-          <Route path="/shared/collection/:shareId" element={<SharedCollection />} />
+
+          {/* Blog editor - needs native scroll for editing */}
+          <Route path="/blog/new" element={<BlogEditor />} />
+          <Route path="/blog/:slug/edit" element={<BlogEditor />} />
+
+          {/* 404 */}
           <Route path="*" element={<Error404 />} />
-        </Routes >
-      </Suspense >
-    </ThemeProvider >
+        </Routes>
+      </Suspense>
+    </ThemeProvider>
   );
 };
 
