@@ -33,6 +33,9 @@ const Solution = lazy(() => import('./components/Pages/Solution'));
 const FeaturesPage = lazy(() => import('./components/Pages/Features'));
 const Feature = lazy(() => import('./components/Pages/Feature'));
 const SearchPage = lazy(() => import('./components/Pages/Search'));
+const UseCases = lazy(() => import('./components/Pages/UseCases'));
+const UseCaseIntent = lazy(() => import('./components/Pages/UseCaseIntent'));
+const UseCaseDetail = lazy(() => import('./components/Pages/UseCaseDetail'));
 
 import { Error404 } from './components/pixeleted-404-not-found';
 const App = () => {
@@ -68,6 +71,9 @@ const App = () => {
           <Route path="/solutions/:slug" element={<Solution />} />
           <Route path="/features" element={<FeaturesPage />} />
           <Route path="/features/:slug" element={<Feature />} />
+          <Route path="/use-cases" element={<UseCases />} />
+          <Route path="/use-cases/:intent" element={<UseCaseIntent />} />
+          <Route path="/use-cases/:intent/:industry" element={<UseCaseDetail />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/shared/bookmark/:shareId" element={<SharedBookmark />} />
           <Route path="/shared/collection/:shareId" element={<SharedCollection />} />

@@ -2,6 +2,7 @@ export const NAV_LINKS = [
   { name: "Home", link: "/" },
   { name: "Features", link: "/features" },
   { name: "Solutions", link: "/solutions" },
+  { name: "Use Cases", link: "/use-cases" },
   { name: "Pricing", link: "/pricing" },
   { name: "Blog", link: "/blog" },
   { name: "Contact", link: "/contact" },
@@ -10,6 +11,7 @@ export const NAV_LINKS = [
 export const PRODUCT_LINKS = [
   { label: "Features", to: "/features" },
   { label: "Solutions", to: "/solutions" },
+  { label: "Use Cases", to: "/use-cases" },
   { label: "Pricing", to: "/pricing" },
   { label: "What is Markify?", to: "/what-is-markify" },
   { label: "Blog", to: "/blog" },

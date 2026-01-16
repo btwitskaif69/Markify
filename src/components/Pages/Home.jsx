@@ -112,6 +112,9 @@ const Home = () => {
                 <Link to="/features" className="text-primary hover:underline">
                   Features
                 </Link>
+                <Link to="/use-cases" className="text-primary hover:underline">
+                  Use cases
+                </Link>
                 <Link to="/pricing" className="text-primary hover:underline">
                   Pricing
                 </Link>

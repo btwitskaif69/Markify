@@ -7,6 +7,11 @@ import Prerenderer from "@prerenderer/prerenderer";
 import PuppeteerRenderer from "@prerenderer/renderer-puppeteer";
 import { FEATURES, getFeaturePath } from "../src/data/features.js";
 import { SOLUTIONS, getSolutionPath } from "../src/data/solutions.js";
+import {
+  getPseoIntentIndex,
+  getPseoIntentPath,
+  getPseoRoutes,
+} from "../src/lib/pseo.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -56,6 +61,7 @@ const STATIC_ROUTES = [
   "/blog",
   "/contact",
   "/what-is-markify",
+  "/use-cases",
   "/privacy",
   "/terms",
   "/cookies",
@@ -96,6 +102,17 @@ const buildRoutes = async (blogPosts = []) => {
   const featureRoutes = FEATURES.map((feature) =>
     normalizeRoute(getFeaturePath(feature.slug))
   ).filter(Boolean);
+  const pseoIntentRoutes = getPseoIntentIndex()
+    .map((intent) => normalizeRoute(getPseoIntentPath(intent.slug)))
+    .filter(Boolean);
+  const pseoLimit = parseNumber(process.env.PSEO_PRERENDER_LIMIT, 250);
+  const pseoOffset = parseNumber(process.env.PSEO_PRERENDER_OFFSET, 0);
+  const pseoDetailRoutes = getPseoRoutes({
+    limit: pseoLimit,
+    offset: pseoOffset,
+  })
+    .map((route) => normalizeRoute(route.path))
+    .filter(Boolean);
   const blogRoutes = blogPosts
     .map((post) => normalizeRoute(`/blog/${post.slug}`))
     .filter(Boolean);
@@ -105,6 +122,8 @@ const buildRoutes = async (blogPosts = []) => {
       ...STATIC_ROUTES.map(normalizeRoute),
       ...solutionRoutes,
       ...featureRoutes,
+      ...pseoIntentRoutes,
+      ...pseoDetailRoutes,
       ...blogRoutes,
     ])
   ).filter(Boolean);
@@ -279,10 +298,10 @@ const resolveServerlessChromium = async () => {
   }
 };
 
-const parseNumber = (value, fallback) => {
+function parseNumber(value, fallback) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
-};
+}
 
 const resolveHeadlessMode = (value) => {
   if (typeof value === "boolean") return { rendererHeadless: value };

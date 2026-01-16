@@ -8,4 +8,4 @@ Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
 
-Sitemap: https://www.markify.tech/sitemap.xml
+Sitemap: https://www.markify.tech/sitemap-index.xml

@@ -32,6 +32,13 @@ const STATIC_PAGES = [
     keywords: ["solutions", "use cases", "teams"],
   },
   {
+    title: "Use Cases",
+    description: "Programmatic SEO workflows organized by intent and industry.",
+    path: "/use-cases",
+    type: "Page",
+    keywords: ["use cases", "programmatic seo", "industry workflows"],
+  },
+  {
     title: "Pricing",
     description: "Simple, transparent pricing for Free, Pro, and Team plans.",
     path: "/pricing",
