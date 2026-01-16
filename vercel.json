@@ -57,7 +57,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!about|solutions|features|pricing|blog|contact|what-is-markify|privacy|terms|cookies|refund-policy|cookie-settings|assets|images|favicon|site.webmanifest|robots.txt|sitemap.xml).*)",
+      "source": "/((?!assets|images|favicon|site.webmanifest|robots.txt|sitemap.xml|sitemap-index\\.xml|sitemap-).*)",
       "destination": "/index.html"
     }
   ]
