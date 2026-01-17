@@ -1,7 +1,11 @@
 const redis = require("../db/redis");
 const prisma = require("../db/prismaClient");
 
-// ... (existing imports and helpers)
+// Admin emails list - same as auth middleware
+const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
+
+// Helper: Check if user is admin
+const isAdmin = (user) => user && ADMIN_EMAILS.includes(user.email);
 
 const clearBlogCache = async () => {
   if (!process.env.UPSTASH_REDIS_REST_URL || !redis) return;
@@ -122,7 +126,8 @@ exports.updatePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    if (existing.authorId !== req.user.id) {
+    // Allow admins to edit any post, or authors to edit their own
+    if (existing.authorId !== req.user.id && !isAdmin(req.user)) {
       return res.status(403).json({ message: "Not allowed to edit this post." });
     }
 
@@ -177,7 +182,8 @@ exports.deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    if (existing.authorId !== req.user.id) {
+    // Allow admins to delete any post, or authors to delete their own
+    if (existing.authorId !== req.user.id && !isAdmin(req.user)) {
       return res
         .status(403)
         .json({ message: "Not allowed to delete this post." });
