@@ -302,8 +302,11 @@ const scanObject = (obj, depth = 0) => {
 // Main WAF middleware
 const wafMiddleware = (req, res, next) => {
     try {
+        // Use originalUrl for whitelist check (includes the full path like /api/blog/...)
+        const fullPath = req.originalUrl || req.url;
+
         // Skip whitelisted routes (they may contain code snippets)
-        if (isWhitelistedRoute(req.path)) {
+        if (isWhitelistedRoute(fullPath)) {
             return next();
         }
 
