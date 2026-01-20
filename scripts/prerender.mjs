@@ -167,7 +167,7 @@ const resolveAptGetPath = async () => {
   }
 };
 
-const ensureChromiumDeps = async () => {
+const ensureChromiumDeps = async ({ allowWithoutDeps = false } = {}) => {
   if (process.platform !== "linux") return true;
   if (!process.env.VERCEL && !process.env.CI) return true;
   if (process.env.SKIP_CHROMIUM_DEPS === "true") return true;
@@ -175,7 +175,7 @@ const ensureChromiumDeps = async () => {
   const aptGetPath = await resolveAptGetPath();
   if (!aptGetPath) {
     console.warn("apt-get not available; skipping Chromium dependency install.");
-    return !process.env.VERCEL;
+    return allowWithoutDeps || !process.env.VERCEL;
   }
 
   console.log("Installing Chromium system dependencies...");
@@ -189,7 +189,7 @@ const ensureChromiumDeps = async () => {
     return true;
   } catch (error) {
     console.warn("Chromium dependency install failed:", error.message);
-    return !process.env.VERCEL;
+    return allowWithoutDeps || !process.env.VERCEL;
   }
 };
 
@@ -317,7 +317,10 @@ const prerender = async () => {
     return;
   }
 
-  const depsReady = await ensureChromiumDeps();
+  const serverlessChromium = await resolveServerlessChromium();
+  const depsReady = await ensureChromiumDeps({
+    allowWithoutDeps: Boolean(serverlessChromium),
+  });
   if (!depsReady) {
     console.warn(
       "Skipping prerender because Chromium dependencies are unavailable in this environment."
@@ -345,7 +348,6 @@ const prerender = async () => {
     4
   );
   const timeout = parseNumber(process.env.PRERENDER_TIMEOUT_MS, 60000);
-  const serverlessChromium = await resolveServerlessChromium();
   const executablePath = await resolveChromeExecutablePath();
   const fallbackArgs = ["--no-sandbox", "--disable-setuid-sandbox"];
   const args = serverlessChromium?.args?.length
@@ -373,6 +375,9 @@ const prerender = async () => {
       args,
       launchOptions: Object.keys(launchOptions).length ? launchOptions : undefined,
       pageSetup: async (page, route) => {
+        await page.evaluateOnNewDocument(() => {
+          window.__PRERENDER_STATUS = true;
+        });
         if (!blogPosts.length) return;
         const normalizedRoute = (route || "").split("?")[0].split("#")[0];
         if (normalizedRoute === "/blog") {

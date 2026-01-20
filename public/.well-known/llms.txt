@@ -1,0 +1,20 @@
+# Markify
+> Bookmark manager for saving, organizing, and finding links with fast search and smart collections.
+
+## Primary URLs
+- https://www.markify.tech/
+- https://www.markify.tech/features
+- https://www.markify.tech/pricing
+- https://www.markify.tech/use-cases
+- https://www.markify.tech/blog
+- https://www.markify.tech/contact
+
+## Product Notes
+- Save links, add notes and tags, and search your bookmark library.
+- Create collections and share public collections when needed.
+- Access bookmarks across devices via the web app and browser extension.
+
+## Policies
+- https://www.markify.tech/privacy
+- https://www.markify.tech/terms
+- https://www.markify.tech/refund-policy

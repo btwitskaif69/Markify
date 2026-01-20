@@ -1,0 +1,702 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://markify.tech/schema.json",
+    "title": "Markify Project Schema",
+    "description": "JSON Schema for the Markify bookmark manager application - defines all data models, API payloads, and configuration structures",
+    "type": "object",
+    "definitions": {
+        "User": {
+            "type": "object",
+            "description": "Represents a registered user in the Markify system",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "User's display name",
+                    "minLength": 1
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address (unique)"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Hashed password (never exposed in API responses)"
+                },
+                "avatar": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "format": "uri",
+                    "description": "URL to user's avatar image"
+                },
+                "isVerified": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether the user's email has been verified"
+                },
+                "isSubscribed": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether the user has an active subscription"
+                },
+                "subscriptionEnds": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "format": "date-time",
+                    "description": "Subscription expiration date"
+                },
+                "geminiUsage": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "description": "Count of AI/Gemini API calls made by the user"
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "email",
+                "password"
+            ]
+        },
+        "PasswordResetToken": {
+            "type": "object",
+            "description": "Token used for password reset requests",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "token": {
+                    "type": "string",
+                    "description": "Unique reset token"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Token creation timestamp"
+                },
+                "expiresAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Token expiration timestamp"
+                },
+                "userId": {
+                    "type": "string",
+                    "description": "Reference to the user who requested the reset"
+                }
+            },
+            "required": [
+                "id",
+                "token",
+                "createdAt",
+                "expiresAt",
+                "userId"
+            ]
+        },
+        "EmailVerificationToken": {
+            "type": "object",
+            "description": "Token used for email verification during signup",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email being verified"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "User's name for the pending registration"
+                },
+                "hashedPassword": {
+                    "type": "string",
+                    "description": "Hashed password for the pending registration"
+                },
+                "code": {
+                    "type": "string",
+                    "description": "Verification code sent to email"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Token creation timestamp"
+                },
+                "expiresAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Token expiration timestamp"
+                }
+            },
+            "required": [
+                "id",
+                "email",
+                "name",
+                "hashedPassword",
+                "code",
+                "createdAt",
+                "expiresAt"
+            ]
+        },
+        "Collection": {
+            "type": "object",
+            "description": "A collection/folder for organizing bookmarks",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Collection name (unique per user)",
+                    "minLength": 1
+                },
+                "userId": {
+                    "type": "string",
+                    "description": "Owner of the collection"
+                },
+                "shareId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Unique share token for public access"
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "userId"
+            ]
+        },
+        "Bookmark": {
+            "type": "object",
+            "description": "A saved bookmark/link",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "userId": {
+                    "type": "string",
+                    "description": "Owner of the bookmark"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Bookmark title (unique per user)",
+                    "minLength": 1
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL of the bookmarked page"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description or notes about the bookmark"
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Category classification for the bookmark"
+                },
+                "tags": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Comma-separated tags for the bookmark"
+                },
+                "isFavorite": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether the bookmark is marked as favorite"
+                },
+                "previewImage": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "format": "uri",
+                    "description": "URL to preview/thumbnail image"
+                },
+                "favicon": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "format": "uri",
+                    "description": "URL to the site's favicon"
+                },
+                "shareId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Unique share token for public access"
+                },
+                "collectionId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Collection this bookmark belongs to"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Creation timestamp"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Last update timestamp"
+                }
+            },
+            "required": [
+                "id",
+                "userId",
+                "title",
+                "url",
+                "description",
+                "category"
+            ]
+        },
+        "BlogPost": {
+            "type": "object",
+            "description": "A blog post/article",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Blog post title",
+                    "minLength": 1
+                },
+                "slug": {
+                    "type": "string",
+                    "description": "URL-friendly slug (unique)",
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Full blog post content (HTML/Markdown)"
+                },
+                "excerpt": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Short excerpt/summary for previews"
+                },
+                "coverImage": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "format": "uri",
+                    "description": "URL to cover image"
+                },
+                "published": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether the post is published/visible"
+                },
+                "authorId": {
+                    "type": "string",
+                    "description": "Author's user ID"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Creation timestamp"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Last update timestamp"
+                }
+            },
+            "required": [
+                "id",
+                "title",
+                "slug",
+                "content",
+                "authorId"
+            ]
+        },
+        "ReviewStatus": {
+            "type": "string",
+            "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+            ],
+            "description": "Status of a user review"
+        },
+        "Review": {
+            "type": "object",
+            "description": "A user review/testimonial",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier (CUID format)"
+                },
+                "rating": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "description": "Star rating (1-5)"
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Review text content"
+                },
+                "status": {
+                    "$ref": "#/definitions/ReviewStatus",
+                    "default": "PENDING"
+                },
+                "userId": {
+                    "type": "string",
+                    "description": "User who submitted the review (one per user)"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Creation timestamp"
+                }
+            },
+            "required": [
+                "id",
+                "rating",
+                "content",
+                "userId"
+            ]
+        },
+        "ApiResponse": {
+            "type": "object",
+            "description": "Standard API response wrapper",
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "description": "Whether the request was successful"
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Human-readable message"
+                },
+                "data": {
+                    "description": "Response payload (varies by endpoint)"
+                },
+                "error": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Error message if success is false"
+                }
+            },
+            "required": [
+                "success"
+            ]
+        },
+        "AuthCredentials": {
+            "type": "object",
+            "description": "Login request payload",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            },
+            "required": [
+                "email",
+                "password"
+            ]
+        },
+        "RegisterPayload": {
+            "type": "object",
+            "description": "Registration request payload",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "email": {
+                    "type": "string",
+                    "format": "email"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            },
+            "required": [
+                "name",
+                "email",
+                "password"
+            ]
+        },
+        "CreateBookmarkPayload": {
+            "type": "object",
+            "description": "Payload for creating a new bookmark",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "collectionId": {
+                    "type": "string"
+                },
+                "isFavorite": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "title",
+                "url",
+                "description",
+                "category"
+            ]
+        },
+        "UpdateBookmarkPayload": {
+            "type": "object",
+            "description": "Payload for updating an existing bookmark",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "collectionId": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "isFavorite": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "CreateCollectionPayload": {
+            "type": "object",
+            "description": "Payload for creating a new collection",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "CreateBlogPostPayload": {
+            "type": "object",
+            "description": "Payload for creating a new blog post",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "slug": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "excerpt": {
+                    "type": "string"
+                },
+                "coverImage": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "published": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "title",
+                "slug",
+                "content"
+            ]
+        },
+        "CreateReviewPayload": {
+            "type": "object",
+            "description": "Payload for submitting a review",
+            "properties": {
+                "rating": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                },
+                "content": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "rating",
+                "content"
+            ]
+        },
+        "PaginationParams": {
+            "type": "object",
+            "description": "Standard pagination query parameters",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                },
+                "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 20
+                },
+                "sortBy": {
+                    "type": "string"
+                },
+                "sortOrder": {
+                    "type": "string",
+                    "enum": [
+                        "asc",
+                        "desc"
+                    ],
+                    "default": "desc"
+                }
+            }
+        },
+        "BookmarkSearchParams": {
+            "type": "object",
+            "description": "Search/filter parameters for bookmarks",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query for title, description, or URL"
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Filter by category"
+                },
+                "collectionId": {
+                    "type": "string",
+                    "description": "Filter by collection"
+                },
+                "isFavorite": {
+                    "type": "boolean",
+                    "description": "Filter favorites only"
+                },
+                "tags": {
+                    "type": "string",
+                    "description": "Filter by tag"
+                }
+            }
+        }
+    },
+    "properties": {
+        "project": {
+            "type": "object",
+            "description": "Project metadata",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "const": "markify"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "const": "Modern bookmark manager with smart organization, lightning-fast search, and Chrome extension"
+                },
+                "repository": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "techStack": {
+                    "type": "object",
+                    "properties": {
+                        "frontend": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": [
+                                "React",
+                                "Vite",
+                                "TailwindCSS",
+                                "shadcn/ui",
+                                "Framer Motion"
+                            ]
+                        },
+                        "backend": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": [
+                                "Node.js",
+                                "Express",
+                                "Prisma",
+                                "PostgreSQL"
+                            ]
+                        },
+                        "deployment": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "default": [
+                                "Vercel"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

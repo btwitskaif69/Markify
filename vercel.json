@@ -57,7 +57,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets|images|favicon|site.webmanifest|robots.txt|sitemap.xml|sitemap-index\\.xml|sitemap-).*)",
+      "source": "/((?!assets|images|favicon|site.webmanifest|robots.txt|sitemap.xml|sitemap-index\\.xml|sitemap-|llms\\.txt|\\.well-known/llms\\.txt).*)",
       "destination": "/index.html"
     }
   ]
