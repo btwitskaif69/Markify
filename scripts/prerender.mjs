@@ -16,6 +16,9 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DIST_DIR = path.join(ROOT_DIR, "dist");
+const IS_VERCEL = Boolean(process.env.VERCEL);
+const ALLOW_MISSING_CHROMIUM_DEPS =
+  process.env.PRERENDER_ALLOW_MISSING_DEPS === "true";
 
 const CHROMIUM_LINUX_DEPS = [
   "libasound2",
@@ -169,13 +172,14 @@ const resolveAptGetPath = async () => {
 
 const ensureChromiumDeps = async ({ allowWithoutDeps = false } = {}) => {
   if (process.platform !== "linux") return true;
-  if (!process.env.VERCEL && !process.env.CI) return true;
+  if (!IS_VERCEL && !process.env.CI) return true;
   if (process.env.SKIP_CHROMIUM_DEPS === "true") return true;
 
   const aptGetPath = await resolveAptGetPath();
   if (!aptGetPath) {
     console.warn("apt-get not available; skipping Chromium dependency install.");
-    return allowWithoutDeps || !process.env.VERCEL;
+    if (IS_VERCEL && !ALLOW_MISSING_CHROMIUM_DEPS) return false;
+    return allowWithoutDeps || !IS_VERCEL;
   }
 
   console.log("Installing Chromium system dependencies...");
@@ -189,7 +193,8 @@ const ensureChromiumDeps = async ({ allowWithoutDeps = false } = {}) => {
     return true;
   } catch (error) {
     console.warn("Chromium dependency install failed:", error.message);
-    return allowWithoutDeps || !process.env.VERCEL;
+    if (IS_VERCEL && !ALLOW_MISSING_CHROMIUM_DEPS) return false;
+    return allowWithoutDeps || !IS_VERCEL;
   }
 };
 
