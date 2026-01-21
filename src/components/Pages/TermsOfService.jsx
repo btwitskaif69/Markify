@@ -13,8 +13,8 @@ const TermsOfService = () => {
     return (
         <>
             <SEO
-                title="Terms of Service"
-                description="Markify Terms of Service - Read our terms and conditions for using our services."
+                title="Bookmark Manager Terms of Service"
+                description="Read the terms and conditions for using Markify's bookmark manager, accounts, and subscriptions."
                 canonical={getCanonicalUrl("/terms")}
                 structuredData={breadcrumbs ? [breadcrumbs] : null}
             />

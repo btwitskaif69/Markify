@@ -13,8 +13,8 @@ const RefundPolicy = () => {
     return (
         <>
             <SEO
-                title="Refund Policy"
-                description="Markify Refund Policy - Information about our refund and cancellation policies."
+                title="Bookmark Manager Refund Policy"
+                description="Learn about Markify refunds and cancellations for bookmark manager subscriptions and billing."
                 canonical={getCanonicalUrl("/refund-policy")}
                 structuredData={breadcrumbs ? [breadcrumbs] : null}
             />

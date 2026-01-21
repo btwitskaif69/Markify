@@ -124,8 +124,8 @@ const WhatIsMarkify = () => {
     return (
         <>
             <SEO
-                title="What is Markify - Smart Bookmark Manager"
-                description="Discover what Markify is, how it works, and why thousands choose it over browser bookmarks. Learn about our features, compare with alternatives, and see if it's right for you."
+                title="What Is a Smart Bookmark Manager"
+                description="Discover what Markify is, how it works, and why teams choose it over browser bookmarks. Learn features, compare alternatives, and see if it's right for you."
                 canonical={getCanonicalUrl("/what-is-markify")}
                 structuredData={structuredDataList}
             />

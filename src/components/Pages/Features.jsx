@@ -33,8 +33,8 @@ const FeaturesPage = () => {
   return (
     <>
       <SEO
-        title="Features"
-        description="Explore the core features that make Markify the fastest way to save, organize, and find bookmarks."
+        title="Bookmark Manager Features for Fast Search"
+        description="Explore Markify features like lightning search, smart collections, auto-tagging, and privacy-first bookmarking built for faster organization."
         canonical={getCanonicalUrl("/features")}
         keywords={[
           "bookmark manager features",

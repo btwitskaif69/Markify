@@ -57,7 +57,51 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets|images|favicon|site.webmanifest|robots.txt|sitemap.xml|sitemap-index\\.xml|sitemap-|llms\\.txt|\\.well-known/llms\\.txt).*)",
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/reset-password/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/verify-email",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/cmd",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/new",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/blog/(.*)/edit",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/shared/bookmark/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/shared/collection/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/search",
       "destination": "/index.html"
     }
   ]

@@ -33,6 +33,25 @@ const getPrerenderedLatestPosts = (slug) => {
   return list.filter((post) => post?.slug && post.slug !== slug).slice(0, 3);
 };
 
+const buildSeoTitle = (title) => {
+  if (!title) return "Markify Blog";
+  const trimmed = title.trim();
+  if (trimmed.length >= 45) return trimmed;
+  return `${trimmed} - Bookmarking Tips`;
+};
+
+const buildSeoDescription = (excerpt, title) => {
+  const fallback = title
+    ? `Read ${title} and learn bookmark workflows that keep links organized and easy to find.`
+    : "Read the latest Markify updates on saving, organizing, and searching bookmarks.";
+  const base = (excerpt || fallback).trim();
+  if (base.length >= 120 && base.length <= 170) return base;
+  if (base.length < 120) {
+    return `${base} Learn how Markify helps you save, organize, and find links faster.`;
+  }
+  return `${base.slice(0, 157).trimEnd()}...`;
+};
+
 // Helper function to render markdown-like content
 const renderContent = (content) => {
   if (!content) return { __html: "" };
@@ -157,6 +176,8 @@ const BlogPost = () => {
     () => renderContent(post?.content),
     [post?.content]
   );
+  const seoTitle = buildSeoTitle(post?.title);
+  const seoDescription = buildSeoDescription(post?.excerpt, post?.title);
 
   // Construct structured data if post exists
   const structuredData = useMemo(() => {
@@ -185,8 +206,8 @@ const BlogPost = () => {
 
       {post && (
         <SEO
-          title={post.title}
-          description={post.excerpt || `Read ${post.title} on Markify Blog.`}
+          title={seoTitle}
+          description={seoDescription}
           canonical={getCanonicalUrl(`/blog/${post.slug}`)}
           type="article"
           image={post.coverImage}
@@ -319,6 +340,10 @@ const BlogPost = () => {
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
                         <Link to="/features" className="text-primary hover:underline">
                           Explore Features
+                        </Link>
+                        <span className="text-muted-foreground" aria-hidden="true">|</span>
+                        <Link to="/use-cases" className="text-primary hover:underline">
+                          Browse Use Cases
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
                         <Link to="/pricing" className="text-primary hover:underline">

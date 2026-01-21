@@ -180,8 +180,8 @@ const Contact = () => {
   return (
     <>
       <SEO
-        title="Contact Us"
-        description="Get in touch with the Markify team. Have a question, feature idea, or partnership opportunity? Send us a message and we'll get back to you."
+        title="Contact Support & Sales"
+        description="Contact the Markify team for support, partnerships, or enterprise pricing. Send a message and we'll reply within 24 hours."
         canonical={getCanonicalUrl("/contact")}
         keywords={["contact Markify", "Markify support", "Markify help"]}
         webPageType="ContactPage"

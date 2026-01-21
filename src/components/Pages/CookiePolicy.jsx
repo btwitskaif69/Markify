@@ -13,8 +13,8 @@ const CookiePolicy = () => {
     return (
         <>
             <SEO
-                title="Cookie Policy"
-                description="Markify Cookie Policy - Understand how we use cookies to improve your experience."
+                title="Bookmark Manager Cookie Policy"
+                description="Understand how Markify uses cookies for analytics, preferences, and performance in the bookmark manager."
                 canonical={getCanonicalUrl("/cookies")}
                 structuredData={breadcrumbs ? [breadcrumbs] : null}
             />

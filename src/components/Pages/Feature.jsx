@@ -35,6 +35,8 @@ const Feature = () => {
   const canonical = getCanonicalUrl(getFeaturePath(feature.slug));
   const relatedFeatures = getRelatedFeatures(feature.slug);
   const relatedSolutions = SOLUTIONS.slice(0, 3);
+  const seoTitle = `${feature.title} Bookmark Manager Feature`;
+  const seoDescription = `${feature.description} Learn how Markify keeps bookmarks organized and easy to find.`;
 
   const structuredData = useMemo(() => {
     const breadcrumbs = buildBreadcrumbSchema([
@@ -49,8 +51,8 @@ const Feature = () => {
   return (
     <>
       <SEO
-        title={feature.title}
-        description={feature.description}
+        title={seoTitle}
+        description={seoDescription}
         canonical={canonical}
         keywords={feature.keywords}
         structuredData={structuredData}

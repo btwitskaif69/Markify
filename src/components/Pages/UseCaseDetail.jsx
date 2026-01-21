@@ -25,6 +25,13 @@ const UseCaseDetail = () => {
     return <NotFoundPage />;
   }
 
+  const seoTitle = `${page.intent.title} bookmarks for ${page.industry.name} teams`;
+  const baseDescription = page.description || "";
+  const extraDescription = `Build a searchable ${page.intent.title.toLowerCase()} library for ${page.industry.name.toLowerCase()} teams with Markify.`;
+  const seoDescription =
+    baseDescription.length >= 120
+      ? baseDescription
+      : `${baseDescription} ${extraDescription}`.trim();
   const canonical = getCanonicalUrl(page.path);
   const structuredData = useMemo(() => {
     const breadcrumbs = buildBreadcrumbSchema([
@@ -53,8 +60,8 @@ const UseCaseDetail = () => {
   return (
     <>
       <SEO
-        title={page.title}
-        description={page.description}
+        title={seoTitle}
+        description={seoDescription}
         canonical={canonical}
         keywords={page.keywords}
         structuredData={structuredData}

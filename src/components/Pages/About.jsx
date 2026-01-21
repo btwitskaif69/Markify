@@ -43,8 +43,8 @@ const About = () => {
   return (
     <>
       <SEO
-        title="About Us - Markify"
-        description="Discover the story behind Markify. We're on a mission to revolutionize how you organize and access the web."
+        title="Bookmark Manager Mission & Story"
+        description="Discover how Markify was built to help people save, organize, and rediscover bookmarks with speed, privacy, and clarity."
         canonical={getCanonicalUrl("/about")}
         structuredData={breadcrumbs ? [breadcrumbs] : null}
       />

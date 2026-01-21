@@ -36,8 +36,8 @@ const CookieSettings = () => {
     return (
         <div className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
             <SEO
-                title="Cookie settings"
-                description="Manage your Markify cookie preferences."
+                title="Manage Cookie Settings"
+                description="Update cookie preferences for the Markify bookmark manager, including analytics and marketing choices."
                 canonical={getCanonicalUrl("/cookie-settings")}
                 structuredData={breadcrumbs ? [breadcrumbs] : null}
             />

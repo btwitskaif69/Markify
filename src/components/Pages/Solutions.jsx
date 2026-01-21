@@ -32,8 +32,8 @@ const Solutions = () => {
   return (
     <>
       <SEO
-        title="Solutions"
-        description="Explore how Markify helps researchers, designers, developers, students, and teams organize the web."
+        title="Bookmark Manager Solutions for Every Team"
+        description="Explore Markify solutions for researchers, designers, developers, students, and teams who need organized, searchable bookmark workflows."
         canonical={getCanonicalUrl("/solutions")}
         structuredData={structuredData}
       />

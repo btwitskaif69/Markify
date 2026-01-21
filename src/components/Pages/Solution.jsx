@@ -33,6 +33,9 @@ const Solution = () => {
 
   const canonical = getCanonicalUrl(getSolutionPath(solution.slug));
   const relatedSolutions = getRelatedSolutions(solution.slug);
+  const solutionAudience = solution.title.replace(/^Bookmark manager for /i, "").trim();
+  const seoTitle = solution.title;
+  const seoDescription = `${solution.description} Markify keeps workflows organized for ${solutionAudience} with smart collections, sharing, and fast search.`;
 
   const structuredData = useMemo(() => {
     const breadcrumbs = buildBreadcrumbSchema([
@@ -47,8 +50,8 @@ const Solution = () => {
   return (
     <>
       <SEO
-        title={solution.title}
-        description={solution.description}
+        title={seoTitle}
+        description={seoDescription}
         canonical={canonical}
         keywords={solution.keywords}
         structuredData={structuredData}

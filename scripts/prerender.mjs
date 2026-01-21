@@ -174,12 +174,18 @@ const ensureChromiumDeps = async ({ allowWithoutDeps = false } = {}) => {
   if (process.platform !== "linux") return true;
   if (!IS_VERCEL && !process.env.CI) return true;
   if (process.env.SKIP_CHROMIUM_DEPS === "true") return true;
+  if (allowWithoutDeps) {
+    console.log(
+      "Skipping Chromium system dependency install (serverless Chromium detected)."
+    );
+    return true;
+  }
 
   const aptGetPath = await resolveAptGetPath();
   if (!aptGetPath) {
     console.warn("apt-get not available; skipping Chromium dependency install.");
-    if (IS_VERCEL && !ALLOW_MISSING_CHROMIUM_DEPS) return false;
-    return allowWithoutDeps || !IS_VERCEL;
+    if (ALLOW_MISSING_CHROMIUM_DEPS) return true;
+    return !IS_VERCEL;
   }
 
   console.log("Installing Chromium system dependencies...");
@@ -193,8 +199,8 @@ const ensureChromiumDeps = async ({ allowWithoutDeps = false } = {}) => {
     return true;
   } catch (error) {
     console.warn("Chromium dependency install failed:", error.message);
-    if (IS_VERCEL && !ALLOW_MISSING_CHROMIUM_DEPS) return false;
-    return allowWithoutDeps || !IS_VERCEL;
+    if (ALLOW_MISSING_CHROMIUM_DEPS) return true;
+    return !IS_VERCEL;
   }
 };
 
@@ -204,6 +210,19 @@ const fileExists = async (filePath) => {
     return true;
   } catch (error) {
     return false;
+  }
+};
+
+const resolvePuppeteerExecutablePath = async () => {
+  try {
+    const puppeteerModule = await import("puppeteer");
+    const puppeteer = puppeteerModule.default || puppeteerModule;
+    if (typeof puppeteer.executablePath !== "function") return null;
+    const candidate = puppeteer.executablePath();
+    if (candidate && (await fileExists(candidate))) return candidate;
+    return null;
+  } catch (error) {
+    return null;
   }
 };
 
@@ -247,6 +266,9 @@ const resolveChromeExecutablePath = async () => {
   if (explicitPath && (await fileExists(explicitPath))) {
     return explicitPath;
   }
+
+  const puppeteerPath = await resolvePuppeteerExecutablePath();
+  if (puppeteerPath) return puppeteerPath;
 
   const cacheDir =
     process.env.PUPPETEER_CACHE_DIR ||

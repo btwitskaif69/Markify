@@ -14,8 +14,8 @@ const PrivacyPolicy = () => {
     return (
         <>
             <SEO
-                title="Privacy Policy"
-                description="Markify Privacy Policy - Learn how we collect, use, and protect your personal data."
+                title="Privacy Policy for Bookmark Manager Users"
+                description="Learn how Markify collects, uses, and protects personal data when you use the bookmark manager and related services."
                 canonical={getCanonicalUrl("/privacy")}
                 structuredData={breadcrumbs ? [breadcrumbs] : null}
             />

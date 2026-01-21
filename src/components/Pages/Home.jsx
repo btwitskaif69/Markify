@@ -61,7 +61,7 @@ const Home = () => {
   ]);
 
   const pageDescription =
-    "Never lose a bookmark again. Save links in one click, organize them into smart collections, and find any bookmark with lightning-fast search. Markify is the 100% free bookmark manager designed for productivity.";
+    "Save links in one click, organize them into smart collections, and find any bookmark instantly. Markify is the fast, free bookmark manager built for productivity.";
   const webAppSchema = buildWebApplicationSchema({
     description: pageDescription,
     url: getCanonicalUrl("/"),
@@ -71,7 +71,7 @@ const Home = () => {
   return (
     <>
       <SEO
-        title="The Smarter Bookmark Manager | Save, Organize & Find Instantly"
+        title="Bookmark Manager for Fast Search"
         description={pageDescription}
         canonical={getCanonicalUrl("/")}
         structuredData={structuredData}
@@ -129,9 +129,9 @@ const Home = () => {
                 </Link>
               </div>
               <p className="text-sm text-muted-foreground">
-                Need background on how bookmarks work? See the official guidance from
+                Need background on browser bookmarks? See the official resources from
                 <a
-                  href="https://support.google.com/chrome/answer/188842"
+                  href="https://www.google.com/chrome/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-1 text-primary hover:underline"

@@ -69,8 +69,8 @@ const PricingPage = () => {
   return (
     <>
       <SEO
-        title="Pricing"
-        description="Choose the perfect Markify plan for your needs. Simple, transparent pricing with no hidden fees. Free, Pro, and Team plans available."
+        title="Bookmark Manager Pricing & Plans"
+        description="Compare Free, Pro, and Team plans for Markify's bookmark manager with transparent pricing and no hidden fees."
         canonical={canonical}
         structuredData={structuredData}
       />

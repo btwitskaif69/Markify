@@ -34,6 +34,8 @@ const UseCaseIntent = () => {
     .filter((item) => item.slug !== intent.slug)
     .slice(0, 4);
   const canonical = getCanonicalUrl(getPseoIntentPath(intent.slug));
+  const seoTitle = `${intent.title} bookmarks by industry`;
+  const seoDescription = `${intent.description} Explore industry-specific bookmark workflows that keep ${intent.title.toLowerCase()} resources organized and searchable.`;
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Use cases", path: getPseoHubPath() },
@@ -51,8 +53,8 @@ const UseCaseIntent = () => {
   return (
     <>
       <SEO
-        title={`${intent.title} by industry`}
-        description={`${intent.description} Browse industry-specific pages built to avoid thin content and keep intent aligned.`}
+        title={seoTitle}
+        description={seoDescription}
         canonical={canonical}
         structuredData={structuredData}
         keywords={[intent.primaryKeyword, ...intent.keywords]}

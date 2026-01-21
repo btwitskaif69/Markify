@@ -35,8 +35,8 @@ const UseCases = () => {
   return (
     <>
       <SEO
-        title="Use Cases"
-        description="Explore programmatic SEO use cases built on structured data. Find the right workflow for your team and industry."
+        title="Bookmark Manager Use Cases by Intent"
+        description="Browse Markify use cases organized by intent and industry to see how teams organize research, content, and knowledge with fast bookmarks."
         canonical={getCanonicalUrl(getPseoHubPath())}
         structuredData={structuredData}
         keywords={[

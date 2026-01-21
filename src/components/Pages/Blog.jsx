@@ -115,8 +115,8 @@ const Blog = () => {
   return (
     <>
       <SEO
-        title="Blog"
-        description="Read the latest updates, tips, and insights from the Markify team."
+        title="Bookmarking Tips & Updates"
+        description="Read the latest bookmark management tips, product updates, and workflow ideas from the Markify team."
         canonical={getCanonicalUrl("/blog")}
         structuredData={breadcrumbs ? [breadcrumbs] : null}
       />
