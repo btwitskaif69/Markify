@@ -176,7 +176,7 @@ const ensureChromiumDeps = async ({ allowWithoutDeps = false } = {}) => {
   if (process.env.SKIP_CHROMIUM_DEPS === "true") return true;
   if (allowWithoutDeps) {
     console.log(
-      "Skipping Chromium system dependency install (PRERENDER_ALLOW_MISSING_DEPS=true)."
+      "Skipping Chromium system dependency install (allowWithoutDeps=true)."
     );
     return true;
   }
@@ -345,9 +345,9 @@ const prerender = async () => {
   }
 
   const serverlessChromium = await resolveServerlessChromium();
-  const depsReady = await ensureChromiumDeps({
-    allowWithoutDeps: ALLOW_MISSING_CHROMIUM_DEPS,
-  });
+  const allowWithoutDeps =
+    ALLOW_MISSING_CHROMIUM_DEPS || Boolean(serverlessChromium);
+  const depsReady = await ensureChromiumDeps({ allowWithoutDeps });
   if (!depsReady) {
     console.warn(
       "Skipping prerender because Chromium dependencies are unavailable in this environment."
