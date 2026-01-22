@@ -57,55 +57,7 @@
   ],
   "rewrites": [
     {
-      "source": "/login",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/signup",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/forgot-password",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/reset-password/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/verify-email",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/dashboard/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/cmd",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/blog/new",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/blog/(.*)/edit",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/shared/bookmark/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/shared/collection/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/search",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/((?!assets/|images/|.*\\.(ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot|css|js|map|webmanifest|xml|txt|br|gz)).*)",
+      "source": "/((?!assets|images|.*\\.(ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot|css|js|map|webmanifest|xml|txt|br|gz)).*)",
       "destination": "/index.html"
     }
   ]
