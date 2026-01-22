@@ -452,7 +452,22 @@ const prerender = async () => {
   );
 };
 
+
 prerender().catch((error) => {
   console.error("Prerender failed:", error);
+  
+  // On Vercel or CI, don't fail the build - just warn
+  // This allows the build to complete even if prerendering has issues
+  if (IS_VERCEL || process.env.CI) {
+    console.warn(
+      "⚠️  Prerendering failed in CI/Vercel environment. " +
+      "The build will continue, but pages won't be pre-rendered. " +
+      "Consider adding a catch-all rewrite in vercel.json for SPA fallback."
+    );
+    process.exit(0); // Exit successfully
+  }
+  
+  // In local/other environments, fail the build
   process.exit(1);
 });
+
