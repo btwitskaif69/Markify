@@ -36,9 +36,16 @@ const generateUniqueSlug = async (title) => {
 
 exports.getPublishedPosts = async (req, res) => {
   try {
+    // Only select fields needed for the blog list (exclude heavy content field)
     const posts = await prisma.blogPost.findMany({
       where: { published: true },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        createdAt: true,
         author: {
           select: { name: true, avatar: true },
         },
