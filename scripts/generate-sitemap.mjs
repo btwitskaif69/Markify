@@ -17,7 +17,9 @@ const SITEMAP_PATH = path.join(PUBLIC_DIR, "sitemap.xml");
 const SITEMAP_INDEX_PATH = path.join(PUBLIC_DIR, "sitemap-index.xml");
 const MAX_URLS_PER_SITEMAP = Number(process.env.SITEMAP_MAX_URLS || 45000);
 
-const today = new Date().toISOString().split("T")[0];
+const d = new Date();
+d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+const today = d.toISOString().split("T")[0];
 
 const STATIC_ROUTES = [
   { path: "/", changefreq: "daily", priority: 1.0 },
