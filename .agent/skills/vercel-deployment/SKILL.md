@@ -1,68 +1,69 @@
 ---
 name: vercel-deployment
-description: Guides Vercel deployment configurations, routing fixes (SPA fallbacks), serverless functions, edge config, environment variables, and production debugging. Use when encountering 404s, routing issues, or deployment configuration problems.
+description: "Expert knowledge for deploying to Vercel with Next.js Use when: vercel, deploy, deployment, hosting, production."
+source: vibeship-spawner-skills (Apache 2.0)
 ---
 
-# Vercel Deployment Skill
+# Vercel Deployment
 
-This skill provides expert guidance for Vercel deployments, focusing on React/Vite SPAs.
+You are a Vercel deployment expert. You understand the platform's
+capabilities, limitations, and best practices for deploying Next.js
+applications at scale.
 
-## Core Capabilities
+Your core principles:
+1. Environment variables - different for dev/preview/production
+2. Edge vs Serverless - choose the right runtime
+3. Build optimization - minimize cold starts and bundle size
+4. Preview deployments - use for testing before production
+5. Monitoring - set up analytics and error tracking
 
-### SPA Routing Configuration
-When deploying SPAs (React, Vue, Vite apps), the `vercel.json` must be configured to serve `index.html` for all client-side routes.
+## Capabilities
 
-**Correct SPA rewrite pattern:**
-```json
-{
-  "rewrites": [
-    {
-      "source": "/((?!assets|images|api|favicon|robots.txt|sitemap.xml).*)",
-      "destination": "/index.html"
-    }
-  ]
-}
-```
+- vercel
+- deployment
+- edge-functions
+- serverless
+- environment-variables
 
-**Key Rules:**
-- Only exclude static files and API routes from the SPA fallback
-- Never exclude client-side page routes (e.g., /features, /pricing)
-- Use negative lookahead `(?!...)` for exclusions
+## Requirements
 
-### Common 404 Issues
+- nextjs-app-router
 
-1. **Direct URL access returns 404**: The rewrite rule is excluding SPA routes
-   - Fix: Remove page routes from the negative lookahead, keep only static files
-   
-2. **API routes not working**: Missing rewrites to serverless functions
-   - Fix: Add explicit API rewrites before the SPA fallback
+## Patterns
 
-3. **Static assets 404**: Assets directory not properly excluded
-   - Fix: Ensure `assets` is in the negative lookahead
+### Environment Variables Setup
 
-### Environment Variables
-- Use `vercel env pull` to sync local `.env` with Vercel
-- Prefix client-side vars with `VITE_` for Vite projects
-- Never commit `.env` files with sensitive data
+Properly configure environment variables for all environments
 
-### Headers Configuration
-For optimal caching:
-```json
-{
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    }
-  ]
-}
-```
+### Edge vs Serverless Functions
 
-### Debugging Checklist
-1. Check `vercel.json` rewrite patterns
-2. Verify build output directory matches `outputDirectory`
-3. Ensure `buildCommand` is correct
-4. Review function logs in Vercel dashboard
-5. Test locally with `vercel dev`
+Choose the right runtime for your API routes
+
+### Build Optimization
+
+Optimize build for faster deployments and smaller bundles
+
+## Anti-Patterns
+
+### ❌ Secrets in NEXT_PUBLIC_
+
+### ❌ Same Database for Preview
+
+### ❌ No Build Cache
+
+## ⚠️ Sharp Edges
+
+| Issue | Severity | Solution |
+|-------|----------|----------|
+| NEXT_PUBLIC_ exposes secrets to the browser | critical | Only use NEXT_PUBLIC_ for truly public values: |
+| Preview deployments using production database | high | Set up separate databases for each environment: |
+| Serverless function too large, slow cold starts | high | Reduce function size: |
+| Edge runtime missing Node.js APIs | high | Check API compatibility before using edge: |
+| Function timeout causes incomplete operations | medium | Handle long operations properly: |
+| Environment variable missing at runtime but present at build | medium | Understand when env vars are read: |
+| CORS errors calling API routes from different domain | medium | Add CORS headers to API routes: |
+| Page shows stale data after deployment | medium | Control caching behavior: |
+
+## Related Skills
+
+Works well with: `nextjs-app-router`, `supabase-backend`
