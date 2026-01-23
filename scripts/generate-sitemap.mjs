@@ -171,6 +171,7 @@ const writeSitemaps = async (routes) => {
 };
 
 const generateSitemap = async () => {
+  console.log("Starting sitemap generation...");
   const solutionRoutes = SOLUTIONS.map((solution) => ({
     path: getSolutionPath(solution.slug),
     changefreq: "weekly",
