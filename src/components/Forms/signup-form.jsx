@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,14 +25,23 @@ const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
 import { signInWithGoogle, initializationError } from "@/lib/firebase";
 
 export function SignupForm({ className, ...props }) {
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user) {
+      navigate(`/dashboard/${user.id}`, { replace: true });
+    }
+  }, [isAuthenticated, user, authLoading, navigate]);
+
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { login } = useAuth();
   const [lastLoginMethod, setLastLoginMethod] = useState(() => {
     return localStorage.getItem("lastLoginMethod");
   });

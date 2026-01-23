@@ -147,8 +147,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.name === "AbortError") {
         toast.error("Login verification took too long. Please try again.");
+      } else if (error.message !== "Unauthorized") {
+        // Token is invalid/malformed - clear it silently
+        console.error("User verification failed, clearing invalid token:", error);
+        saveToken(null);
+        saveUser(null);
       }
-      console.error("User verification failed:", error);
+      // "Unauthorized" errors are already handled by authFetch which calls logout()
     } finally {
       setIsLoading(false);
     }

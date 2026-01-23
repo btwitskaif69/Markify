@@ -18,9 +18,11 @@ import { AnimationStyles } from "./theme-animations";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 import { NAV_LINKS } from "@/data/siteLinks";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   const toggleMobileMenu = () => setMobileOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileOpen(false);
@@ -53,8 +55,8 @@ const Navbar = () => {
             <Moon className="h-6 w-6 text-gray-500" />
           )}
         </button>
-        <NavbarButton as={Link} to="/signup">
-          Sign Up
+        <NavbarButton as={Link} to={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"}>
+          {isAuthenticated ? "Dashboard" : "Sign Up"}
         </NavbarButton>
       </NavBody>
 
@@ -90,8 +92,8 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          <NavbarButton as={Link} to="/signup" className="w-full mt-4">
-            Sign Up
+          <NavbarButton as={Link} to={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"} className="w-full mt-4">
+            {isAuthenticated ? "Dashboard" : "Sign Up"}
           </NavbarButton>
         </MobileNavMenu>
       </MobileNav>
