@@ -1,19 +1,31 @@
 export const SITE_CONFIG = {
   name: "Markify",
+  tagline: "Bookmark Manager for Fast Search",
   url: "https://www.markify.tech",
-  defaultTitle: "Markify",
+  defaultTitle: "Bookmark Manager for Fast Search | Markify",
   defaultDescription:
-    "Markify is a Bookmark Manager for smart collections, fast search, and shareable knowledge.",
+    "Markify is a free online bookmark manager. Save, organize, and search your bookmarks across devices. Create collections, add tags, and share curated link libraries.",
   defaultImage: "https://assets.markify.tech/assets/markify%20og%20image.png",
   logo: "https://www.markify.tech/android-chrome-512x512.png",
-  twitterHandle: "@markify",
+  twitterHandle: "@markifytech",
   locale: "en_US",
   themeColor: "#0f172a",
   contactEmail: "hello@markify.tech",
   supportEmail: "support@markify.tech",
   socialProfiles: [
-    "https://twitter.com/markify",
-    "https://github.com/markify",
+    "https://twitter.com/markifytech",
+    "https://github.com/btwitskaif69/Markify",
+  ],
+  // SEO Keywords for differentiation
+  keywords: [
+    "bookmark manager",
+    "online bookmark organizer",
+    "save bookmarks online",
+    "bookmark sync",
+    "link organizer",
+    "browser bookmark manager",
+    "bookmark collections",
+    "share bookmarks",
   ],
 };
 
