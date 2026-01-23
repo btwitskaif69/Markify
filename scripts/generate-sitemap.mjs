@@ -93,13 +93,14 @@ const normalizeDate = (value) => {
 };
 
 const fetchBlogPosts = async () => {
-  if (process.env.SKIP_BLOG_SITEMAP === "true") return [];
   const blogApi =
     process.env.SITEMAP_BLOG_API || "https://markify-api.vercel.app/api/blog";
+  console.log("Fetching blog posts from:", blogApi);
   try {
     const response = await fetch(blogApi);
     if (!response.ok) throw new Error(`Blog fetch failed: ${response.status}`);
     const posts = await response.json();
+    console.log(`Fetched ${posts.length} blog posts`);
     if (!Array.isArray(posts)) return [];
     return posts
       .filter((post) => post?.slug && post?.published !== false)
@@ -110,7 +111,7 @@ const fetchBlogPosts = async () => {
         lastmod: normalizeDate(post.updatedAt || post.createdAt),
       }));
   } catch (error) {
-    console.warn("Sitemap blog fetch skipped:", error.message);
+    console.error("Sitemap blog fetch FAILED:", error.message);
     return [];
   }
 };
