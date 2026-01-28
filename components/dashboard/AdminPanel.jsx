@@ -40,7 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import SEO from "@/components/SEO/SEO";
+import SEO from "@/components/seo/SEO";
 import {
   SidebarInset,
   SidebarProvider,

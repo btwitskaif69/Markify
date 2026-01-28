@@ -17,7 +17,7 @@ import { useAuth } from "@/client/context/AuthContext";
 import { secureFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { Mail, RefreshCw } from "lucide-react";
-import SEO from "@/components/SEO/SEO";
+import SEO from "@/components/seo/SEO";
 
 const VERIFY_URL = `${API_BASE_URL}/users/verify-email`;
 const RESEND_URL = `${API_BASE_URL}/users/resend-verification`;
