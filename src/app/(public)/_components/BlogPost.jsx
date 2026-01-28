@@ -9,9 +9,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Calendar, User, Clock } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { API_BASE_URL } from "@/lib/apiConfig";
-import { secureFetch } from "@/lib/secureApi";
-import SEO from "../SEO/SEO";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { secureFetch } from "@/client/lib/secureApi";
+import SEO from "@/components/SEO/SEO";
 import {
   buildArticleSchema,
   buildBreadcrumbSchema,

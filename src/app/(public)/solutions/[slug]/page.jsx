@@ -1,4 +1,4 @@
-import Solution from "@/components/Pages/Solution";
+import Solution from "@/app/(public)/_components/Solution";
 
 export default function Page() {
   return <Solution />;

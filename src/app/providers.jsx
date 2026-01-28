@@ -3,7 +3,7 @@
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/client/context/AuthContext";
 
 export default function Providers({ children }) {
   return (

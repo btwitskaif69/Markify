@@ -10,8 +10,8 @@ import React, {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { secureFetch as secureApiFetch } from "@/lib/secureApi";
-import { API_BASE_URL, AUTH_TIMEOUT_MS } from "@/lib/apiConfig";
+import { secureFetch as secureApiFetch } from "@/client/lib/secureApi";
+import { API_BASE_URL, AUTH_TIMEOUT_MS } from "@/client/lib/apiConfig";
 
 const AuthContext = createContext(null);
 const PROTECTED_PATH_PREFIXES = ["/dashboard"];

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Star, Clock, CheckCircle, XCircle } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/client/context/AuthContext";
 import {
     Dialog,
     DialogContent,
@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 // Status badge component
 function StatusBadge({ status }) {

@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { useState, useCallback } from "react";
 
 const API_URL = API_BASE_URL;

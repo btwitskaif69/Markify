@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import ImageCropper from "./ImageCropper";
 
 const logo = "/assets/logo.svg";

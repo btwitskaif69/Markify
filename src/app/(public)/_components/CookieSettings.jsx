@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import SEO from "../SEO/SEO";
+import SEO from "@/components/SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const CookieSettings = () => {

@@ -15,9 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
-import { secureFetch } from "@/lib/secureApi";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { useAuth } from "@/client/context/AuthContext";
+import { secureFetch } from "@/client/lib/secureApi";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import SEO from "@/components/SEO/SEO";
 import PasswordInput from "@/components/password-input-2";
 
@@ -25,7 +25,7 @@ import PasswordInput from "@/components/password-input-2";
 const API_URL = `${API_BASE_URL}/users/initiate-signup`;
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
 
-import { signInWithGoogle, initializationError } from "@/lib/firebase";
+import { signInWithGoogle, initializationError } from "@/client/lib/firebase";
 
 export function SignupForm({ className, ...props }) {
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();

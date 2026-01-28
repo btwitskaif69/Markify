@@ -95,9 +95,12 @@ Markify/
       error.jsx
       loading.jsx
       globals.css
+    client/                      # Client-only hooks/context/lib
+      hooks/
+      context/
+      lib/
     components/                  # UI components
-    hooks/                       # Client hooks
-    lib/                         # Client helpers
+    lib/                         # Shared, framework-agnostic utils
     server/                      # Server-only logic (used by route handlers)
       config/
       controllers/

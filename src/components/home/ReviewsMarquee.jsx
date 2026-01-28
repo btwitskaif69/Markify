@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Marquee } from "@/components/ui/marquee";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 // Individual review card component
 function ReviewCard({ name, avatar, rating, content }) {

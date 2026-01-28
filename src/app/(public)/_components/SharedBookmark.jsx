@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink, Calendar, Tag, ArrowLeft, Share2, Link2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import SEO from "@/components/SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";

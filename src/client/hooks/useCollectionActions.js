@@ -1,7 +1,7 @@
 // src/components/Dashboard/useCollectionActions.js
 import { useState } from "react";
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
 

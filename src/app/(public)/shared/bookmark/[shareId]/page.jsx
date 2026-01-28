@@ -1,4 +1,4 @@
-import SharedBookmark from "@/components/Pages/SharedBookmark";
+import SharedBookmark from "@/app/(public)/_components/SharedBookmark";
 
 export default function Page() {
   return <SharedBookmark />;

@@ -1,7 +1,7 @@
 // src/components/Dashboard/usePreview.js
 import { useState, useCallback } from "react";
 import { debounce } from "lodash";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
 

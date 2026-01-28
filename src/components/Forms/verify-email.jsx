@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
-import { secureFetch } from "@/lib/secureApi";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { useAuth } from "@/client/context/AuthContext";
+import { secureFetch } from "@/client/lib/secureApi";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { Mail, RefreshCw } from "lucide-react";
 import SEO from "@/components/SEO/SEO";
 

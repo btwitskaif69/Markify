@@ -1,8 +1,21 @@
 import { Resend } from "resend";
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+
+if (!RESEND_API_KEY) {
+  console.warn("RESEND_API_KEY is not set. Email sending is disabled.");
+}
+
+const ensureResend = () => {
+  if (!resend) {
+    throw new Error("Email service not configured. Set RESEND_API_KEY.");
+  }
+};
 
 export const sendPasswordResetEmail = async (toEmail, resetLink) => {
   try {
+    ensureResend();
     const { data, error } = await resend.emails.send({
       from: 'Markify <noreply@markify.tech>',
       to: [toEmail],
@@ -38,6 +51,7 @@ export const sendPasswordResetEmail = async (toEmail, resetLink) => {
 
 export const sendVerificationEmail = async (toEmail, code) => {
   try {
+    ensureResend();
     const { data, error } = await resend.emails.send({
       from: 'Markify <noreply@markify.tech>',
       to: [toEmail],
@@ -72,6 +86,10 @@ export const sendVerificationEmail = async (toEmail, code) => {
 
 export const sendWelcomeEmail = async (toEmail, userName) => {
   try {
+    if (!resend) {
+      console.warn("Skipping welcome email; RESEND_API_KEY is not set.");
+      return null;
+    }
     const firstName = userName ? userName.split(' ')[0] : 'there';
     const { data, error } = await resend.emails.send({
       from: 'Markify <noreply@markify.tech>',

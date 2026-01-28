@@ -39,9 +39,9 @@ import {
     Loader2,
     Image as ImageIcon,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/client/context/AuthContext";
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
 

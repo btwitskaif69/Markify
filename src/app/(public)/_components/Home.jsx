@@ -4,10 +4,10 @@
 import { lazy, Suspense } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import Hero from '../home/Hero';
-import DashboardPreview from '../home/DashboardPreview';
-import Marquee from '../home/Marquee';
-import SEO from '../SEO/SEO';
+import Hero from '@/components/home/Hero';
+import DashboardPreview from '@/components/home/DashboardPreview';
+import Marquee from '@/components/home/Marquee';
+import SEO from '@/components/SEO/SEO';
 import LazySection from "@/components/LazySection";
 import {
   buildFaqSchema,
@@ -16,13 +16,13 @@ import {
 } from "@/lib/seo";
 
 // Lazy load below-fold components
-const Features = lazy(() => import('../home/Features'));
-const HowItWorks = lazy(() => import('../home/HowItWorks'));
-const Stats = lazy(() => import('../home/Stats'));
+const Features = lazy(() => import('@/components/home/Features'));
+const HowItWorks = lazy(() => import('@/components/home/HowItWorks'));
+const Stats = lazy(() => import('@/components/home/Stats'));
 
-const FAQ = lazy(() => import('../home/FAQ'));
-const CTA = lazy(() => import('../home/CTA'));
-const ReviewsMarquee = lazy(() => import('../home/ReviewsMarquee'));
+const FAQ = lazy(() => import('@/components/home/FAQ'));
+const CTA = lazy(() => import('@/components/home/CTA'));
+const ReviewsMarquee = lazy(() => import('@/components/home/ReviewsMarquee'));
 const Footer = lazy(() => import('@/components/Footer'));
 
 // Minimal loading placeholder for below-fold content

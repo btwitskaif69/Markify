@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/client/context/AuthContext";
 import { Bookmark, Shield } from "lucide-react";
 
 export function NavMain({ totalBookmarks }) {

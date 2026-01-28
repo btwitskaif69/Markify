@@ -56,8 +56,8 @@ import {
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import BookmarkManager from "@/components/dashboard/BookmarkManager";
 
-import { useAuth } from "@/context/AuthContext";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { useAuth } from "@/client/context/AuthContext";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;

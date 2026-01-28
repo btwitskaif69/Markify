@@ -8,10 +8,10 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Spotlight } from "../ui/spotlight-new";
-import SEO from "../SEO/SEO";
+import { Spotlight } from "@/components/ui/spotlight-new";
+import SEO from "@/components/SEO/SEO";
 import { SITE_CONFIG, buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { toast } from "sonner";
 import {
   Loader2, Mail, Phone, Building2, MessageSquare, Send, CheckCircle,

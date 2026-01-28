@@ -14,8 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { API_BASE_URL } from "@/lib/apiConfig";
-import { secureFetch } from "@/lib/secureApi";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { secureFetch } from "@/client/lib/secureApi";
 import SEO from "@/components/SEO/SEO";
 
 export default function ResetPassword() {

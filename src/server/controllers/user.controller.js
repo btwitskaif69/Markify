@@ -177,6 +177,10 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required." });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -196,8 +200,12 @@ export const loginUser = async (req, res) => {
     delete user.password;
     res.status(200).json({ message: "Login successful", user, token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("loginUser error:", error);
+    const message =
+      process.env.NODE_ENV === "development" && error?.message
+        ? error.message
+        : "Internal Server Error";
+    res.status(500).json({ message });
   }
 };
 

@@ -6,7 +6,7 @@ import { NavMain } from "@/components/dashboard/nav-main"
 
 import { NavCollections } from "@/components/dashboard/nav-collections"
 import { NavUser } from "@/components/dashboard/nav-user"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/client/context/AuthContext"
 import {
   Sidebar,
   SidebarContent,

@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/client/context/AuthContext";
 import AccountDialog from "./AccountDialog";
 import { ReviewDialog } from "./ReviewDialog";
 

@@ -15,17 +15,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/client/context/AuthContext';
 import { Eye, EyeOff } from "lucide-react";
-import { secureFetch } from "@/lib/secureApi";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { secureFetch } from "@/client/lib/secureApi";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import SEO from "@/components/SEO/SEO";
 
 // The URL now includes the full path to the login endpoint
 const API_URL = `${API_BASE_URL}/users/login`;
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
 
-import { signInWithGoogle, initializationError } from "@/lib/firebase";
+import { signInWithGoogle, initializationError } from "@/client/lib/firebase";
 
 export function LoginForm({ className, ...props }) {
   const { login, isAuthenticated, user, isLoading: authLoading } = useAuth();
@@ -44,9 +44,18 @@ export function LoginForm({ className, ...props }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [lastLoginMethod, setLastLoginMethod] = useState(() => {
-    return localStorage.getItem("lastLoginMethod");
-  });
+  const [lastLoginMethod, setLastLoginMethod] = useState(null);
+
+  useEffect(() => {
+    try {
+      const storedMethod = window.localStorage.getItem("lastLoginMethod");
+      if (storedMethod) {
+        setLastLoginMethod(storedMethod);
+      }
+    } catch {
+      // Ignore storage access errors (e.g. privacy mode).
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -73,7 +82,12 @@ export function LoginForm({ className, ...props }) {
 
       toast.success("Logged in with Google successfully!");
       login(data.user, data.token);
-      localStorage.setItem("lastLoginMethod", "google");
+      try {
+        localStorage.setItem("lastLoginMethod", "google");
+      } catch {
+        // Ignore storage access errors.
+      }
+      setLastLoginMethod("google");
 
       if (data.isNewUser) {
         router.push(`/dashboard/${data.user.id}?welcome=true`);
@@ -107,7 +121,12 @@ export function LoginForm({ className, ...props }) {
 
       toast.success("Logged in successfully!");
       login(data.user, data.token);
-      localStorage.setItem("lastLoginMethod", "email");
+      try {
+        localStorage.setItem("lastLoginMethod", "email");
+      } catch {
+        // Ignore storage access errors.
+      }
+      setLastLoginMethod("email");
       router.push(`/dashboard/${data.user.id}`);
     } catch (error) {
       console.error("Login error:", error);

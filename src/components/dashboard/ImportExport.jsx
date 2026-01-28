@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/client/context/AuthContext";
 import { toast } from "sonner";
 import { Upload, Download, Settings, FileJson, FileSpreadsheet, FileCode } from "lucide-react";
 import {
@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { API_BASE_URL } from "@/lib/apiConfig";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { parseBookmarksHtml } from "@/lib/bookmarkParser";
 
 const API_URL = API_BASE_URL;
@@ -276,7 +276,7 @@ export default function ImportExport({ onRefetch }) {
         {/* Import Dropdown */}
         <SidebarMenuItem>
           <DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="w-full">
+            <DropdownMenuTrigger asChild>
               <SidebarMenuButton tooltip="Import Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
                 <Upload className="h-4 w-4" />
                 <span>Import Data</span>
@@ -309,7 +309,7 @@ export default function ImportExport({ onRefetch }) {
         {/* Export Dropdown */}
         <SidebarMenuItem>
           <DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="w-full">
+            <DropdownMenuTrigger asChild>
               <SidebarMenuButton tooltip="Export Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
                 <Download className="h-4 w-4" />
                 <span>Export Data</span>

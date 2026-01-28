@@ -18,8 +18,8 @@ import {
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Spotlight } from "../ui/spotlight-new";
-import SEO from "../SEO/SEO";
+import { Spotlight } from "@/components/ui/spotlight-new";
+import SEO from "@/components/SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const fadeIn = {

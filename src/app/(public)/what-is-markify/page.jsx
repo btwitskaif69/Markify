@@ -1,4 +1,4 @@
-import WhatIsMarkify from "@/components/Pages/WhatIsMarkify";
+import WhatIsMarkify from "@/app/(public)/_components/WhatIsMarkify";
 
 export default function Page() {
   return <WhatIsMarkify />;

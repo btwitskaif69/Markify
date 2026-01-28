@@ -13,12 +13,12 @@ import {
   NavbarLogo,
   NavbarButton,
 } from "@/components/ui/resizable-navbar";
-import { useThemeToggle } from "../hooks/useThemeToggle";
+import { useThemeToggle } from "@/client/hooks/useThemeToggle";
 import { AnimationStyles } from "./theme-animations";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 import { NAV_LINKS } from "@/data/siteLinks";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/client/context/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);

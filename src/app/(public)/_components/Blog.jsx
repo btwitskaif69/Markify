@@ -12,11 +12,11 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { Spotlight } from "../ui/spotlight-new";
-import { SkeletonCard } from "../ui/SkeletonCard";
-import { API_BASE_URL } from "@/lib/apiConfig";
-import { secureFetch } from "@/lib/secureApi";
-import SEO from "../SEO/SEO";
+import { Spotlight } from "@/components/ui/spotlight-new";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
+import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { secureFetch } from "@/client/lib/secureApi";
+import SEO from "@/components/SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
