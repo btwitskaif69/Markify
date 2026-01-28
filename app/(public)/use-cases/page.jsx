@@ -1,5 +1,5 @@
 import UseCases from "@/app/(public)/_components/UseCases";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   getPseoHubPath,

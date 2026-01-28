@@ -1,5 +1,5 @@
 import Home from "@/app/(public)/_components/Home";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import PublicLayout from "@/components/layouts/PublicLayout";
 import { HOME_FAQS } from "@/data/homeFaqs";
 import {

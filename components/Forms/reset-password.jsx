@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
-import SEO from "@/components/seo/SEO";
+import SEO from "@/components/SEO/SEO";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");

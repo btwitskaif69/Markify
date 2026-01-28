@@ -1,5 +1,5 @@
 import Feature from "@/app/(public)/_components/Feature";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { FEATURES, getFeatureBySlug, getFeaturePath } from "@/data/features";
 import { buildBreadcrumbSchema, buildFaqSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";

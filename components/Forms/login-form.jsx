@@ -19,7 +19,7 @@ import { useAuth } from '@/client/context/AuthContext';
 import { Eye, EyeOff } from "lucide-react";
 import { secureFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
-import SEO from "@/components/seo/SEO";
+import SEO from "@/components/SEO/SEO";
 
 // The URL now includes the full path to the login endpoint
 const API_URL = `${API_BASE_URL}/users/login`;

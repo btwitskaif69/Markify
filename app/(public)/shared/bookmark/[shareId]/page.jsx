@@ -1,5 +1,5 @@
 import SharedBookmark from "@/app/(public)/_components/SharedBookmark";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { buildBreadcrumbSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";

@@ -17,7 +17,7 @@ import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import SEO from "@/components/seo/SEO";
+import SEO from "@/components/SEO/SEO";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";

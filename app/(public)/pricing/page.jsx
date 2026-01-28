@@ -1,5 +1,5 @@
 import PricingPage from "@/app/(public)/_components/Pricing";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { PRICING_TIERS } from "@/data/pricingTiers";
 import { buildBreadcrumbSchema, buildProductSchema, getCanonicalUrl } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";

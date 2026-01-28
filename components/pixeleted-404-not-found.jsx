@@ -4,7 +4,7 @@ import { Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import SEO from "@/components/seo/SEO"
+import SEO from "@/components/SEO/SEO"
 
 export function Error404() {
   const mouseX = useMotionValue(0)

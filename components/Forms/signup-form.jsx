@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/client/context/AuthContext";
 import { secureFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
-import SEO from "@/components/seo/SEO";
+import SEO from "@/components/SEO/SEO";
 import PasswordInput from "@/components/password-input-2";
 
 // API URL to initiate signup endpoint

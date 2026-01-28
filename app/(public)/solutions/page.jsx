@@ -1,5 +1,5 @@
 import Solutions from "@/app/(public)/_components/Solutions";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
 import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";

@@ -1,5 +1,5 @@
 import UseCaseIntent from "@/app/(public)/_components/UseCaseIntent";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   getPseoHubPath,

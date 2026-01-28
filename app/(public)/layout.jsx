@@ -1,5 +1,5 @@
 import PublicLayout from "@/components/layouts/PublicLayout";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildOrganizationSchema, buildWebsiteSchema } from "@/lib/seo";
 
 export default function PublicGroupLayout({ children }) {

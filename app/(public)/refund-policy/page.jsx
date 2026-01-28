@@ -1,5 +1,5 @@
 import RefundPolicy from "@/app/(public)/_components/RefundPolicy";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildBreadcrumbSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 

@@ -1,5 +1,5 @@
 import CookieSettings from "@/app/(public)/_components/CookieSettings";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildBreadcrumbSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 

@@ -1,5 +1,5 @@
 import Contact from "@/app/(public)/_components/Contact";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildBreadcrumbSchema, buildWebPageSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 

@@ -1,5 +1,5 @@
 import BlogPost from "@/app/(public)/_components/BlogPost";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   buildArticleSchema,

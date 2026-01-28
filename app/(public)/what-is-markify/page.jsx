@@ -1,5 +1,5 @@
 import WhatIsMarkify from "@/app/(public)/_components/WhatIsMarkify";
-import StructuredData from "@/components/seo/StructuredData";
+import StructuredData from "@/components/SEO/StructuredData";
 import { WHAT_IS_MARKIFY_FAQS } from "@/data/whatIsMarkifyFaqs";
 import { buildBreadcrumbSchema, buildFaqSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";

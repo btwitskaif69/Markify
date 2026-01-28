@@ -39,7 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import SEO from "@/components/seo/SEO";
+import SEO from "@/components/SEO/SEO";
 import { useAuth } from "@/client/context/AuthContext";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { formatDateUTC } from "@/lib/date";

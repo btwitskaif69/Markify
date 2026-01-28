@@ -24,7 +24,7 @@ import Bookmarks from "./Bookmarks";
 import SharedItems from "./SharedItems";
 import CmdK from "./CmdK";
 import WelcomeDialog from "./WelcomeDialog";
-import SEO from "@/components/seo/SEO";
+import SEO from "@/components/SEO/SEO";
 
 const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
 
