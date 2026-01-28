@@ -84,30 +84,29 @@ npm run dev           # http://localhost:3000
 
 ```
 Markify/
-  src/
-    app/                         # Next.js App Router
-      (auth)/                    # Auth routes (group)
-      (public)/                  # Marketing/public routes (group)
-      api/                       # Route handlers (backend)
-      layout.jsx
-      page.jsx
-      not-found.jsx
-      error.jsx
-      loading.jsx
-      globals.css
-    client/                      # Client-only hooks/context/lib
-      hooks/
-      context/
-      lib/
-    components/                  # UI components
-    lib/                         # Shared, framework-agnostic utils
-    server/                      # Server-only logic (used by route handlers)
-      config/
-      controllers/
-      db/
-      middleware/
-      services/
-      utils/
+  app/                         # Next.js App Router
+    (auth)/                    # Auth routes (group)
+    (public)/                  # Marketing/public routes (group)
+    api/                       # Route handlers (backend)
+    layout.jsx
+    page.jsx
+    not-found.jsx
+    error.jsx
+    loading.jsx
+    globals.css
+  client/                      # Client-only hooks/context/lib
+    hooks/
+    context/
+    lib/
+  components/                  # UI components
+  lib/                         # Shared, framework-agnostic utils
+  server/                      # Server-only logic (used by route handlers)
+    config/
+    controllers/
+    db/
+    middleware/
+    services/
+    utils/
   prisma/                        # Prisma schema & migrations
   public/                        # Static assets
   markify-extension/             # Browser extension
