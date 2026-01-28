@@ -38,6 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import SEO from "@/components/SEO/SEO";
 import { useAuth } from "@/client/context/AuthContext";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
@@ -66,6 +67,7 @@ export default function AdminDashboard() {
 
   const [posts, setPosts] = useState([]);
   const [isPostsLoading, setIsPostsLoading] = useState(false);
+  const [selectedPosts, setSelectedPosts] = useState(new Set());
 
   const [pendingReviews, setPendingReviews] = useState([]);
   const [isPendingLoading, setIsPendingLoading] = useState(false);
@@ -146,6 +148,49 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedPosts(new Set(posts.map((p) => p.id)));
+    } else {
+      setSelectedPosts(new Set());
+    }
+  };
+
+  const handleSelectPost = (postId, checked) => {
+    const newSelected = new Set(selectedPosts);
+    if (checked) {
+      newSelected.add(postId);
+    } else {
+      newSelected.delete(postId);
+    }
+    setSelectedPosts(newSelected);
+  };
+
+  const handleBulkPublish = async () => {
+    if (selectedPosts.size === 0) return;
+    if (!window.confirm(`Are you sure you want to publish ${selectedPosts.size} posts?`)) return;
+
+    try {
+      const res = await authFetch(`${API_URL}/blog/bulk`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ids: Array.from(selectedPosts),
+          data: { published: true },
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to bulk publish.");
+
+      toast.success("Posts published successfully.");
+
+      setPosts(prev => prev.map(p => selectedPosts.has(p.id) ? { ...p, published: true } : p));
+      setSelectedPosts(new Set());
+    } catch (err) {
+      toast.error("Failed to bulk publish posts.");
+    }
+  };
+
   const handleApproveReview = async (reviewId) => {
     try {
       const res = await authFetch(`${API_URL}/reviews/${reviewId}/approve`, { method: "PATCH" });
@@ -155,12 +200,12 @@ export default function AdminDashboard() {
       setOverview((prev) =>
         prev
           ? {
-              ...prev,
-              moderation: {
-                ...prev.moderation,
-                pendingReviews: Math.max(0, (prev.moderation?.pendingReviews ?? 0) - 1),
-              },
-            }
+            ...prev,
+            moderation: {
+              ...prev.moderation,
+              pendingReviews: Math.max(0, (prev.moderation?.pendingReviews ?? 0) - 1),
+            },
+          }
           : prev
       );
     } catch (err) {
@@ -178,12 +223,12 @@ export default function AdminDashboard() {
       setOverview((prev) =>
         prev
           ? {
-              ...prev,
-              moderation: {
-                ...prev.moderation,
-                pendingReviews: Math.max(0, (prev.moderation?.pendingReviews ?? 0) - 1),
-              },
-            }
+            ...prev,
+            moderation: {
+              ...prev.moderation,
+              pendingReviews: Math.max(0, (prev.moderation?.pendingReviews ?? 0) - 1),
+            },
+          }
           : prev
       );
     } catch (err) {
@@ -308,6 +353,11 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">Manage your blog posts here.</p>
         </div>
         <div className="flex gap-2">
+          {selectedPosts.size > 0 && (
+            <Button onClick={handleBulkPublish} className="mr-2">
+              Publish Selected ({selectedPosts.size})
+            </Button>
+          )}
           <Button variant="outline" onClick={() => setActiveView("overview")}>
             Back to Overview
           </Button>
@@ -322,6 +372,12 @@ export default function AdminDashboard() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[50px]">
+                <Checkbox
+                  checked={posts.length > 0 && selectedPosts.size === posts.length}
+                  onCheckedChange={handleSelectAll}
+                />
+              </TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
@@ -344,14 +400,19 @@ export default function AdminDashboard() {
             ) : (
               posts.map((post) => (
                 <TableRow key={post.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedPosts.has(post.id)}
+                      onCheckedChange={(checked) => handleSelectPost(post.id, checked)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        post.published
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${post.published
                           ? "bg-green-100 text-green-700"
                           : "bg-yellow-100 text-yellow-700"
-                      }`}
+                        }`}
                     >
                       {post.published ? "Published" : "Draft"}
                     </span>
@@ -463,11 +524,10 @@ export default function AdminDashboard() {
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          className={`h-4 w-4 ${
-                            star <= review.rating
+                          className={`h-4 w-4 ${star <= review.rating
                               ? "fill-yellow-400 text-yellow-400"
                               : "text-gray-300"
-                          }`}
+                            }`}
                         />
                       ))}
                     </div>

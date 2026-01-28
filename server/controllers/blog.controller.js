@@ -1,5 +1,6 @@
 import redis from "../db/redis";
 import prisma from "../db/prismaClient";
+import { deleteImage } from "../services/r2.service.js";
 
 // ... (existing imports and helpers)
 
@@ -138,6 +139,14 @@ export const updatePost = async (req, res) => {
       slug = await generateUniqueSlug(title);
     }
 
+    // Delete old cover image from R2 if a new one is being uploaded
+    if (coverImage && existing.coverImage && coverImage !== existing.coverImage) {
+      // Only delete if the old image is on our R2 bucket
+      if (existing.coverImage.includes(process.env.R2_PUBLIC_URL)) {
+        await deleteImage(existing.coverImage);
+      }
+    }
+
     const updated = await prisma.blogPost.update({
       where: { id: postId },
       data: {
@@ -219,5 +228,34 @@ export const getMyPosts = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to load your posts." });
+  }
+};
+
+export const bulkUpdatePosts = async (req, res) => {
+  try {
+    const { ids, data } = req.body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "No post IDs provided." });
+    }
+
+    // Only admin can bulk update for now
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: "Unauthorized bulk action." });
+    }
+
+    await prisma.blogPost.updateMany({
+      where: {
+        id: { in: ids },
+      },
+      data: data,
+    });
+
+    await clearBlogCache();
+
+    res.status(200).json({ message: "Posts updated successfully." });
+  } catch (error) {
+    console.error("Bulk update error:", error);
+    res.status(500).json({ message: "Failed to update posts." });
   }
 };

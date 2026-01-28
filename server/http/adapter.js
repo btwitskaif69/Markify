@@ -121,11 +121,14 @@ export const createRequestContext = async (request, context = {}) => {
   const url = new URL(request.url);
   const headers = Object.fromEntries(request.headers.entries());
 
+  // Await params if it is a promise (Next.js 15+)
+  const params = context.params ? await context.params : {};
+
   const req = {
     method: request.method,
     headers,
     query: parseQuery(url.searchParams),
-    params: context.params || {},
+    params: params,
     body: await parseBody(request),
     url: url.toString(),
     originalUrl: `${url.pathname}${url.search}`,

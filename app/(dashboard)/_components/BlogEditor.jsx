@@ -105,14 +105,19 @@ const BlogEditor = () => {
 
     try {
       const escapedKeyword = escapeRegex(linkKeyword);
-      // Regex: matching keyword as whole word, avoiding existing markdown links
-      // Negative lookbehind (?<!\[) ensures we don't match matching [keyword]
-      // This is a basic implementation and might loop if not careful, but fine for simple cases.
-      const regex = new RegExp(`(?<!\\[)\\b${escapedKeyword}\\b(?!\\])`, 'gi');
+      // Robust Regex:
+      // Group 1: Matches things inside brackets [...] containing the keyword (to ignore)
+      // Group 2: Matches the keyword as a whole word (to replace)
+      const regex = new RegExp(`(\\[[^\\]]*${escapedKeyword}[^\\]]*\\])|(\\b${escapedKeyword}\\b)`, 'gi');
 
       let count = 0;
-      const newContent = content.replace(regex, (match) => {
-        if (count >= 3) return match;
+      const newContent = content.replace(regex, (match, group1, group2) => {
+        // If it matched Group 1 (inside brackets), return as is
+        if (group1) return match;
+
+        // If we reached the limit, return as is
+        if (count >= 100) return match; // Increased limit
+
         count++;
         return `[${match}](${linkUrl})`;
       });
@@ -123,7 +128,7 @@ const BlogEditor = () => {
         setLinkKeyword("");
         setLinkUrl("");
       } else {
-        toast.info(`No occurrences of "${linkKeyword}" found to link.`);
+        toast.info(`No text found to link for "${linkKeyword}" (or already linked).`);
       }
     } catch (e) {
       console.error(e);
