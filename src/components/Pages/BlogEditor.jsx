@@ -1,3 +1,4 @@
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import {
@@ -5,7 +6,8 @@ import {
   Strikethrough, Bold, Italic, Underline, Link2, Sparkles, Loader2,
   ChevronLeft, Image as ImageIcon, Rocket
 } from "lucide-react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,10 +54,11 @@ const SimpleMarkdownRenderer = ({ content }) => {
 };
 
 const BlogEditor = () => {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const isEditMode = Boolean(slug);
   const { user, isAuthenticated, isLoading, authFetch } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [postId, setPostId] = useState(null);
   const [title, setTitle] = useState("");
@@ -72,8 +75,29 @@ const BlogEditor = () => {
   const contentRef = useRef(null);
 
   // Helper to escape regex special characters
-  const escapeRegex = (string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapeRegex = (value) => {
+    const specials = new Set([
+      "\\",
+      ".",
+      "*",
+      "+",
+      "?",
+      "^",
+      "$",
+      "{",
+      "}",
+      "(",
+      ")",
+      "|",
+      "[",
+      "]",
+    ]);
+
+    let result = "";
+    for (const char of value) {
+      result += specials.has(char) ? `\\${char}` : char;
+    }
+    return result;
   };
 
   const handleAutoLink = () => {
@@ -108,8 +132,8 @@ const BlogEditor = () => {
   };
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) navigate("/login");
-  }, [isAuthenticated, isLoading, navigate]);
+    if (!isLoading && !isAuthenticated) router.push("/login");
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     const loadPost = async () => {
@@ -120,7 +144,7 @@ const BlogEditor = () => {
         const data = await res.json();
         if (data.authorId && user && data.authorId !== user.id) {
           toast.error("You are not allowed to edit this post.");
-          navigate("/blog");
+          router.push("/blog");
           return;
         }
         setPostId(data.id);
@@ -130,13 +154,13 @@ const BlogEditor = () => {
         setCoverImage(data.coverImage || "");
       } catch (err) {
         toast.error(err.message || "Failed to load post.");
-        navigate("/blog");
+        router.push("/blog");
       } finally {
         setIsInitialLoading(false);
       }
     };
     if (isEditMode) loadPost();
-  }, [isEditMode, slug, user, navigate]);
+  }, [isEditMode, slug, user, router]);
 
   const handleSubmit = async (e, isDraft = false) => {
     e.preventDefault();
@@ -159,7 +183,7 @@ const BlogEditor = () => {
       if (!res.ok) throw new Error("Failed to save post.");
 
       toast.success(isDraft ? "Draft saved successfully." : (isEditMode ? "Post updated." : "Post published!"));
-      navigate(`/dashboard/${user.id}/admin`);
+      router.push(`/dashboard/${user.id}/admin`);
     } catch (err) {
       toast.error(err.message || "Failed to save post.");
     } finally {
@@ -306,7 +330,7 @@ const BlogEditor = () => {
       />
       <div className="container mx-auto max-w-[1600px]">
         <div className="mb-6 flex items-center justify-between">
-          <Link to={`/dashboard/${user?.id}/admin`} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+          <Link href={`/dashboard/${user?.id}/admin`} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
             <ChevronLeft className="h-4 w-4" /> Back to Dashboard
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">{isEditMode ? "Edit Post" : "New Post"}</h1>
@@ -446,7 +470,7 @@ const BlogEditor = () => {
           </div>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={() => navigate(`/dashboard/${user?.id}/admin`)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => router.push(`/dashboard/${user?.id}/admin`)}>Cancel</Button>
             <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting}>
               Save Draft
             </Button>

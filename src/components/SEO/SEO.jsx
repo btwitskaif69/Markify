@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 import PropTypes from "prop-types";
 import {
   SITE_CONFIG,
@@ -34,9 +36,9 @@ const SEO = ({
   includeWebPageSchema = true,
   webPageType = "WebPage",
 }) => {
-  const location = useLocation();
+  const pathname = usePathname();
   const canonicalUrl =
-    canonical || getCanonicalUrl(path || location.pathname);
+    canonical || getCanonicalUrl(path || pathname || "/");
   const metaDescription = description || SITE_CONFIG.defaultDescription;
   const fullTitle = getFullTitle(title, name);
   const resolvedImage = toAbsoluteUrl(image);

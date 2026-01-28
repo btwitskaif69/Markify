@@ -1,24 +1,14 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Marquee as FastMarquee } from "@/components/ui/marquee";
 
-// Import tech logos (light/dark)
-import ReactLight from "@/assets/react-light.svg";
-import ReactDark from "@/assets/react-dark.svg";
-import ExpressLight from "@/assets/express-light.svg";
-import ExpressDark from "@/assets/express-dark.svg";
-import TailwindLight from "@/assets/tailwind-light.svg";
-import TailwindDark from "@/assets/tailwind-dark.svg";
-import ShadcnLight from "@/assets/shadcn-light.svg";
-import ShadcnDark from "@/assets/shadcn-dark.svg";
-import PrismaLight from "@/assets/prisma-light.svg";
-import PrismaDark from "@/assets/prisma-dark.svg";
-
 const logoData = [
-    { name: "React", light: ReactLight, dark: ReactDark, width: 180, height: 54 },
-    { name: "Express", light: ExpressLight, dark: ExpressDark, width: 64, height: 64 },
-    { name: "Tailwind", light: TailwindLight, dark: TailwindDark, width: 320, height: 40 },
-    { name: "shadcn/ui", light: ShadcnLight, dark: ShadcnDark, width: 56, height: 56 },
-    { name: "Prisma", light: PrismaLight, dark: PrismaDark, width: 102, height: 40 },
+    { name: "React", light: "/assets/react-light.svg", dark: "/assets/react-dark.svg", width: 180, height: 54 },
+    { name: "Express", light: "/assets/express-light.svg", dark: "/assets/express-dark.svg", width: 64, height: 64 },
+    { name: "Tailwind", light: "/assets/tailwind-light.svg", dark: "/assets/tailwind-dark.svg", width: 320, height: 40 },
+    { name: "shadcn/ui", light: "/assets/shadcn-light.svg", dark: "/assets/shadcn-dark.svg", width: 56, height: 56 },
+    { name: "Prisma", light: "/assets/prisma-light.svg", dark: "/assets/prisma-dark.svg", width: 102, height: 40 },
 ];
 
 const Marquee = () => {

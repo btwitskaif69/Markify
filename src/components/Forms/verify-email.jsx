@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,15 +23,15 @@ const VERIFY_URL = `${API_BASE_URL}/users/verify-email`;
 const RESEND_URL = `${API_BASE_URL}/users/resend-verification`;
 
 export function VerifyEmail({ className, ...props }) {
-    const [searchParams] = useSearchParams();
-    const email = searchParams.get("email") || "";
+    const searchParams = useSearchParams();
+    const email = searchParams?.get("email") || "";
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
     const [resendCooldown, setResendCooldown] = useState(0);
     const inputRefs = useRef([]);
-    const navigate = useNavigate();
-    const { login } = useAuth();
+  const router = useRouter();
+  const { login } = useAuth();
 
     // Cooldown timer
     useEffect(() => {
@@ -107,7 +109,7 @@ export function VerifyEmail({ className, ...props }) {
 
             toast.success("Account verified successfully!");
             login(data.user, data.token);
-            navigate(`/dashboard/${data.user.id}?welcome=true`);
+            router.push(`/dashboard/${data.user.id}?welcome=true`);
         } catch (error) {
             console.error("Verification error:", error);
             toast.error(error.message);
@@ -149,10 +151,13 @@ export function VerifyEmail({ className, ...props }) {
         }
     };
 
-    if (!email) {
-        navigate("/signup");
-        return null;
-    }
+    useEffect(() => {
+        if (!email) {
+            router.replace("/signup");
+        }
+    }, [email, router]);
+
+    if (!email) return null;
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background! p-4">

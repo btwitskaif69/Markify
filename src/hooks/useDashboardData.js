@@ -1,19 +1,24 @@
+"use client";
+
 // src/components/Dashboard/useDashboardData.js
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
 const PAGE_SIZE = 8;
 
 export function useDashboardData(user, authFetch, isAuthLoading) {
-  const { userId, collectionId: activeCollectionId } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const router = useRouter();
+  const getParamValue = (value) => (Array.isArray(value) ? value[0] : value);
+  const userId = getParamValue(params?.userId);
+  const activeCollectionId = getParamValue(params?.collectionId);
 
   const [allBookmarks, setAllBookmarks] = useState(() => {
     // Try to load from cache
-    if (user?.id) {
+    if (typeof window !== "undefined" && user?.id) {
       const cached = localStorage.getItem(`bookmarks_cache_${user.id}`);
       if (cached) {
         try {
@@ -81,7 +86,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     if (isAuthLoading) return;
 
     if (!user) {
-      navigate("/login");
+      router.push("/login");
       return;
     }
     if (user.id !== userId) {
@@ -118,7 +123,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
           toast.error(err.message);
         }
       });
-  }, [userId, user, authFetch, isAuthLoading, navigate, fetchBookmarks]);
+  }, [userId, user, authFetch, isAuthLoading, router, fetchBookmarks]);
 
   // Load more bookmarks
   const fetchMoreBookmarks = async () => {

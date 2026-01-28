@@ -1,10 +1,13 @@
+"use client";
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SEO from "../SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
+import { formatDateUTC } from "@/lib/date";
 
 const PrivacyPolicy = () => {
     const breadcrumbs = buildBreadcrumbSchema([
@@ -24,13 +27,13 @@ const PrivacyPolicy = () => {
                 <article className="max-w-4xl mx-auto">
                     <h1 className="text-4xl font-bold mb-8 text-foreground">Privacy Policy</h1>
                     <div className="prose prose-invert max-w-none text-muted-foreground">
-                        <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
+                        <p className="mb-4">Last updated: {formatDateUTC(new Date())}</p>
 
                         <section className="mb-8">
                             <h2 className="text-2xl font-semibold mb-4 text-foreground">1. Introduction</h2>
                             <p>
-                                Welcome to <Link to="/" className="text-primary hover:underline">Markify</Link>. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.
-                                Please also review our <Link to="/cookies" className="text-primary hover:underline">Cookie Policy</Link> to understand how we use cookies.
+                                Welcome to <Link href="/" className="text-primary hover:underline">Markify</Link>. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.
+                                Please also review our <Link href="/cookies" className="text-primary hover:underline">Cookie Policy</Link> to understand how we use cookies.
                             </p>
                         </section>
 
@@ -68,7 +71,7 @@ const PrivacyPolicy = () => {
                         <section className="mb-8">
                             <h2 className="text-2xl font-semibold mb-4 text-foreground">5. Contact Us</h2>
                             <p>
-                                If you have any questions about this privacy policy or our privacy practices, please <Link to="/contact" className="text-primary hover:underline">contact us</Link> or check our <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>.
+                                If you have any questions about this privacy policy or our privacy practices, please <Link href="/contact" className="text-primary hover:underline">contact us</Link> or check our <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link>.
                             </p>
                         </section>
 
@@ -76,16 +79,16 @@ const PrivacyPolicy = () => {
                             <h3 className="text-lg font-semibold mb-3 text-foreground">Related Pages</h3>
                             <ul className="space-y-2">
                                 <li>
-                                    <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link> - Our rules and regulations
+                                    <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> - Our rules and regulations
                                 </li>
                                 <li>
-                                    <Link to="/cookies" className="text-primary hover:underline">Cookie Policy</Link> - How we use cookies
+                                    <Link href="/cookies" className="text-primary hover:underline">Cookie Policy</Link> - How we use cookies
                                 </li>
                                 <li>
-                                    <Link to="/refund-policy" className="text-primary hover:underline">Refund Policy</Link> - Our refund guidelines
+                                    <Link href="/refund-policy" className="text-primary hover:underline">Refund Policy</Link> - Our refund guidelines
                                 </li>
                                 <li>
-                                    <Link to="/about" className="text-primary hover:underline">About Us</Link> - Learn more about Markify
+                                    <Link href="/about" className="text-primary hover:underline">About Us</Link> - Learn more about Markify
                                 </li>
                             </ul>
                         </section>

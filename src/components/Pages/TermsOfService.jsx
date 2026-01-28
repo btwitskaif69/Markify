@@ -1,9 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+"use client";
+
+import React from "react";
+import Link from "next/link";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SEO from "../SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
+import { formatDateUTC } from "@/lib/date";
 
 const TermsOfService = () => {
     const breadcrumbs = buildBreadcrumbSchema([
@@ -23,13 +26,13 @@ const TermsOfService = () => {
                 <article className="max-w-4xl mx-auto">
                     <h1 className="text-4xl font-bold mb-8 text-foreground">Terms of Service</h1>
                     <div className="prose prose-invert max-w-none text-muted-foreground">
-                        <p className="mb-4">Last updated: {new Date().toLocaleDateString()}</p>
+                        <p className="mb-4">Last updated: {formatDateUTC(new Date())}</p>
 
                         <section className="mb-8">
                             <h2 className="text-2xl font-semibold mb-4 text-foreground">1. Agreement to Terms</h2>
                             <p>
-                                By accessing our website at <Link to="/" className="text-primary hover:underline">Markify</Link>, you agree to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. By using our service, you also agree to our{' '}
-                                <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
+                                By accessing our website at <Link href="/" className="text-primary hover:underline">Markify</Link>, you agree to be bound by these terms of service, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site. By using our service, you also agree to our{' '}
+                                <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
                             </p>
                         </section>
 
@@ -58,7 +61,7 @@ const TermsOfService = () => {
                             <h2 className="text-2xl font-semibold mb-4 text-foreground">4. Limitations</h2>
                             <p>
                                 In no event shall Markify or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Markify's website, even if Markify or a Markify authorized representative has been notified orally or in writing of the possibility of such damage. For information about refunds, please see our{' '}
-                                <Link to="/refund-policy" className="text-primary hover:underline">Refund Policy</Link>.
+                                <Link href="/refund-policy" className="text-primary hover:underline">Refund Policy</Link>.
                             </p>
                         </section>
 
@@ -73,9 +76,9 @@ const TermsOfService = () => {
                             <h2 className="text-2xl font-semibold mb-4 text-foreground">6. Contact Information</h2>
                             <p>
                                 If you have any questions about these Terms of Service, please{' '}
-                                <Link to="/contact" className="text-primary hover:underline">contact us</Link>. You can learn more about our service on our{' '}
-                                <Link to="/about" className="text-primary hover:underline">About page</Link>, or explore our{' '}
-                                <Link to="/pricing" className="text-primary hover:underline">pricing plans</Link>.
+                                <Link href="/contact" className="text-primary hover:underline">contact us</Link>. You can learn more about our service on our{' '}
+                                <Link href="/about" className="text-primary hover:underline">About page</Link>, or explore our{' '}
+                                <Link href="/pricing" className="text-primary hover:underline">pricing plans</Link>.
                             </p>
                         </section>
 
@@ -83,16 +86,16 @@ const TermsOfService = () => {
                             <h3 className="text-lg font-semibold mb-3 text-foreground">Related Pages</h3>
                             <ul className="space-y-2">
                                 <li>
-                                    <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link> - How we handle your personal data
+                                    <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link> - How we handle your personal data
                                 </li>
                                 <li>
-                                    <Link to="/cookies" className="text-primary hover:underline">Cookie Policy</Link> - Information about our cookie usage
+                                    <Link href="/cookies" className="text-primary hover:underline">Cookie Policy</Link> - Information about our cookie usage
                                 </li>
                                 <li>
-                                    <Link to="/refund-policy" className="text-primary hover:underline">Refund Policy</Link> - Our refund and cancellation terms
+                                    <Link href="/refund-policy" className="text-primary hover:underline">Refund Policy</Link> - Our refund and cancellation terms
                                 </li>
                                 <li>
-                                    <Link to="/about" className="text-primary hover:underline">About Us</Link> - Learn more about Markify
+                                    <Link href="/about" className="text-primary hover:underline">About Us</Link> - Learn more about Markify
                                 </li>
                             </ul>
                         </section>
@@ -105,3 +108,4 @@ const TermsOfService = () => {
 };
 
 export default TermsOfService;
+

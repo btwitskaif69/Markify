@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   SidebarGroup,
   SidebarMenu,
@@ -10,20 +13,20 @@ import { useAuth } from "@/context/AuthContext";
 import { Bookmark, Shield } from "lucide-react";
 
 export function NavMain({ totalBookmarks }) {
-  const location = useLocation();
+  const pathname = usePathname();
   const { user, isAdmin } = useAuth();
 
   // Determine if the "All Bookmarks" link should be active.
   // It's active if the path is exactly the user's dashboard URL.
-  const isAllBookmarksActive = location.pathname === `/dashboard/${user?.id}`;
+  const isAllBookmarksActive = pathname === `/dashboard/${user?.id}`;
   const isAdminActive =
-    isAdmin && location.pathname === `/dashboard/${user?.id}/admin`;
+    isAdmin && pathname === `/dashboard/${user?.id}/admin`;
 
   return (
     <SidebarGroup>
       <SidebarMenu>
         <SidebarMenuItem>
-          <Link to={user ? `/dashboard/${user.id}` : "/login"}>
+          <Link href={user ? `/dashboard/${user.id}` : "/login"}>
             <SidebarMenuButton
               tooltip="All Bookmarks"
               isActive={isAllBookmarksActive}
@@ -41,7 +44,7 @@ export function NavMain({ totalBookmarks }) {
         </SidebarMenuItem>
         {isAdmin && user && (
           <SidebarMenuItem>
-            <Link to={`/dashboard/${user.id}/admin`}>
+            <Link href={`/dashboard/${user.id}/admin`}>
               <SidebarMenuButton
                 tooltip="Admin"
                 isActive={isAdminActive}
@@ -57,4 +60,3 @@ export function NavMain({ totalBookmarks }) {
     </SidebarGroup>
   );
 }
-

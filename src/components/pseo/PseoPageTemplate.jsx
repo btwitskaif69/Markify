@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,19 +35,19 @@ const PseoPageTemplate = ({ page }) => {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to="/">Home</Link>
+                <Link href="/">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={getPseoHubPath()}>Use cases</Link>
+                <Link href={getPseoHubPath()}>Use cases</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={getPseoIntentPath(intent.slug)}>{intent.title}</Link>
+                <Link href={getPseoIntentPath(intent.slug)}>{intent.title}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
@@ -65,10 +67,10 @@ const PseoPageTemplate = ({ page }) => {
           <p className="text-muted-foreground text-lg">{hero.subheading}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Button asChild>
-              <Link to={page.cta.href}>{page.cta.label}</Link>
+              <Link href={page.cta.href}>{page.cta.label}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link to="/pricing">View pricing</Link>
+              <Link href="/pricing">View pricing</Link>
             </Button>
           </div>
         </div>
@@ -215,7 +217,7 @@ const PseoPageTemplate = ({ page }) => {
                   size="sm"
                 >
                   <Link
-                    to={getPseoDetailPath(relatedIntent.slug, industry.slug)}
+                    href={getPseoDetailPath(relatedIntent.slug, industry.slug)}
                   >
                     {relatedIntent.title}
                   </Link>
@@ -243,7 +245,7 @@ const PseoPageTemplate = ({ page }) => {
                   size="sm"
                 >
                   <Link
-                    to={getPseoDetailPath(intent.slug, relatedIndustry.slug)}
+                    href={getPseoDetailPath(intent.slug, relatedIndustry.slug)}
                   >
                     {relatedIndustry.name}
                   </Link>
@@ -264,13 +266,13 @@ const PseoPageTemplate = ({ page }) => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild>
-              <Link to={page.cta.href}>{page.cta.label}</Link>
+              <Link href={page.cta.href}>{page.cta.label}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link to="/features">Explore features</Link>
+              <Link href="/features">Explore features</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link to="/contact">Talk to sales</Link>
+              <Link href="/contact">Talk to sales</Link>
             </Button>
           </div>
         </div>

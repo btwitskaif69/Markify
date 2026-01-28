@@ -1,5 +1,7 @@
+"use client";
+
 import * as React from "react"
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { NavMain } from "@/components/dashboard/nav-main"
 
 import { NavCollections } from "@/components/dashboard/nav-collections"
@@ -13,7 +15,7 @@ import {
   SidebarMenuButton
 } from "@/components/ui/sidebar"
 import ImportExport from "./ImportExport";
-import logo from "@/assets/logo.svg"
+const logo = "/assets/logo.svg";
 
 export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, onShareCollection, totalBookmarks, ...props }) {
   const { user, logout } = useAuth();
@@ -21,7 +23,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <Link to={user ? `/dashboard/${user.id}` : '/login'}>
+        <Link href={user ? `/dashboard/${user.id}` : '/login'}>
           <SidebarMenuButton
             size="lg"
             className="hover:bg-transparent hover:text-inherit"

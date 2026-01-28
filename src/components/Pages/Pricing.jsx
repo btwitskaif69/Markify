@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -145,7 +147,7 @@ const PricingPage = () => {
 
           <div className="mt-10 text-center text-sm text-muted-foreground">
             Need a custom plan or have questions?{" "}
-            <Link to="/contact" className="text-primary hover:underline">
+            <Link href="/contact" className="text-primary hover:underline">
               Contact us
             </Link>
             .

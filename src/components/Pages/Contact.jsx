@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -370,15 +372,15 @@ const Contact = () => {
                 Learn more about what Markify can do for you.
               </p>
               <div className="flex flex-wrap gap-2">
-                {[
-                  { label: "Features", to: "/features" },
-                  { label: "Pricing", to: "/pricing" },
-                  { label: "Blog", to: "/blog" },
-                  { label: "About", to: "/about" }
+                  {[
+                  { label: "Features", href: "/features" },
+                  { label: "Pricing", href: "/pricing" },
+                  { label: "Blog", href: "/blog" },
+                  { label: "About", href: "/about" }
                 ].map((link) => (
                   <Link
-                    key={link.to}
-                    to={link.to}
+                    key={link.href}
+                    href={link.href}
                     className="px-3 py-1.5 rounded-full text-sm font-medium bg-muted hover:bg-primary hover:text-primary-foreground transition-all"
                   >
                     {link.label}
@@ -559,7 +561,7 @@ const Contact = () => {
 
                     <p className="text-xs text-muted-foreground text-center pt-2">
                       By submitting this form, you agree to our{" "}
-                      <Link to="/privacy" className="text-primary hover:underline">
+                      <Link href="/privacy" className="text-primary hover:underline">
                         Privacy Policy
                       </Link>
                       .
@@ -596,12 +598,12 @@ const Contact = () => {
                 Join thousands of users who've transformed their digital workspace with Markify.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/signup">
+                <Link href="/signup">
                   <Button size="lg" variant="secondary" className="rounded-full px-8 font-medium">
                     Get Started Free
                   </Button>
                 </Link>
-                <Link to="/features">
+                <Link href="/features">
                   <Button size="lg" variant="ghost" className="rounded-full px-8 font-medium text-white border-white/30 hover:bg-white/10">
                     Explore Features
                   </Button>

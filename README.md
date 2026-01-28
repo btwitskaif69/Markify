@@ -39,8 +39,8 @@
 
 | Frontend | Backend | Database | Deployment |
 |----------|---------|----------|------------|
-| ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white) | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white) |
-| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | ![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white) | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) | ![Cloudflare](https://img.shields.io/badge/Cloudflare_R2-F38020?style=flat&logo=cloudflare&logoColor=white) |
+| ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white) | ![Next.js](https://img.shields.io/badge/Route_Handlers-000000?style=flat&logo=nextdotjs&logoColor=white) | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white) | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white) |
+| ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white) | ![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white) | ![Cloudflare](https://img.shields.io/badge/Cloudflare_R2-F38020?style=flat&logo=cloudflare&logoColor=white) |
 | ![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat&logo=tailwind-css&logoColor=white) | ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=flat&logo=zod&logoColor=white) | | |
 
 </div>
@@ -64,11 +64,7 @@ git clone https://github.com/btwitskaif69/Markify.git
 # Navigate to project directory
 cd Markify
 
-# Install frontend dependencies
-npm install
-
-# Install backend dependencies
-cd Markify-Backend
+# Install dependencies
 npm install
 
 # Set up environment variables
@@ -78,11 +74,8 @@ cp .env.example .env
 # Run database migrations
 npx prisma migrate dev
 
-# Start development servers
-cd ..
-npm run dev           # Frontend: http://localhost:5173
-cd Markify-Backend
-npm run dev           # Backend: http://localhost:3000
+# Start development server
+npm run dev           # http://localhost:3000
 ```
 
 ---
@@ -91,23 +84,32 @@ npm run dev           # Backend: http://localhost:3000
 
 ```
 Markify/
-├── src/
-│   ├── components/        # React components
-│   │   ├── Pages/         # Page components (Home, About, etc.)
-│   │   ├── dashboard/     # Dashboard components
-│   │   ├── ui/            # Reusable UI components
-│   │   └── Forms/         # Authentication forms
-│   ├── context/           # React context providers
-│   ├── hooks/             # Custom React hooks
-│   ├── lib/               # Utility functions
-│   └── assets/            # Static assets
-├── Markify-Backend/
-│   ├── controllers/       # Route controllers
-│   ├── routes/            # API routes
-│   ├── prisma/            # Database schema & migrations
-│   └── utils/             # Backend utilities
-├── markify-extension/     # Browser extension
-└── public/                # Static files
+  app/                           # Next.js App Router
+    (auth)/                      # Auth routes (group)
+    (public)/                    # Marketing/public routes (group)
+    api/                         # Route handlers (backend)
+    layout.jsx
+    page.jsx
+    not-found.jsx
+    error.jsx
+    loading.jsx
+    globals.css
+  src/
+    components/                  # UI components
+    hooks/                       # Client hooks
+    lib/                         # Client helpers
+    server/                      # Server-only logic (used by route handlers)
+      config/
+      controllers/
+      db/
+      middleware/
+      services/
+      utils/
+  prisma/                        # Prisma schema & migrations
+  public/                        # Static assets
+  markify-extension/             # Browser extension
+  package.json
+  next.config.mjs
 ```
 
 ---
@@ -116,12 +118,19 @@ Markify/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/auth/signup` | Create new account |
-| `POST` | `/api/auth/login` | User login |
-| `GET` | `/api/bookmarks` | Get all bookmarks |
-| `POST` | `/api/bookmarks` | Create bookmark |
-| `GET` | `/api/collections` | Get all collections |
+| `POST` | `/api/users/initiate-signup` | Start signup flow |
+| `POST` | `/api/users/verify-email` | Verify email |
+| `POST` | `/api/users/login` | User login |
+| `POST` | `/api/users/forgot-password` | Request password reset |
+| `POST` | `/api/users/reset-password/{token}` | Reset password |
+| `GET` | `/api/users/profile` | Get current user profile |
+| `PATCH` | `/api/users/profile` | Update profile |
+| `GET` | `/api/collections` | List collections |
 | `POST` | `/api/collections` | Create collection |
+| `POST` | `/api/bookmarks` | Create bookmark |
+| `PATCH` | `/api/bookmarks/{bookmarkId}` | Update bookmark |
+| `DELETE` | `/api/bookmarks/{bookmarkId}` | Delete bookmark |
+| `POST` | `/api/upload` | Upload asset |
 
 ---
 

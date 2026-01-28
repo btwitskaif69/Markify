@@ -1,5 +1,7 @@
+"use client";
+
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -18,7 +20,11 @@ import {
 } from "@/lib/seo";
 
 const UseCaseDetail = () => {
-  const { intent: intentSlug, industry: industrySlug } = useParams();
+  const params = useParams();
+  const intentSlug = Array.isArray(params.intent) ? params.intent[0] : params.intent;
+  const industrySlug = Array.isArray(params.industry)
+    ? params.industry[0]
+    : params.industry;
   const page = getPseoPageBySlugs(intentSlug, industrySlug);
 
   if (!page) {

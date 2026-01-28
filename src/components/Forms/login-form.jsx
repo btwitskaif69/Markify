@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,14 +29,14 @@ import { signInWithGoogle, initializationError } from "@/lib/firebase";
 
 export function LoginForm({ className, ...props }) {
   const { login, isAuthenticated, user, isLoading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
-      navigate(`/dashboard/${user.id}`, { replace: true });
+      router.replace(`/dashboard/${user.id}`);
     }
-  }, [isAuthenticated, user, authLoading, navigate]);
+  }, [isAuthenticated, user, authLoading, router]);
   // ... existing state ...
   const [formData, setFormData] = useState({
     email: "",
@@ -73,9 +76,9 @@ export function LoginForm({ className, ...props }) {
       localStorage.setItem("lastLoginMethod", "google");
 
       if (data.isNewUser) {
-        navigate(`/dashboard/${data.user.id}?welcome=true`);
+        router.push(`/dashboard/${data.user.id}?welcome=true`);
       } else {
-        navigate(`/dashboard/${data.user.id}`);
+        router.push(`/dashboard/${data.user.id}`);
       }
     } catch (error) {
       console.error("Google Login error:", error);
@@ -105,7 +108,7 @@ export function LoginForm({ className, ...props }) {
       toast.success("Logged in successfully!");
       login(data.user, data.token);
       localStorage.setItem("lastLoginMethod", "email");
-      navigate(`/dashboard/${data.user.id}`);
+      router.push(`/dashboard/${data.user.id}`);
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.message);
@@ -154,7 +157,7 @@ export function LoginForm({ className, ...props }) {
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password" className="text-white">Password</Label>
-                  <Link to="/forgot-password" className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-zinc-400 hover:text-primary">
+                  <Link href="/forgot-password" className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-zinc-400 hover:text-primary">
                     Forgot your password?
                   </Link>
                 </div>
@@ -238,7 +241,7 @@ export function LoginForm({ className, ...props }) {
             </div>
             <div className="mt-4 text-center text-sm text-zinc-400">
               Don't have an account?{" "}
-              <Link to="/signup" className="underline underline-offset-4 hover:text-primary text-white">
+              <Link href="/signup" className="underline underline-offset-4 hover:text-primary text-white">
                 Sign up
               </Link>
             </div>

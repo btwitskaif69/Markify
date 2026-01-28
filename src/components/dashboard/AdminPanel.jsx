@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
 import {
   BarChart3,
   BookMarked,
@@ -55,13 +58,15 @@ import BookmarkManager from "@/components/dashboard/BookmarkManager";
 
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
 
 export default function AdminPanel() {
   const { user, isAdmin, isLoading, isAuthenticated, authFetch } = useAuth();
-  const navigate = useNavigate();
-  const { userId } = useParams();
+  const router = useRouter();
+  const params = useParams();
+  const userId = Array.isArray(params?.userId) ? params.userId[0] : params?.userId;
   const [posts, setPosts] = useState([]);
   const [isPostsLoading, setIsPostsLoading] = useState(true);
 
@@ -75,11 +80,11 @@ export default function AdminPanel() {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      navigate("/login");
+      router.push("/login");
     } else if (!isLoading && !isAdmin) {
-      navigate(`/dashboard/${user?.id}`);
+      router.push(`/dashboard/${user?.id}`);
     }
-  }, [isLoading, isAuthenticated, isAdmin, navigate, user]);
+  }, [isLoading, isAuthenticated, isAdmin, router, user]);
 
   useEffect(() => {
     // Fetch usage count (mock or actual)
@@ -290,7 +295,7 @@ export default function AdminPanel() {
             Back to Overview
           </Button>
           <Button asChild>
-            <Link to="/blog/new">
+            <Link href="/blog/new">
               <Plus className="mr-2 h-4 w-4" /> Create New
             </Link>
           </Button>
@@ -320,7 +325,7 @@ export default function AdminPanel() {
                       {post.published ? "Published" : "Draft"}
                     </span>
                   </TableCell>
-                  <TableCell>{new Date(post.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{formatDateUTC(post.createdAt)}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -328,8 +333,8 @@ export default function AdminPanel() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem asChild><Link to={`/blog/${post.slug}`}>View</Link></DropdownMenuItem>
-                        <DropdownMenuItem asChild><Link to={`/blog/${post.slug}/edit`}><Edit className="mr-2 h-4 w-4" /> Edit</Link></DropdownMenuItem>
+                        <DropdownMenuItem asChild><Link href={`/blog/${post.slug}`}>View</Link></DropdownMenuItem>
+                        <DropdownMenuItem asChild><Link href={`/blog/${post.slug}/edit`}><Edit className="mr-2 h-4 w-4" /> Edit</Link></DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(post.id)}><Trash2 className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
                       </DropdownMenuContent>
@@ -394,7 +399,7 @@ export default function AdminPanel() {
                     </div>
                   </TableCell>
                   <TableCell className="max-w-md"><p className="line-clamp-2 text-sm">{review.content}</p></TableCell>
-                  <TableCell>{new Date(review.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{formatDateUTC(review.createdAt)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => handleApproveReview(review.id)}><CheckCircle className="h-4 w-4 mr-1" /> Approve</Button>
@@ -427,7 +432,7 @@ export default function AdminPanel() {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink asChild><Link to={user ? `/dashboard/${user.id}` : "/login"}>Dashboard</Link></BreadcrumbLink>
+                  <BreadcrumbLink asChild><Link href={user ? `/dashboard/${user.id}` : "/login"}>Dashboard</Link></BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem><BreadcrumbLink>Admin</BreadcrumbLink></BreadcrumbItem>

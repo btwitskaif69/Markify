@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { useSearchParams, Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -28,20 +31,23 @@ const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", cate
 export default function Dashboard() {
   const { user, authFetch, isLoading: isAuthLoading } = useAuth();
   const { theme, setTheme } = useTheme();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [showWelcome, setShowWelcome] = useState(false);
-  const location = useLocation();
-  const isSharedView = location.pathname.endsWith("/shared");
+  const isSharedView = pathname?.endsWith("/shared");
 
   // Check for welcome param (new user onboarding)
   useEffect(() => {
     if (searchParams.get("welcome") === "true") {
       setShowWelcome(true);
-      // Remove the query param from URL
-      searchParams.delete("welcome");
-      setSearchParams(searchParams, { replace: true });
+      // Remove the query param from URL.
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("welcome");
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, router, pathname]);
 
   const {
     allBookmarks,
@@ -182,7 +188,7 @@ export default function Dashboard() {
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink asChild>
-                      <Link to={user ? `/dashboard/${user.id}` : "/login"}>
+                      <Link href={user ? `/dashboard/${user.id}` : "/login"}>
                         {user ? `${user.name}'s Bookmarks` : "Bookmarks"}
                       </Link>
                     </BreadcrumbLink>

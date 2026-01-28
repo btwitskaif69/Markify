@@ -1,8 +1,10 @@
+"use client";
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const CTA = () => {
   return (
@@ -49,7 +51,7 @@ const CTA = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/signup">
+              <Link href="/signup">
                 <Button
                   size="lg"
                   className="bg-white text-primary hover:bg-white/90 text-lg px-8 rounded-full shadow-lg shadow-black/20 cursor-pointer"
@@ -58,7 +60,7 @@ const CTA = () => {
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Link to="/about">
+              <Link href="/about">
                 <Button
                   variant="outline"
                   size="lg"

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   Navbar as ResizableNavbar,
   NavBody,
@@ -55,7 +55,7 @@ const Navbar = () => {
             <Moon className="h-6 w-6 text-gray-500" />
           )}
         </button>
-        <NavbarButton as={Link} to={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"}>
+        <NavbarButton as={Link} href={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"}>
           {isAuthenticated ? "Dashboard" : "Sign Up"}
         </NavbarButton>
       </NavBody>
@@ -85,14 +85,14 @@ const Navbar = () => {
           {NAV_LINKS.map((item, idx) => (
             <Link
               key={`mobile-link-${idx}`}
-              to={item.link}
+              href={item.link}
               onClick={closeMobileMenu}
               className="w-full px-4 py-2 text-lg text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded"
             >
               {item.name}
             </Link>
           ))}
-          <NavbarButton as={Link} to={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"} className="w-full mt-4">
+          <NavbarButton as={Link} href={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"} className="w-full mt-4">
             {isAuthenticated ? "Dashboard" : "Sign Up"}
           </NavbarButton>
         </MobileNavMenu>

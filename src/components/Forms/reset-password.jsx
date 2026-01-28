@@ -1,6 +1,8 @@
 // src/components/ResetPassword.jsx
+"use client";
+
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -13,14 +15,16 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import { secureFetch } from "@/lib/secureApi";
 import SEO from "@/components/SEO/SEO";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { token } = useParams(); // Get the token from the URL
-  const navigate = useNavigate();
+  const params = useParams();
+  const token = Array.isArray(params?.token) ? params.token[0] : params?.token;
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +35,7 @@ export default function ResetPassword() {
     setIsLoading(true);
     try {
       const API_URL = `${API_BASE_URL}/users/reset-password/${token}`;
-      const response = await fetch(API_URL, {
+      const response = await secureFetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
@@ -40,7 +44,7 @@ export default function ResetPassword() {
       if (!response.ok) throw new Error(data.message);
 
       toast.success(data.message);
-      navigate('/login');
+      router.push('/login');
     } catch (error) {
       toast.error(error.message);
     } finally {

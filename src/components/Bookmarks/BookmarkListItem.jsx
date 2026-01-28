@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { formatDateUTC } from "@/lib/date"
 import { ExternalLink, Edit, Trash2, Star } from "lucide-react"
 
 function BookmarkListItem({
@@ -86,7 +87,7 @@ function BookmarkListItem({
         <div className="text-right flex-shrink-0">
           <div className="font-medium text-sm">{bookmark.category}</div>
           <div className="text-xs text-muted-foreground">
-            {new Date(bookmark.createdAt).toLocaleDateString()}
+            {formatDateUTC(bookmark.createdAt)}
           </div>
         </div>
         {/* Hide actions in selection mode */}

@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +17,7 @@ import {
   buildBreadcrumbSchema,
   getCanonicalUrl,
 } from "@/lib/seo";
+import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
 
@@ -104,7 +108,8 @@ const renderContent = (content) => {
 };
 
 const BlogPost = () => {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const initialPost = getPrerenderedPost(slug);
   const initialLatestPosts = getPrerenderedLatestPosts(slug);
   const [post, setPost] = useState(initialPost);
@@ -238,7 +243,7 @@ const BlogPost = () => {
           <div className="container mx-auto px-4 py-20 text-center relative z-10">
             <p className="text-destructive text-lg mb-4">{error}</p>
             <Button asChild variant="outline">
-              <Link to="/blog">Back to Blog</Link>
+              <Link href="/blog">Back to Blog</Link>
             </Button>
           </div>
         )}
@@ -268,7 +273,7 @@ const BlogPost = () => {
               <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 pb-10 md:pb-16">
                 <div className="max-w-5xl mx-auto">
                   <Link
-                    to="/blog"
+                    href="/blog"
                     className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
                   >
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -286,14 +291,11 @@ const BlogPost = () => {
                       <Calendar className="h-4 w-4" />
                       <span>
                         {post.createdAt
-                          ? new Date(post.createdAt).toLocaleDateString(
-                            undefined,
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            }
-                          )
+                          ? formatDateUTC(post.createdAt, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
                           : ""}
                       </span>
                     </div>
@@ -320,7 +322,7 @@ const BlogPost = () => {
                         Thanks for reading!
                       </p>
                       <Button asChild variant="outline">
-                        <Link to="/blog">Read more articles</Link>
+                        <Link href="/blog">Read more articles</Link>
                       </Button>
                     </div>
 
@@ -330,31 +332,31 @@ const BlogPost = () => {
                         Discover how Markify can transform your workflow:
                       </p>
                       <div className="flex flex-wrap gap-4 text-sm">
-                        <Link to="/about" className="text-primary hover:underline">
+                        <Link href="/about" className="text-primary hover:underline">
                           About Markify
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link to="/solutions" className="text-primary hover:underline">
+                        <Link href="/solutions" className="text-primary hover:underline">
                           Browse Solutions
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link to="/features" className="text-primary hover:underline">
+                        <Link href="/features" className="text-primary hover:underline">
                           Explore Features
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link to="/use-cases" className="text-primary hover:underline">
+                        <Link href="/use-cases" className="text-primary hover:underline">
                           Browse Use Cases
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link to="/pricing" className="text-primary hover:underline">
+                        <Link href="/pricing" className="text-primary hover:underline">
                           View Pricing
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link to="/signup" className="text-primary hover:underline">
+                        <Link href="/signup" className="text-primary hover:underline">
                           Sign Up Free
                         </Link>
                         <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link to="/contact" className="text-primary hover:underline">
+                        <Link href="/contact" className="text-primary hover:underline">
                           Contact Us
                         </Link>
                       </div>
@@ -373,7 +375,7 @@ const BlogPost = () => {
                     <div className="space-y-4">
                       {latestPosts.length > 0 ? (
                         latestPosts.map((latest) => (
-                          <Link key={latest.id} to={`/blog/${latest.slug}`} className="block group">
+                          <Link key={latest.id} href={`/blog/${latest.slug}`} className="block group">
                             <Card className="overflow-hidden border-border/50 hover:border-primary/30 transition-colors bg-card/50 backdrop-blur-sm !py-0">
                               <div className="aspect-video w-full bg-muted overflow-hidden">
                                 {latest.coverImage ? (
@@ -397,9 +399,7 @@ const BlogPost = () => {
                                   {latest.title}
                                 </h4>
                                 <p className="text-xs text-muted-foreground">
-                                  {new Date(
-                                    latest.createdAt
-                                  ).toLocaleDateString()}
+                                  {formatDateUTC(latest.createdAt)}
                                 </p>
                               </CardContent>
                             </Card>
@@ -419,7 +419,7 @@ const BlogPost = () => {
                     {latestPosts.map((latest) => (
                       <Link
                         key={latest.id}
-                        to={`/blog/${latest.slug}`}
+                        href={`/blog/${latest.slug}`}
                         className="block group"
                       >
                         <Card className="overflow-hidden border-border/50 hover:border-primary/30 transition-colors !py-0">
@@ -445,7 +445,7 @@ const BlogPost = () => {
                               {latest.title}
                             </h4>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(latest.createdAt).toLocaleDateString()}
+                              {formatDateUTC(latest.createdAt)}
                             </p>
                           </CardContent>
                         </Card>

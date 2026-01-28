@@ -1,9 +1,11 @@
+"use client";
+
 import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "../ui/spotlight-new";
 import { ChevronRight } from "lucide-react";
 import SparklesIcon from "@/components/ui/sparkles-icon";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import ShinyText from "../ShinyText";
 
 const Hero = () => {
@@ -34,7 +36,7 @@ const Hero = () => {
       <section className="relative z-20 flex items-center justify-center min-h-[100vh]">
         <div className="container mx-auto px-6 md:px-12 flex flex-col items-center justify-center text-center">
           {/* Tagline */}
-          <Link to="/signup" className="inline-block">
+          <Link href="/signup" className="inline-block">
             <Button
               variant="outline"
               className="group border px-6 py-3 rounded-full inline-flex items-center gap-1 text-sm font-medium cursor-pointer bg-transparent!"
@@ -65,12 +67,12 @@ const Hero = () => {
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto">
-            <Link to="/signup">
+            <Link href="/signup">
               <Button size="lg" className="text-lg rounded-full shadow-md w-full sm:w-auto cursor-pointer text-black dark:text-white font-semibold">
                 Get Started
               </Button>
             </Link>
-            <Link to="/about">
+            <Link href="/about">
               <Button
                 variant="outline"
                 size="lg"

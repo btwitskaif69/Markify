@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,11 +14,13 @@ import { API_BASE_URL } from "@/lib/apiConfig";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import SEO from "@/components/SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
+import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
 
 export default function SharedBookmark() {
-    const { shareId } = useParams();
+    const params = useParams();
+    const shareId = Array.isArray(params.shareId) ? params.shareId[0] : params.shareId;
     const [bookmark, setBookmark] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -82,7 +87,7 @@ export default function SharedBookmark() {
                             <p className="text-muted-foreground mb-6">
                                 This bookmark may have been removed or the link is no longer valid.
                             </p>
-                            <Link to="/">
+                            <Link href="/">
                                 <Button variant="outline" className="gap-2">
                                     <ArrowLeft className="h-4 w-4" />
                                     Back to Home
@@ -122,7 +127,7 @@ export default function SharedBookmark() {
                     {/* LEFT COLUMN: Back Link */}
                     <div className="hidden lg:block w-48 sticky top-24 shrink-0">
                         <Link
-                            to="/"
+                            href="/"
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-card hover:bg-primary/5 text-sm font-medium text-muted-foreground hover:text-primary transition-all group"
                         >
                             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -134,7 +139,7 @@ export default function SharedBookmark() {
                     <div className="w-full max-w-2xl flex-1">
                         {/* Mobile Back Link */}
                         <Link
-                            to="/"
+                            href="/"
                             className="lg:hidden inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
                         >
                             <ArrowLeft className="h-4 w-4" />
@@ -218,9 +223,7 @@ export default function SharedBookmark() {
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <Calendar className="h-3.5 w-3.5" />
-                                        <span>{new Date(bookmark.createdAt).toLocaleDateString(undefined, {
-                                            dateStyle: 'medium'
-                                        })}</span>
+                                        <span>{formatDateUTC(bookmark.createdAt, { dateStyle: "medium" })}</span>
                                     </div>
                                 </div>
 
@@ -264,7 +267,7 @@ export default function SharedBookmark() {
                             <p className="text-sm text-muted-foreground mb-4">
                                 Join Markify to organize your digital life.
                             </p>
-                            <Link to="/signup">
+                            <Link href="/signup">
                                 <Button className="w-full">Get Started Free</Button>
                             </Link>
                         </div>
@@ -288,12 +291,12 @@ export default function SharedBookmark() {
                             </p>
 
                             <div className="w-full space-y-3">
-                                <Link to="/signup">
+                                <Link href="/signup">
                                     <Button className="w-full font-semibold shadow-md">
                                         Join Markify for Free
                                     </Button>
                                 </Link>
-                                <Link to="/">
+                                <Link href="/">
                                     <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-foreground">
                                         Learn More
                                     </Button>

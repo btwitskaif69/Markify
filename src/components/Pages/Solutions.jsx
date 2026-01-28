@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -66,7 +68,7 @@ const Solutions = () => {
                 </CardHeader>
                 <CardContent>
                   <Button asChild variant="outline" className="gap-2">
-                    <Link to={getSolutionPath(solution.slug)}>
+                    <Link href={getSolutionPath(solution.slug)}>
                       Explore solution <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -86,16 +88,16 @@ const Solutions = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild>
-                <Link to="/signup">Get started free</Link>
+                <Link href="/signup">Get started free</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/pricing">View pricing</Link>
+                <Link href="/pricing">View pricing</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/features">Explore features</Link>
+                <Link href="/features">Explore features</Link>
               </Button>
               <Button asChild variant="ghost">
-                <Link to="/blog">Read the blog</Link>
+                <Link href="/blog">Read the blog</Link>
               </Button>
             </div>
           </div>

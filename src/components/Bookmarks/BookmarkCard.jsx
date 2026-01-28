@@ -1,11 +1,12 @@
 import React, { useState, memo } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { formatDateUTC } from "@/lib/date"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical, FolderSymlink, CheckSquare, Share2 } from "lucide-react"
-import placeholder from "@/assets/placeholder.svg"
+const placeholder = "/assets/placeholder.svg";
 
 import {
   DropdownMenu,
@@ -161,7 +162,7 @@ function BookmarkCard({
             {/* Category & Date (no border-t) */}
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="text-primary">{bookmark.category}</span>
-              <span className="text-primary">{new Date(bookmark.createdAt).toLocaleDateString()}</span>
+              <span className="text-primary">{formatDateUTC(bookmark.createdAt)}</span>
             </div>
           </div>
         </div>

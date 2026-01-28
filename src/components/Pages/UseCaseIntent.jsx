@@ -1,4 +1,7 @@
-import { Link, useParams } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -22,7 +25,8 @@ import {
 import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
 
 const UseCaseIntent = () => {
-  const { intent: intentSlug } = useParams();
+  const params = useParams();
+  const intentSlug = Array.isArray(params.intent) ? params.intent[0] : params.intent;
   const intent = getPseoIntentBySlug(intentSlug);
 
   if (!intent) {
@@ -88,7 +92,7 @@ const UseCaseIntent = () => {
                 </CardHeader>
                 <CardContent>
                   <Button asChild variant="outline" className="gap-2">
-                    <Link to={getPseoDetailPath(intent.slug, industry.slug)}>
+                    <Link href={getPseoDetailPath(intent.slug, industry.slug)}>
                       View {industry.name} page
                     </Link>
                   </Button>
@@ -110,7 +114,7 @@ const UseCaseIntent = () => {
             <div className="flex flex-wrap justify-center gap-3">
               {relatedIntents.map((related) => (
                 <Button key={related.slug} asChild variant="outline" size="sm">
-                  <Link to={getPseoIntentPath(related.slug)}>
+                  <Link href={getPseoIntentPath(related.slug)}>
                     {related.title}
                   </Link>
                 </Button>

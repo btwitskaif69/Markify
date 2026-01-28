@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -75,7 +77,7 @@ const UseCases = () => {
                 </CardHeader>
                 <CardContent>
                   <Button asChild variant="outline" className="gap-2">
-                    <Link to={getPseoIntentPath(intent.slug)}>
+                    <Link href={getPseoIntentPath(intent.slug)}>
                       Explore {intent.title.toLowerCase()}
                     </Link>
                   </Button>
@@ -96,13 +98,13 @@ const UseCases = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild>
-                <Link to="/signup">Start free</Link>
+                <Link href="/signup">Start free</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/features">Explore features</Link>
+                <Link href="/features">Explore features</Link>
               </Button>
               <Button asChild variant="ghost">
-                <Link to="/contact">Talk to sales</Link>
+                <Link href="/contact">Talk to sales</Link>
               </Button>
             </div>
           </div>

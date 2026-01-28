@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Bookmark,
@@ -538,14 +540,14 @@ const WhatIsMarkify = () => {
                         </p>
                         <div className="relative z-10 flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
-                                to="/signup"
+                                href="/signup"
                                 className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             >
                                 Get Started Free
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
                             <Link
-                                to="/pricing"
+                                href="/pricing"
                                 className="inline-flex h-12 items-center justify-center rounded-full border border-input bg-background px-8 font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                             >
                                 View Pricing

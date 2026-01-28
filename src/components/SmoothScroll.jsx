@@ -1,6 +1,8 @@
+"use client";
+
 import { ReactLenis, useLenis } from 'lenis/react';
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 
 /**
  * SmoothScroll wrapper component using Lenis
@@ -13,8 +15,6 @@ import { useLocation } from 'react-router-dom';
  * - Respects reduced motion preferences via CSS
  */
 const SmoothScroll = ({ children }) => {
-    const location = useLocation();
-
     return (
         <ReactLenis
             root
@@ -38,14 +38,14 @@ const SmoothScroll = ({ children }) => {
  */
 const ScrollToTop = () => {
     const lenis = useLenis();
-    const location = useLocation();
+    const pathname = usePathname();
 
     useEffect(() => {
         // Scroll to top immediately on route change
         if (lenis) {
             lenis.scrollTo(0, { immediate: true });
         }
-    }, [location.pathname, lenis]);
+    }, [pathname, lenis]);
 
     return null;
 };

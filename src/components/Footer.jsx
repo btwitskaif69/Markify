@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
-import logo from "@/assets/logo.svg";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
 import {
   GET_STARTED_LINKS,
@@ -8,10 +9,12 @@ import {
   RESOURCE_LINKS,
 } from "@/data/siteLinks";
 
+const logo = "/assets/logo.svg";
+
 function Footer() {
   const solutionLinks = SOLUTIONS.slice(0, 4).map((solution) => ({
     label: solution.title,
-    to: getSolutionPath(solution.slug),
+    href: getSolutionPath(solution.slug),
   }));
 
   return (
@@ -22,7 +25,7 @@ function Footer() {
         <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8 mb-32">
           {/* Brand / Logo Section */}
           <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center gap-3 mb-6 group w-fit">
+            <Link href="/" className="flex items-center gap-3 mb-6 group w-fit">
               <div className="bg-primary p-2 rounded-xl">
                 <img
                   src={logo}
@@ -51,7 +54,7 @@ function Footer() {
                 {PRODUCT_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
-                      to={link.to}
+                      href={link.to}
                       className="hover:text-primary transition-colors duration-200"
                     >
                       {link.label}
@@ -68,9 +71,9 @@ function Footer() {
               </h3>
               <ul className="space-y-4 text-sm text-muted-foreground">
                 {solutionLinks.map((link) => (
-                  <li key={link.to}>
+                  <li key={link.href}>
                     <Link
-                      to={link.to}
+                      href={link.href}
                       className="hover:text-primary transition-colors duration-200"
                     >
                       {link.label}
@@ -89,7 +92,7 @@ function Footer() {
                 {RESOURCE_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
-                      to={link.to}
+                      href={link.to}
                       className="hover:text-primary transition-colors duration-200"
                     >
                       {link.label}
@@ -119,7 +122,7 @@ function Footer() {
                 {GET_STARTED_LINKS.map((link) => (
                   <li key={link.to}>
                     <Link
-                      to={link.to}
+                      href={link.to}
                       className="hover:text-primary transition-colors duration-200"
                     >
                       {link.label}
@@ -137,7 +140,7 @@ function Footer() {
               <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <a
-                    href="https://linkedin.com"
+                    href="https://linkedin.com/company/markifytech"
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
@@ -147,7 +150,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://youtube.com"
+                    href="https://youtube.com/@markifytech"
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
@@ -157,7 +160,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://twitter.com"
+                    href="https://twitter.com/markifytech"
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
@@ -167,7 +170,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://instagram.com"
+                    href="https://instagram.com/markifytech"
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
@@ -184,16 +187,16 @@ function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-muted-foreground font-medium pt-8 border-t border-border/40">
           <p>© 2026 Markify Inc. All rights reserved.</p>
           <div className="flex gap-8">
-            <Link to="/privacy" className="hover:text-primary transition-colors duration-200">
+            <Link href="/privacy" className="hover:text-primary transition-colors duration-200">
               Privacy policy
             </Link>
-            <Link to="/terms" className="hover:text-primary transition-colors duration-200">
+            <Link href="/terms" className="hover:text-primary transition-colors duration-200">
               Terms of service
             </Link>
-            <Link to="/refund-policy" className="hover:text-primary transition-colors duration-200">
+            <Link href="/refund-policy" className="hover:text-primary transition-colors duration-200">
               Refund policy
             </Link>
-            <Link to="/cookies" className="hover:text-primary transition-colors duration-200">
+            <Link href="/cookies" className="hover:text-primary transition-colors duration-200">
               Cookie settings
             </Link>
           </div>

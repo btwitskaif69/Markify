@@ -1,4 +1,6 @@
-const DEFAULT_BACKEND_URL = import.meta.env.DEV
+const isDev = process.env.NODE_ENV !== "production";
+const isBrowser = typeof window !== "undefined";
+const DEFAULT_BACKEND_URL = isDev
   ? "http://localhost:5000"
   : "https://markify-api.vercel.app";
 
@@ -10,10 +12,15 @@ const normalizeBackendUrl = (url) => {
   return withoutTrailingSlash.replace(/\/api$/, "");
 };
 
-export const BACKEND_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:5000"
-  : normalizeBackendUrl(import.meta.env.VITE_APP_BACKEND_URL);
-export const API_BASE_URL = `${BACKEND_BASE_URL}/api`;
+const resolvedBackendUrl = normalizeBackendUrl(
+  process.env.NEXT_PUBLIC_APP_BACKEND_URL ||
+    process.env.APP_BACKEND_URL ||
+    DEFAULT_BACKEND_URL
+);
+
+export const BACKEND_BASE_URL = resolvedBackendUrl;
+// Use same-origin proxy in the browser to avoid CORS during dev.
+export const API_BASE_URL = isBrowser ? "/api" : `${resolvedBackendUrl}/api`;
 
 // Allow override via env, otherwise give slow endpoints a reasonable window to respond.
-export const AUTH_TIMEOUT_MS = Number(import.meta.env.VITE_AUTH_TIMEOUT_MS || 60000);
+export const AUTH_TIMEOUT_MS = Number(process.env.NEXT_PUBLIC_AUTH_TIMEOUT_MS || 60000);

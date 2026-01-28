@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   createContext,
   useState,
@@ -6,7 +8,7 @@ import React, {
   useCallback,
   useMemo
 } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { secureFetch as secureApiFetch } from "@/lib/secureApi";
 import { API_BASE_URL, AUTH_TIMEOUT_MS } from "@/lib/apiConfig";
@@ -16,11 +18,12 @@ const PROTECTED_PATH_PREFIXES = ["/dashboard"];
 const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
 
 export const AuthProvider = ({ children }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   // Load from localStorage on first render
   const [user, setUser] = useState(() => {
+    if (typeof window === "undefined") return null;
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
@@ -42,10 +45,14 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [token, setToken] = useState(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("token");
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   const saveToken = (authToken) => {
+    if (typeof window === "undefined") return;
     if (authToken) {
       localStorage.setItem("token", authToken);
     } else {
@@ -55,6 +62,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const saveUser = (userData) => {
+    if (typeof window === "undefined") return;
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
     } else {
@@ -67,8 +75,8 @@ export const AuthProvider = ({ children }) => {
     saveToken(null);
     saveUser(null);
     toast.success("You have been logged out.");
-    navigate("/login");
-  }, [navigate]);
+    router.push("/login");
+  }, [router]);
 
   // Helper for fetch with encryption support and timeout
   const timedSecureFetch = useCallback(async (url, options = {}) => {
@@ -195,7 +203,7 @@ export const AuthProvider = ({ children }) => {
 
   const shouldShowGlobalLoader =
     isLoading &&
-    PROTECTED_PATH_PREFIXES.some((path) => location.pathname.startsWith(path));
+    PROTECTED_PATH_PREFIXES.some((path) => (pathname || "").startsWith(path));
 
   return (
     <AuthContext.Provider value={authValue}>

@@ -1,5 +1,8 @@
+"use client";
+
 import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -24,7 +27,8 @@ import {
 } from "@/lib/seo";
 
 const Solution = () => {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
   const solution = getSolutionBySlug(slug);
 
   if (!solution) {
@@ -72,10 +76,10 @@ const Solution = () => {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Button asChild>
-                <Link to="/signup">Start free</Link>
+                <Link href="/signup">Start free</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/pricing">View pricing</Link>
+                <Link href="/pricing">View pricing</Link>
               </Button>
             </div>
           </div>
@@ -118,13 +122,13 @@ const Solution = () => {
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
                 <Button asChild variant="outline">
-                  <Link to="/pricing">Pricing</Link>
+                  <Link href="/pricing">Pricing</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/blog">Blog</Link>
+                  <Link href="/blog">Blog</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/contact">Contact</Link>
+                  <Link href="/contact">Contact</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -156,7 +160,7 @@ const Solution = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold">Related solutions</h2>
               <Button asChild variant="ghost">
-                <Link to="/solutions">All solutions</Link>
+                <Link href="/solutions">All solutions</Link>
               </Button>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
@@ -168,7 +172,7 @@ const Solution = () => {
                   </CardHeader>
                   <CardContent>
                     <Button asChild variant="outline" className="w-full">
-                      <Link to={getSolutionPath(related.slug)}>View solution</Link>
+                      <Link href={getSolutionPath(related.slug)}>View solution</Link>
                     </Button>
                   </CardContent>
                 </Card>

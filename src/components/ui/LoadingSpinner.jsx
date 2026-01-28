@@ -1,5 +1,6 @@
 import React from 'react';
-import logo from '@/assets/logo.svg';
+
+const logo = '/assets/logo.svg';
 
 const LoadingSpinner = ({ size = "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14" }) => {
     return (

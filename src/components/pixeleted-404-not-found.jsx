@@ -1,6 +1,8 @@
+"use client";
+
 import { Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Link } from "react-router-dom"
+import Link from "next/link"
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
 import SEO from "@/components/SEO/SEO"
 
@@ -58,7 +60,7 @@ export function Error404() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild className="h-9 px-6 bg-orange-600 hover:bg-orange-500 text-white text-sm font-medium tracking-wide rounded-lg transition-all shadow-lg hover:shadow-orange-500/20">
-                <Link to="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2">
                   <Home className="w-3.5 h-3.5" />
                   Back to Home
                 </Link>

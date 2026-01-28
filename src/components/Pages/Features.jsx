@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -80,7 +82,7 @@ const FeaturesPage = () => {
                   </CardHeader>
                   <CardContent>
                     <Button asChild variant="outline" className="gap-2">
-                      <Link to={getFeaturePath(feature.slug)}>
+                      <Link href={getFeaturePath(feature.slug)}>
                         View feature <ArrowRight className="h-4 w-4" />
                       </Link>
                     </Button>
@@ -102,13 +104,13 @@ const FeaturesPage = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild>
-                <Link to="/solutions">Browse solutions</Link>
+                <Link href="/solutions">Browse solutions</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/pricing">View pricing</Link>
+                <Link href="/pricing">View pricing</Link>
               </Button>
               <Button asChild variant="ghost">
-                <Link to="/blog">Read the blog</Link>
+                <Link href="/blog">Read the blog</Link>
               </Button>
             </div>
           </div>

@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useState, memo } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
@@ -16,6 +18,7 @@ import { API_BASE_URL } from "@/lib/apiConfig";
 import { secureFetch } from "@/lib/secureApi";
 import SEO from "../SEO/SEO";
 import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
+import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
 
@@ -29,7 +32,7 @@ const getPrerenderedPosts = () => {
 const BlogCard = memo(({ post }) => (
   <article className="animate-fadeIn">
     <Link
-      to={`/blog/${post.slug}`}
+      href={`/blog/${post.slug}`}
       className="group block h-full"
     >
       <Card className="h-full flex flex-col overflow-hidden border-border/60 bg-card/80 hover:bg-card hover:shadow-xl hover:border-primary/40 transition-all duration-200 !py-0 backdrop-blur-sm hover:-translate-y-1">
@@ -57,7 +60,7 @@ const BlogCard = memo(({ post }) => (
             </span>
             <span>
               {post.createdAt
-                ? new Date(post.createdAt).toLocaleDateString()
+                ? formatDateUTC(post.createdAt)
                 : ""}
             </span>
           </div>
@@ -156,23 +159,23 @@ const Blog = () => {
               managing your knowledge with Markify.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm animate-fadeIn">
-              <Link to="/about" className="text-primary hover:underline">
+              <Link href="/about" className="text-primary hover:underline">
                 Learn More About Markify
               </Link>
               <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link to="/features" className="text-primary hover:underline">
+              <Link href="/features" className="text-primary hover:underline">
                 Explore Features
               </Link>
               <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link to="/solutions" className="text-primary hover:underline">
+              <Link href="/solutions" className="text-primary hover:underline">
                 Browse Solutions
               </Link>
               <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link to="/pricing" className="text-primary hover:underline">
+              <Link href="/pricing" className="text-primary hover:underline">
                 Pricing Plans
               </Link>
               <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link to="/contact" className="text-primary hover:underline">
+              <Link href="/contact" className="text-primary hover:underline">
                 Contact Us
               </Link>
             </div>

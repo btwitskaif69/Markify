@@ -1,5 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,14 +29,14 @@ import { signInWithGoogle, initializationError } from "@/lib/firebase";
 
 export function SignupForm({ className, ...props }) {
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
-      navigate(`/dashboard/${user.id}`, { replace: true });
+      router.replace(`/dashboard/${user.id}`);
     }
-  }, [isAuthenticated, user, authLoading, navigate]);
+  }, [isAuthenticated, user, authLoading, router]);
 
   const { login } = useAuth();
   const [formData, setFormData] = useState({
@@ -74,9 +77,9 @@ export function SignupForm({ className, ...props }) {
       localStorage.setItem("lastLoginMethod", "google");
 
       if (data.isNewUser) {
-        navigate(`/dashboard/${data.user.id}?welcome=true`);
+        router.push(`/dashboard/${data.user.id}?welcome=true`);
       } else {
-        navigate(`/dashboard/${data.user.id}`);
+        router.push(`/dashboard/${data.user.id}`);
       }
     } catch (error) {
       console.error("Google Signup error:", error);
@@ -105,7 +108,7 @@ export function SignupForm({ className, ...props }) {
 
       toast.success("Verification code sent to your email!");
       localStorage.setItem("lastLoginMethod", "email");
-      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       console.error("Signup error:", error);
       toast.error(error.message);
@@ -230,7 +233,7 @@ export function SignupForm({ className, ...props }) {
 
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
-              <Link to="/login" className="underline underline-offset-4 hover:text-primary">
+              <Link href="/login" className="underline underline-offset-4 hover:text-primary">
                 Log in
               </Link>
             </div>

@@ -15,6 +15,9 @@ export const SITE_CONFIG = {
   socialProfiles: [
     "https://twitter.com/markifytech",
     "https://github.com/btwitskaif69/Markify",
+    "https://linkedin.com/company/markifytech",
+    "https://instagram.com/markifytech",
+    "https://youtube.com/@markifytech",
   ],
   // SEO Keywords for differentiation
   keywords: [

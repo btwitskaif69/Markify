@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -100,7 +103,9 @@ const normalize = (value) => (value || "").toLowerCase().trim();
 const tokenize = (value) => normalize(value).split(/\s+/).filter(Boolean);
 
 const SearchPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const query = searchParams.get("q") || "";
   const [input, setInput] = useState(query);
   const [blogPosts, setBlogPosts] = useState([]);
@@ -178,11 +183,14 @@ const SearchPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const trimmed = input.trim();
+    const params = new URLSearchParams(searchParams.toString());
     if (trimmed) {
-      setSearchParams({ q: trimmed });
+      params.set("q", trimmed);
     } else {
-      setSearchParams({});
+      params.delete("q");
     }
+    const nextQuery = params.toString();
+    router.push(nextQuery ? `${pathname}?${nextQuery}` : pathname);
   };
 
   return (
@@ -244,7 +252,7 @@ const SearchPage = () => {
                     {results.map((result) => (
                       <Link
                         key={`${result.type}-${result.path}`}
-                        to={result.path}
+                        href={result.path}
                         className="rounded-2xl border border-border bg-card/60 p-6 transition-colors hover:bg-card"
                       >
                         <div className="flex flex-wrap items-center gap-3 mb-2 text-xs uppercase tracking-wide text-muted-foreground">
@@ -282,7 +290,7 @@ const SearchPage = () => {
               {STATIC_PAGES.slice(0, 6).map((page) => (
                 <Link
                   key={page.path}
-                  to={page.path}
+                  href={page.path}
                   className="rounded-xl border border-border bg-card/60 p-4 text-sm text-muted-foreground hover:bg-card"
                 >
                   <span className="block font-medium text-foreground mb-1">

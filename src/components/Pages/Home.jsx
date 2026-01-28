@@ -1,6 +1,8 @@
+"use client";
+
 // Home.jsx
 import { lazy, Suspense } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Hero from '../home/Hero';
 import DashboardPreview from '../home/DashboardPreview';
@@ -109,22 +111,22 @@ const Home = () => {
                 bookmark library.
               </p>
               <div className="flex flex-wrap justify-center gap-4 text-sm font-medium">
-                <Link to="/features" className="text-primary hover:underline">
+                <Link href="/features" className="text-primary hover:underline">
                   Features
                 </Link>
-                <Link to="/use-cases" className="text-primary hover:underline">
+                <Link href="/use-cases" className="text-primary hover:underline">
                   Use cases
                 </Link>
-                <Link to="/pricing" className="text-primary hover:underline">
+                <Link href="/pricing" className="text-primary hover:underline">
                   Pricing
                 </Link>
-                <Link to="/about" className="text-primary hover:underline">
+                <Link href="/about" className="text-primary hover:underline">
                   About
                 </Link>
-                <Link to="/blog" className="text-primary hover:underline">
+                <Link href="/blog" className="text-primary hover:underline">
                   Blog
                 </Link>
-                <Link to="/contact" className="text-primary hover:underline">
+                <Link href="/contact" className="text-primary hover:underline">
                   Contact
                 </Link>
               </div>

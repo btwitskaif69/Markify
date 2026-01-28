@@ -1,6 +1,8 @@
 // src/components/ForgotPassword.jsx
+"use client";
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -13,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/lib/apiConfig";
+import { secureFetch } from "@/lib/secureApi";
 import SEO from "@/components/SEO/SEO";
 
 const API_URL = `${API_BASE_URL}/users/forgot-password`;
@@ -25,7 +28,7 @@ export default function ForgotPassword() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await fetch(API_URL, {
+      const response = await secureFetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -76,7 +79,7 @@ export default function ForgotPassword() {
             </div>
             <div className="mt-4 text-center text-sm">
               Remembered your password?{" "}
-              <Link to="/login" className="underline">
+              <Link href="/login" className="underline">
                 Log in
               </Link>
             </div>

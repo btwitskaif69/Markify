@@ -1,5 +1,8 @@
+"use client";
+
 import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO/SEO";
@@ -25,7 +28,8 @@ import {
 } from "@/lib/seo";
 
 const Feature = () => {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const feature = getFeatureBySlug(slug);
 
   if (!feature) {
@@ -73,10 +77,10 @@ const Feature = () => {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Button asChild>
-                <Link to="/signup">Start free</Link>
+                <Link href="/signup">Start free</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/pricing">View pricing</Link>
+                <Link href="/pricing">View pricing</Link>
               </Button>
             </div>
           </div>
@@ -119,13 +123,13 @@ const Feature = () => {
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
                 <Button asChild variant="outline">
-                  <Link to="/solutions">Solutions</Link>
+                  <Link href="/solutions">Solutions</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/blog">Blog</Link>
+                  <Link href="/blog">Blog</Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link to="/contact">Contact</Link>
+                  <Link href="/contact">Contact</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -157,7 +161,7 @@ const Feature = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold">Related features</h2>
               <Button asChild variant="ghost">
-                <Link to="/features">All features</Link>
+                <Link href="/features">All features</Link>
               </Button>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
@@ -169,7 +173,7 @@ const Feature = () => {
                   </CardHeader>
                   <CardContent>
                     <Button asChild variant="outline" className="w-full">
-                      <Link to={getFeaturePath(related.slug)}>View feature</Link>
+                      <Link href={getFeaturePath(related.slug)}>View feature</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -192,7 +196,7 @@ const Feature = () => {
               <div className="flex flex-wrap gap-3">
                 {relatedSolutions.map((solution) => (
                   <Button key={solution.slug} asChild variant="outline">
-                    <Link to={getSolutionPath(solution.slug)}>
+                    <Link href={getSolutionPath(solution.slug)}>
                       {solution.title}
                     </Link>
                   </Button>

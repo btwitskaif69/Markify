@@ -1,4 +1,7 @@
-import { Link, useParams, useLocation } from 'react-router-dom';
+"use client";
+
+import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
 import { Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders, Share2, Globe } from "lucide-react";
 import {
   DropdownMenu,
@@ -18,17 +21,21 @@ import {
 import { Button } from "@/components/ui/button";
 
 export function NavCollections({ collections = [], onCreate, onRename, onDelete, onShare }) {
-  const { userId, collectionId: activeCollectionId } = useParams();
-  const location = useLocation();
+  const params = useParams();
+  const pathname = usePathname();
+  const userId = Array.isArray(params.userId) ? params.userId[0] : params.userId;
+  const activeCollectionId = Array.isArray(params.collectionId)
+    ? params.collectionId[0]
+    : params.collectionId;
 
   return (
     <SidebarGroup>
       <SidebarMenu>
         <SidebarMenuItem>
-          <Link to={`/dashboard/${userId}/shared`}>
+          <Link href={`/dashboard/${userId}/shared`}>
             <SidebarMenuButton
               tooltip="Shared"
-              isActive={location.pathname === `/dashboard/${userId}/shared`}
+              isActive={pathname === `/dashboard/${userId}/shared`}
               className="data-[active=true]:bg-primary data-[active=true]:text-white mb-2"
             >
               <Globe className="h-4 w-4" />
@@ -52,7 +59,7 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete,
       <SidebarMenu>
         {(Array.isArray(collections) ? collections : []).map((collection) => (
           <div key={collection.id} className="flex items-center group">
-            <Link to={`/dashboard/${userId}/collections/${collection.id}`} className="flex-1">
+            <Link href={`/dashboard/${userId}/collections/${collection.id}`} className="flex-1">
               <SidebarMenuButton
                 className="w-full data-[active=true]:bg-primary"
                 tooltip={collection.name}

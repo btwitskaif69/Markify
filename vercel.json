@@ -1,7 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -53,12 +51,6 @@
       "source": "/home/",
       "destination": "/",
       "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }

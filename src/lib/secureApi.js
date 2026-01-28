@@ -1,7 +1,8 @@
 import CryptoJS from "crypto-js";
 
 // Use the same key as the backend
-const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY || "markify-secret-key-123";
+const ENCRYPTION_KEY =
+    process.env.NEXT_PUBLIC_ENCRYPTION_KEY || "markify-secret-key-123";
 
 /**
  * Decrypts the response body if it's encrypted.
@@ -52,13 +53,28 @@ export const secureFetch = async (url, options = {}) => {
             signal: controller.signal
         });
 
-        // Clone the response so we can modify the json method
-        const originalJson = response.json.bind(response);
+        // Clone to safely read text once and keep original response intact.
+        const responseClone = response.clone();
+        const rawTextPromise = responseClone.text();
 
-        // Override .json() to handle decryption automatically
+        // Override .json() to handle decryption + non-JSON responses gracefully.
         response.json = async () => {
-            const data = await originalJson();
-            return decryptResponse(data);
+            const rawText = await rawTextPromise;
+            if (!rawText) {
+                return decryptResponse({ message: response.statusText || "Request failed" });
+            }
+
+            try {
+                const data = JSON.parse(rawText);
+                return decryptResponse(data);
+            } catch (error) {
+                const trimmed = rawText.trim();
+                const fallbackMessage =
+                    trimmed.startsWith("<")
+                        ? (response.statusText || "Request failed")
+                        : (trimmed || response.statusText || "Request failed");
+                return decryptResponse({ message: fallbackMessage });
+            }
         };
 
         return response;
