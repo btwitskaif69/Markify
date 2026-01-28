@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
   Edit,
@@ -60,14 +60,18 @@ const StatCard = ({ title, value, icon: Icon, accent, helper }) => (
 export default function AdminDashboard() {
   const { user, isAdmin, isLoading, isAuthenticated, authFetch } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [activeView, setActiveView] = useState("overview");
+  // Read initial view from URL query param
+  const initialView = searchParams.get("view") || "overview";
+  const [activeView, setActiveView] = useState(initialView);
   const [overview, setOverview] = useState(null);
   const [isOverviewLoading, setIsOverviewLoading] = useState(false);
 
   const [posts, setPosts] = useState([]);
   const [isPostsLoading, setIsPostsLoading] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState(new Set());
+  const [blogFilter, setBlogFilter] = useState("all"); // "all", "published", "draft"
 
   const [pendingReviews, setPendingReviews] = useState([]);
   const [isPendingLoading, setIsPendingLoading] = useState(false);
@@ -148,9 +152,15 @@ export default function AdminDashboard() {
     }
   };
 
+  const filteredPosts = useMemo(() => {
+    if (blogFilter === "published") return posts.filter((p) => p.published);
+    if (blogFilter === "draft") return posts.filter((p) => !p.published);
+    return posts;
+  }, [posts, blogFilter]);
+
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedPosts(new Set(posts.map((p) => p.id)));
+      setSelectedPosts(new Set(filteredPosts.map((p) => p.id)));
     } else {
       setSelectedPosts(new Set());
     }
@@ -251,6 +261,13 @@ export default function AdminDashboard() {
     };
   }, [overview]);
 
+  // Helper to change view and update URL
+  const handleViewChange = useCallback((view) => {
+    setActiveView(view);
+    const url = view === "overview" ? "/admin" : `/admin?view=${view}`;
+    router.replace(url, { scroll: false });
+  }, [router]);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -296,9 +313,9 @@ export default function AdminDashboard() {
 
       <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
       <div className="grid gap-4 md:grid-cols-3">
-        <div
-          className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
-          onClick={() => setActiveView("blog")}
+        <Link
+          href="/admin/manage-blogs"
+          className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden block"
         >
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <FileText className="h-24 w-24" />
@@ -309,7 +326,7 @@ export default function AdminDashboard() {
               Create, edit, and delete blog posts.
             </p>
           </div>
-        </div>
+        </Link>
 
         <div
           className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
@@ -368,13 +385,45 @@ export default function AdminDashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-1 p-1 bg-muted rounded-lg w-fit">
+        <button
+          onClick={() => { setBlogFilter("all"); setSelectedPosts(new Set()); }}
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${blogFilter === "all"
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
+        >
+          All ({posts.length})
+        </button>
+        <button
+          onClick={() => { setBlogFilter("published"); setSelectedPosts(new Set()); }}
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${blogFilter === "published"
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
+        >
+          Published ({posts.filter((p) => p.published).length})
+        </button>
+        <button
+          onClick={() => { setBlogFilter("draft"); setSelectedPosts(new Set()); }}
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${blogFilter === "draft"
+            ? "bg-background text-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+            }`}
+        >
+          Drafts ({posts.filter((p) => !p.published).length})
+        </button>
+      </div>
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
                 <Checkbox
-                  checked={posts.length > 0 && selectedPosts.size === posts.length}
+                  checked={filteredPosts.length > 0 && selectedPosts.size === filteredPosts.length}
                   onCheckedChange={handleSelectAll}
                 />
               </TableHead>
@@ -391,14 +440,14 @@ export default function AdminDashboard() {
                   Loading...
                 </TableCell>
               </TableRow>
-            ) : posts.length === 0 ? (
+            ) : filteredPosts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
-                  No posts found.
+                <TableCell colSpan={5} className="h-24 text-center">
+                  No {blogFilter === "all" ? "" : blogFilter} posts found.
                 </TableCell>
               </TableRow>
             ) : (
-              posts.map((post) => (
+              filteredPosts.map((post) => (
                 <TableRow key={post.id}>
                   <TableCell>
                     <Checkbox
@@ -410,8 +459,8 @@ export default function AdminDashboard() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${post.published
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
                         }`}
                     >
                       {post.published ? "Published" : "Draft"}
@@ -525,8 +574,8 @@ export default function AdminDashboard() {
                         <Star
                           key={star}
                           className={`h-4 w-4 ${star <= review.rating
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
                             }`}
                         />
                       ))}
@@ -581,12 +630,8 @@ export default function AdminDashboard() {
             >
               Overview
             </Button>
-            <Button
-              size="sm"
-              variant={activeView === "blog" ? "default" : "ghost"}
-              onClick={() => setActiveView("blog")}
-            >
-              Blog
+            <Button size="sm" variant="ghost" asChild>
+              <Link href="/admin/manage-blogs">Blog</Link>
             </Button>
             <Button
               size="sm"
