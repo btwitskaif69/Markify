@@ -1,11 +1,10 @@
 User-agent: *
 Allow: /
 Disallow: /dashboard/
-Disallow: /blog/new
-Disallow: /blog/*/edit
+Disallow: /admin
 Disallow: /login
 Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
 
-Sitemap: https://www.markify.tech/sitemap-index.xml
+Sitemap: https://www.markify.tech/sitemap.xml

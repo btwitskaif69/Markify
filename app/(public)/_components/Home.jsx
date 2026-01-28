@@ -7,13 +7,7 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/home/Hero';
 import DashboardPreview from '@/components/home/DashboardPreview';
 import Marquee from '@/components/home/Marquee';
-import SEO from '@/components/SEO/SEO';
 import LazySection from "@/components/LazySection";
-import {
-  buildFaqSchema,
-  buildWebApplicationSchema,
-  getCanonicalUrl,
-} from "@/lib/seo";
 
 // Lazy load below-fold components
 const Features = lazy(() => import('@/components/home/Features'));
@@ -29,64 +23,8 @@ const Footer = lazy(() => import('@/components/Footer'));
 const BelowFoldPlaceholder = () => <div className="min-h-[200px]" />;
 
 const Home = () => {
-  const faqSchema = buildFaqSchema([
-    {
-      question: "Is Markify free to use?",
-      answer:
-        "Yes! Markify offers a generous free tier with unlimited bookmarks, collections, and search. Premium features like AI-powered tagging and advanced analytics are available with our Pro plan.",
-    },
-    {
-      question: "Can I import my bookmarks from Chrome or Firefox?",
-      answer:
-        "Absolutely! Markify supports importing bookmarks from Chrome, Firefox, Safari, and Edge. You can import via HTML export file or use our browser extension for seamless sync.",
-    },
-    {
-      question: "Is my data secure?",
-      answer:
-        "Security is our top priority. All data is encrypted at rest and in transit. We never sell your data or show you ads. Your bookmarks are 100% private.",
-    },
-    {
-      question: "Can I access my bookmarks on multiple devices?",
-      answer:
-        "Yes! Your bookmarks sync across all your devices automatically. Access them from your desktop, laptop, tablet, or phone wherever you go.",
-    },
-    {
-      question: "How does the AI tagging work?",
-      answer:
-        "When you save a bookmark, our AI analyzes the page content and suggests relevant tags. You can accept, modify, or add your own tags. The more you use Markify, the smarter it gets!",
-    },
-    {
-      question: "Can I share collections with others?",
-      answer:
-        "Yes! You can create public share links for any collection. Perfect for sharing resources with teammates, students, or friends. You control who can access what.",
-    },
-  ]);
-
-  const pageDescription =
-    "Save links in one click, organize them into smart collections, and find any bookmark instantly. Markify is the fast, free bookmark manager built for productivity.";
-  const webAppSchema = buildWebApplicationSchema({
-    description: pageDescription,
-    url: getCanonicalUrl("/"),
-  });
-  const structuredData = [faqSchema, webAppSchema].filter(Boolean);
-
   return (
     <>
-      <SEO
-        title="Bookmark Manager for Fast Search"
-        description={pageDescription}
-        canonical={getCanonicalUrl("/")}
-        structuredData={structuredData}
-        keywords={[
-          "bookmark manager",
-          "save bookmarks",
-          "organize links",
-          "search bookmarks",
-          "free bookmark manager",
-          "bookmark organizer",
-          "link manager",
-        ]}
-      />
       <Navbar />
 
       <main>

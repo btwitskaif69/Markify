@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,42 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  getPseoHubPath,
-  getPseoIntentIndex,
-  getPseoIntentPath,
-} from "@/lib/pseo";
-import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
+import { getPseoIntentPath } from "@/lib/pseo";
 
-const UseCases = () => {
-  const intents = getPseoIntentIndex();
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Use cases", path: getPseoHubPath() },
-  ]);
-  const itemListSchema = buildItemListSchema(
-    intents.map((intent) => ({
-      name: intent.title,
-      path: getPseoIntentPath(intent.slug),
-    })),
-    { name: "Markify use cases" }
-  );
-  const structuredData = [breadcrumbs, itemListSchema].filter(Boolean);
+const UseCases = ({ intents = [] }) => {
 
   return (
     <>
-      <SEO
-        title="Bookmark Manager Use Cases by Intent"
-        description="Browse Markify use cases organized by intent and industry to see how teams organize research, content, and knowledge with fast bookmarks."
-        canonical={getCanonicalUrl(getPseoHubPath())}
-        structuredData={structuredData}
-        keywords={[
-          "use cases",
-          "programmatic seo",
-          "industry workflows",
-          "bookmark manager",
-        ]}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen">

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,31 +13,10 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
-import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
-
-const solutionsItemListSchema = buildItemListSchema(
-  SOLUTIONS.map((solution) => ({
-    name: solution.title,
-    path: getSolutionPath(solution.slug),
-  })),
-  { name: "Markify Solutions" }
-);
 
 const Solutions = () => {
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Solutions", path: "/solutions" },
-  ]);
-  const structuredData = [breadcrumbs, solutionsItemListSchema].filter(Boolean);
-
   return (
     <>
-      <SEO
-        title="Bookmark Manager Solutions for Every Team"
-        description="Explore Markify solutions for researchers, designers, developers, students, and teams who need organized, searchable bookmark workflows."
-        canonical={getCanonicalUrl("/solutions")}
-        structuredData={structuredData}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen">

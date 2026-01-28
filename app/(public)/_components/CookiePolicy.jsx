@@ -4,23 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
 const CookiePolicy = () => {
-    const breadcrumbs = buildBreadcrumbSchema([
-        { name: "Home", path: "/" },
-        { name: "Cookie Policy", path: "/cookies" },
-    ]);
     return (
         <>
-            <SEO
-                title="Bookmark Manager Cookie Policy"
-                description="Understand how Markify uses cookies for analytics, preferences, and performance in the bookmark manager."
-                canonical={getCanonicalUrl("/cookies")}
-                structuredData={breadcrumbs ? [breadcrumbs] : null}
-            />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
                 <article className="max-w-4xl mx-auto">

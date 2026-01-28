@@ -16,8 +16,6 @@ import { Spotlight } from "@/components/ui/spotlight-new";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
@@ -85,19 +83,15 @@ const BlogCard = memo(({ post }) => (
 
 BlogCard.displayName = "BlogCard";
 
-const Blog = () => {
-  const initialPosts = getPrerenderedPosts();
-  const hasPrerenderedPosts = initialPosts.length > 0;
-  const [posts, setPosts] = useState(initialPosts);
-  const [isLoading, setIsLoading] = useState(!hasPrerenderedPosts);
+const Blog = ({ initialPosts = [] }) => {
+  const seededPosts = initialPosts.length ? initialPosts : getPrerenderedPosts();
+  const hasSeededPosts = seededPosts.length > 0;
+  const [posts, setPosts] = useState(seededPosts);
+  const [isLoading, setIsLoading] = useState(!hasSeededPosts);
   const [error, setError] = useState(null);
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Blog", path: "/blog" },
-  ]);
 
   useEffect(() => {
-    if (hasPrerenderedPosts) {
+    if (hasSeededPosts) {
       setIsLoading(false);
       setError(null);
       return;
@@ -117,16 +111,10 @@ const Blog = () => {
     };
 
     fetchPosts();
-  }, [hasPrerenderedPosts]);
+  }, [hasSeededPosts]);
 
   return (
     <>
-      <SEO
-        title="Bookmarking Tips & Updates"
-        description="Read the latest bookmark management tips, product updates, and workflow ideas from the Markify team."
-        canonical={getCanonicalUrl("/blog")}
-        structuredData={breadcrumbs ? [breadcrumbs] : null}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen relative overflow-hidden">

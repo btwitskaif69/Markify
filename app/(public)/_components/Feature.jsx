@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,11 +19,6 @@ import {
   getRelatedFeatures,
 } from "@/data/features";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
-import {
-  buildBreadcrumbSchema,
-  buildFaqSchema,
-  getCanonicalUrl,
-} from "@/lib/seo";
 
 const Feature = () => {
   const params = useParams();
@@ -36,31 +29,11 @@ const Feature = () => {
     return <NotFoundPage />;
   }
 
-  const canonical = getCanonicalUrl(getFeaturePath(feature.slug));
   const relatedFeatures = getRelatedFeatures(feature.slug);
   const relatedSolutions = SOLUTIONS.slice(0, 3);
-  const seoTitle = `${feature.title} Bookmark Manager Feature`;
-  const seoDescription = `${feature.description} Learn how Markify keeps bookmarks organized and easy to find.`;
-
-  const structuredData = useMemo(() => {
-    const breadcrumbs = buildBreadcrumbSchema([
-      { name: "Home", path: "/" },
-      { name: "Features", path: "/features" },
-      { name: feature.title, path: getFeaturePath(feature.slug) },
-    ]);
-    const faqSchema = buildFaqSchema(feature.faqs);
-    return [breadcrumbs, faqSchema].filter(Boolean);
-  }, [feature]);
 
   return (
     <>
-      <SEO
-        title={seoTitle}
-        description={seoDescription}
-        canonical={canonical}
-        keywords={feature.keywords}
-        structuredData={structuredData}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen">

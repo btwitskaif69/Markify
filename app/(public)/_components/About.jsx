@@ -19,8 +19,6 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Spotlight } from "@/components/ui/spotlight-new";
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -37,19 +35,8 @@ const staggerContainer = {
 };
 
 const About = () => {
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-  ]);
-
   return (
     <>
-      <SEO
-        title="Bookmark Manager Mission & Story"
-        description="Discover how Markify was built to help people save, organize, and rediscover bookmarks with speed, privacy, and clarity."
-        canonical={getCanonicalUrl("/about")}
-        structuredData={breadcrumbs ? [breadcrumbs] : null}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen relative overflow-hidden">

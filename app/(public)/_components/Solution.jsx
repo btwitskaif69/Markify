@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,11 +18,6 @@ import {
   getSolutionBySlug,
   getSolutionPath,
 } from "@/data/solutions";
-import {
-  buildBreadcrumbSchema,
-  buildFaqSchema,
-  getCanonicalUrl,
-} from "@/lib/seo";
 
 const Solution = () => {
   const params = useParams();
@@ -35,31 +28,10 @@ const Solution = () => {
     return <NotFoundPage />;
   }
 
-  const canonical = getCanonicalUrl(getSolutionPath(solution.slug));
   const relatedSolutions = getRelatedSolutions(solution.slug);
-  const solutionAudience = solution.title.replace(/^Bookmark manager for /i, "").trim();
-  const seoTitle = solution.title;
-  const seoDescription = `${solution.description} Markify keeps workflows organized for ${solutionAudience} with smart collections, sharing, and fast search.`;
-
-  const structuredData = useMemo(() => {
-    const breadcrumbs = buildBreadcrumbSchema([
-      { name: "Home", path: "/" },
-      { name: "Solutions", path: "/solutions" },
-      { name: solution.title, path: getSolutionPath(solution.slug) },
-    ]);
-    const faqSchema = buildFaqSchema(solution.faqs);
-    return [breadcrumbs, faqSchema].filter(Boolean);
-  }, [solution]);
 
   return (
     <>
-      <SEO
-        title={seoTitle}
-        description={seoDescription}
-        canonical={canonical}
-        keywords={solution.keywords}
-        structuredData={structuredData}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen">

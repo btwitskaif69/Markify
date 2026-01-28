@@ -9,13 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spotlight } from "@/components/ui/spotlight-new";
-import SEO from "@/components/SEO/SEO";
-import { SITE_CONFIG, buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { toast } from "sonner";
 import {
   Loader2, Mail, Phone, Building2, MessageSquare, Send, CheckCircle,
-  Clock, Users, Zap, HelpCircle, ChevronDown, MapPin, Globe
+  Clock, HelpCircle, ChevronDown, Globe
 } from "lucide-react";
 
 // Animation variants
@@ -114,11 +112,6 @@ const Contact = () => {
     }
   };
 
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Contact", path: "/contact" },
-  ]);
-
   const subjectOptions = [
     "General Inquiry",
     "Feature Request",
@@ -181,14 +174,6 @@ const Contact = () => {
 
   return (
     <>
-      <SEO
-        title="Contact Support & Sales"
-        description="Contact the Markify team for support, partnerships, or enterprise pricing. Send a message and we'll reply within 24 hours."
-        canonical={getCanonicalUrl("/contact")}
-        keywords={["contact Markify", "Markify support", "Markify help"]}
-        webPageType="ContactPage"
-        structuredData={breadcrumbs ? [breadcrumbs] : null}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground relative overflow-hidden">

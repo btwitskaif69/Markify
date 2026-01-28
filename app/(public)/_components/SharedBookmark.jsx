@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,8 +12,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
@@ -24,7 +22,6 @@ export default function SharedBookmark() {
     const [bookmark, setBookmark] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const canonical = getCanonicalUrl(`/shared/bookmark/${shareId}`);
 
     useEffect(() => {
         const fetchBookmark = async () => {
@@ -45,24 +42,6 @@ export default function SharedBookmark() {
         fetchBookmark();
     }, [shareId]);
 
-    const structuredData = useMemo(() => {
-        if (!bookmark) return null;
-        const breadcrumb = buildBreadcrumbSchema([
-            { name: "Home", path: "/" },
-            { name: "Shared Bookmark", path: `/shared/bookmark/${shareId}` },
-        ]);
-        const webPage = {
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            name: bookmark.title,
-            description:
-                bookmark.description ||
-                `Shared bookmark from ${bookmark.sharedBy?.name || "a Markify user"}.`,
-            url: canonical,
-        };
-        return [webPage, breadcrumb].filter(Boolean);
-    }, [bookmark, canonical, shareId, buildBreadcrumbSchema]);
-
     if (isLoading) {
         return <LoadingSpinner />;
     }
@@ -70,12 +49,6 @@ export default function SharedBookmark() {
     if (error || !bookmark) {
         return (
             <>
-                <SEO
-                    title="Bookmark not found"
-                    description="This shared bookmark is no longer available."
-                    canonical={canonical}
-                    noindex
-                />
                 <Navbar />
                 <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
                     <Card className="max-w-md w-full text-center p-8 py-0! border-destructive/20">
@@ -110,18 +83,6 @@ export default function SharedBookmark() {
     return (
         <>
             <Navbar />
-            <SEO
-                title={bookmark.title}
-                description={
-                    bookmark.description ||
-                    `Shared bookmark from ${bookmark.sharedBy?.name || "a Markify user"}.`
-                }
-                canonical={canonical}
-                image={bookmark.previewImage}
-                imageAlt={bookmark.title}
-                structuredData={structuredData}
-                noindex
-            />
             <main className="min-h-screen py-16 md:py-24 px-4 md:px-8 bg-background">
                 <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start justify-center gap-8 relative">
                     {/* LEFT COLUMN: Back Link */}

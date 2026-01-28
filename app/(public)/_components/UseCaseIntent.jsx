@@ -1,10 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,56 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import NotFoundPage from "@/components/NotFoundPage";
-import {
-  getPseoHubPath,
-  getPseoIntentBySlug,
-  getPseoIntentIndex,
-  getPseoIntentPath,
-  getPseoDetailPath,
-  getPseoIndustriesForIntent,
-} from "@/lib/pseo";
-import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
+import { getPseoIntentPath, getPseoDetailPath } from "@/lib/pseo";
 
-const UseCaseIntent = () => {
-  const params = useParams();
-  const intentSlug = Array.isArray(params.intent) ? params.intent[0] : params.intent;
-  const intent = getPseoIntentBySlug(intentSlug);
-
-  if (!intent) {
-    return <NotFoundPage />;
-  }
-
-  const industries = getPseoIndustriesForIntent(intent.slug);
-  const relatedIntents = getPseoIntentIndex()
-    .filter((item) => item.slug !== intent.slug)
-    .slice(0, 4);
-  const canonical = getCanonicalUrl(getPseoIntentPath(intent.slug));
-  const seoTitle = `${intent.title} bookmarks by industry`;
-  const seoDescription = `${intent.description} Explore industry-specific bookmark workflows that keep ${intent.title.toLowerCase()} resources organized and searchable.`;
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Use cases", path: getPseoHubPath() },
-    { name: intent.title, path: getPseoIntentPath(intent.slug) },
-  ]);
-  const itemListSchema = buildItemListSchema(
-    industries.map((industry) => ({
-      name: industry.name,
-      path: getPseoDetailPath(intent.slug, industry.slug),
-    })),
-    { name: `${intent.title} by industry` }
-  );
-  const structuredData = [breadcrumbs, itemListSchema].filter(Boolean);
+const UseCaseIntent = ({ intent, industries = [], relatedIntents = [] }) => {
+  if (!intent) return null;
 
   return (
     <>
-      <SEO
-        title={seoTitle}
-        description={seoDescription}
-        canonical={canonical}
-        structuredData={structuredData}
-        keywords={[intent.primaryKeyword, ...intent.keywords]}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen">

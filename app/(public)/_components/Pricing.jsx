@@ -6,76 +6,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/spotlight-new";
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, buildProductSchema, getCanonicalUrl } from "@/lib/seo";
-
-const tiers = [
-  {
-    name: "Free",
-    price: "0",
-    description: "Perfect to get started with Markify.",
-    features: [
-      "Up to 3 collections",
-      "Basic bookmarking",
-      "Light & dark themes",
-      "Access on any device",
-    ],
-    cta: "Start for free",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "9",
-    description: "For power users and busy professionals.",
-    features: [
-      "Unlimited collections & bookmarks",
-      "Advanced search & filters",
-      "Priority feature updates",
-      "Email support",
-    ],
-    cta: "Upgrade to Pro",
-    highlighted: true,
-  },
-  {
-    name: "Team",
-    price: "19",
-    description: "Collaborate on research and resources as a team.",
-    features: [
-      "Shared collections",
-      "Roles & permissions",
-      "Team activity overview",
-      "Priority support",
-    ],
-    cta: "Contact sales",
-    highlighted: false,
-  },
-];
+import { PRICING_TIERS } from "@/data/pricingTiers";
 
 const PricingPage = () => {
-  const canonical = getCanonicalUrl("/pricing");
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Pricing", path: "/pricing" },
-  ]);
-  const productSchemas = tiers.map(tier =>
-    buildProductSchema({
-      name: `Markify ${tier.name}`,
-      description: tier.description,
-      price: tier.price.replace('$', ''),
-      currency: 'USD',
-      url: canonical,
-    })
-  );
-  const structuredData = [breadcrumbs, ...productSchemas].filter(Boolean);
-
   return (
     <>
-      <SEO
-        title="Bookmark Manager Pricing & Plans"
-        description="Compare Free, Pro, and Team plans for Markify's bookmark manager with transparent pricing and no hidden fees."
-        canonical={canonical}
-        structuredData={structuredData}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground relative overflow-hidden">
@@ -109,7 +44,7 @@ const PricingPage = () => {
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {tiers.map((tier) => (
+            {PRICING_TIERS.map((tier) => (
               <div
                 key={tier.name}
                 className={`flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm ${tier.highlighted ? "ring-2 ring-primary" : ""

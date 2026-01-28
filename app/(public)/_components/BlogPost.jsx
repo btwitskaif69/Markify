@@ -11,12 +11,6 @@ import { ArrowLeft, Calendar, User, Clock } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
-import SEO from "@/components/SEO/SEO";
-import {
-  buildArticleSchema,
-  buildBreadcrumbSchema,
-  getCanonicalUrl,
-} from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
@@ -35,25 +29,6 @@ const getPrerenderedLatestPosts = (slug) => {
   const list = window.__PRERENDER_BLOG_LIST__;
   if (!Array.isArray(list)) return [];
   return list.filter((post) => post?.slug && post.slug !== slug).slice(0, 3);
-};
-
-const buildSeoTitle = (title) => {
-  if (!title) return "Markify Blog";
-  const trimmed = title.trim();
-  if (trimmed.length >= 45) return trimmed;
-  return `${trimmed} - Bookmarking Tips`;
-};
-
-const buildSeoDescription = (excerpt, title) => {
-  const fallback = title
-    ? `Read ${title} and learn bookmark workflows that keep links organized and easy to find.`
-    : "Read the latest Markify updates on saving, organizing, and searching bookmarks.";
-  const base = (excerpt || fallback).trim();
-  if (base.length >= 120 && base.length <= 170) return base;
-  if (base.length < 120) {
-    return `${base} Learn how Markify helps you save, organize, and find links faster.`;
-  }
-  return `${base.slice(0, 157).trimEnd()}...`;
 };
 
 // Helper function to render markdown-like content
@@ -107,14 +82,16 @@ const renderContent = (content) => {
   return { __html: html };
 };
 
-const BlogPost = () => {
+const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
   const params = useParams();
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
-  const initialPost = getPrerenderedPost(slug);
-  const initialLatestPosts = getPrerenderedLatestPosts(slug);
-  const [post, setPost] = useState(initialPost);
-  const [latestPosts, setLatestPosts] = useState(initialLatestPosts);
-  const [isLoading, setIsLoading] = useState(!initialPost);
+  const seededPost =
+    initialPost && initialPost.slug === slug ? initialPost : getPrerenderedPost(slug);
+  const seededLatest =
+    initialLatestPosts.length > 0 ? initialLatestPosts : getPrerenderedLatestPosts(slug);
+  const [post, setPost] = useState(seededPost);
+  const [latestPosts, setLatestPosts] = useState(seededLatest);
+  const [isLoading, setIsLoading] = useState(!seededPost);
   const [error, setError] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -132,6 +109,18 @@ const BlogPost = () => {
   }, []);
 
   useEffect(() => {
+    const localSeededPost =
+      initialPost && initialPost.slug === slug ? initialPost : null;
+    const localSeededLatest =
+      initialLatestPosts.length > 0 ? initialLatestPosts : null;
+    if (localSeededPost) {
+      setPost(localSeededPost);
+      setLatestPosts(localSeededLatest || []);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
     const prerenderedPost = getPrerenderedPost(slug);
     const prerenderedLatest = getPrerenderedLatestPosts(slug);
     if (prerenderedPost) {
@@ -143,7 +132,7 @@ const BlogPost = () => {
     }
 
     setPost(null);
-    setLatestPosts(prerenderedLatest);
+    setLatestPosts(prerenderedLatest || []);
     setError(null);
     setIsLoading(true);
 
@@ -175,54 +164,15 @@ const BlogPost = () => {
     };
 
     fetchData();
-  }, [slug]);
+  }, [slug, initialPost, initialLatestPosts]);
 
   const renderedContent = useMemo(
     () => renderContent(post?.content),
     [post?.content]
   );
-  const seoTitle = buildSeoTitle(post?.title);
-  const seoDescription = buildSeoDescription(post?.excerpt, post?.title);
-
-  // Construct structured data if post exists
-  const structuredData = useMemo(() => {
-    if (!post) return null;
-    const canonicalUrl = getCanonicalUrl(`/blog/${post.slug}`);
-    const articleSchema = buildArticleSchema({
-      title: post.title,
-      description: post.excerpt,
-      image: post.coverImage,
-      url: canonicalUrl,
-      datePublished: post.createdAt,
-      dateModified: post.updatedAt || post.createdAt,
-      authorName: post.author?.name || "Markify Team",
-    });
-    const breadcrumbs = buildBreadcrumbSchema([
-      { name: "Home", path: "/" },
-      { name: "Blog", path: "/blog" },
-      { name: post.title, path: `/blog/${post.slug}` },
-    ]);
-    return [articleSchema, breadcrumbs].filter(Boolean);
-  }, [post]);
-
   return (
     <>
       <Navbar />
-
-      {post && (
-        <SEO
-          title={seoTitle}
-          description={seoDescription}
-          canonical={getCanonicalUrl(`/blog/${post.slug}`)}
-          type="article"
-          image={post.coverImage}
-          imageAlt={post.title}
-          publishedTime={post.createdAt}
-          modifiedTime={post.updatedAt || post.createdAt}
-          author={post.author?.name || "Markify Team"}
-          structuredData={structuredData}
-        />
-      )}
 
       {/* Reading Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 z-50 bg-transparent">

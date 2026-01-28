@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,37 +14,10 @@ import {
 import { ArrowRight } from "lucide-react";
 import { FEATURES, getFeaturePath } from "@/data/features";
 import { FEATURE_ICONS } from "@/data/featureIcons";
-import { buildBreadcrumbSchema, buildItemListSchema, getCanonicalUrl } from "@/lib/seo";
-
-const featuresItemListSchema = buildItemListSchema(
-  FEATURES.map((feature) => ({
-    name: feature.title,
-    path: getFeaturePath(feature.slug),
-  })),
-  { name: "Markify Features" }
-);
 
 const FeaturesPage = () => {
-  const breadcrumbs = buildBreadcrumbSchema([
-    { name: "Home", path: "/" },
-    { name: "Features", path: "/features" },
-  ]);
-  const structuredData = [breadcrumbs, featuresItemListSchema].filter(Boolean);
-
   return (
     <>
-      <SEO
-        title="Bookmark Manager Features for Fast Search"
-        description="Explore Markify features like lightning search, smart collections, auto-tagging, and privacy-first bookmarking built for faster organization."
-        canonical={getCanonicalUrl("/features")}
-        keywords={[
-          "bookmark manager features",
-          "bookmark tools",
-          "organize bookmarks",
-          "markify features",
-        ]}
-        structuredData={structuredData}
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen">

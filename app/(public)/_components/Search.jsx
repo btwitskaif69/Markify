@@ -5,12 +5,10 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SEO from "@/components/SEO/SEO";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
 import { FEATURES, getFeaturePath } from "@/data/features";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
-import { getCanonicalUrl } from "@/lib/seo";
 
 const STATIC_PAGES = [
   {
@@ -195,12 +193,6 @@ const SearchPage = () => {
 
   return (
     <>
-      <SEO
-        title="Search"
-        description="Search Markify pages, features, and solutions."
-        canonical={getCanonicalUrl("/search")}
-        noindex
-      />
       <Navbar />
 
       <main className="bg-background text-foreground min-h-screen pt-24 pb-20">

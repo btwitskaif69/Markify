@@ -4,23 +4,11 @@ import React from "react";
 import Link from "next/link";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
 const TermsOfService = () => {
-    const breadcrumbs = buildBreadcrumbSchema([
-        { name: "Home", path: "/" },
-        { name: "Terms of Service", path: "/terms" },
-    ]);
     return (
         <>
-            <SEO
-                title="Bookmark Manager Terms of Service"
-                description="Read the terms and conditions for using Markify's bookmark manager, accounts, and subscriptions."
-                canonical={getCanonicalUrl("/terms")}
-                structuredData={breadcrumbs ? [breadcrumbs] : null}
-            />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
                 <article className="max-w-4xl mx-auto">

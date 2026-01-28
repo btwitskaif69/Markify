@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 
 const CookieSettings = () => {
     const [settings, setSettings] = useState({
@@ -13,11 +11,6 @@ const CookieSettings = () => {
         analytics: false,
         marketing: false,
     });
-    const breadcrumbs = buildBreadcrumbSchema([
-        { name: "Home", path: "/" },
-        { name: "Cookie Settings", path: "/cookie-settings" },
-    ]);
-
     useEffect(() => {
         const savedSettings = localStorage.getItem('cookieSettings');
         if (savedSettings) {
@@ -37,12 +30,6 @@ const CookieSettings = () => {
 
     return (
         <div className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
-            <SEO
-                title="Manage Cookie Settings"
-                description="Update cookie preferences for the Markify bookmark manager, including analytics and marketing choices."
-                canonical={getCanonicalUrl("/cookie-settings")}
-                structuredData={breadcrumbs ? [breadcrumbs] : null}
-            />
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-4xl font-bold mb-4 text-foreground">Cookie Settings</h1>
                 <p className="text-muted-foreground mb-8">

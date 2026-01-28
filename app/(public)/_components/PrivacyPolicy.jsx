@@ -4,24 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { ScrollArea } from "@/components/ui/scroll-area";
-import SEO from "@/components/SEO/SEO";
-import { buildBreadcrumbSchema, getCanonicalUrl } from "@/lib/seo";
 import { formatDateUTC } from "@/lib/date";
 
 const PrivacyPolicy = () => {
-    const breadcrumbs = buildBreadcrumbSchema([
-        { name: "Home", path: "/" },
-        { name: "Privacy Policy", path: "/privacy" },
-    ]);
     return (
         <>
-            <SEO
-                title="Privacy Policy for Bookmark Manager Users"
-                description="Learn how Markify collects, uses, and protects personal data when you use the bookmark manager and related services."
-                canonical={getCanonicalUrl("/privacy")}
-                structuredData={breadcrumbs ? [breadcrumbs] : null}
-            />
             <Navbar />
             <main className="min-h-screen bg-background pt-20 pb-10 px-4 sm:px-6 lg:px-8">
                 <article className="max-w-4xl mx-auto">
