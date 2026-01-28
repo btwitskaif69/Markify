@@ -1,5 +1,5 @@
 import "./globals.css";
-import "../src/font.css";
+import "@/font.css";
 import Providers from "./providers";
 
 export const metadata = {

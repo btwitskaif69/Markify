@@ -84,17 +84,17 @@ npm run dev           # http://localhost:3000
 
 ```
 Markify/
-  app/                           # Next.js App Router
-    (auth)/                      # Auth routes (group)
-    (public)/                    # Marketing/public routes (group)
-    api/                         # Route handlers (backend)
-    layout.jsx
-    page.jsx
-    not-found.jsx
-    error.jsx
-    loading.jsx
-    globals.css
   src/
+    app/                         # Next.js App Router
+      (auth)/                    # Auth routes (group)
+      (public)/                  # Marketing/public routes (group)
+      api/                       # Route handlers (backend)
+      layout.jsx
+      page.jsx
+      not-found.jsx
+      error.jsx
+      loading.jsx
+      globals.css
     components/                  # UI components
     hooks/                       # Client hooks
     lib/                         # Client helpers
