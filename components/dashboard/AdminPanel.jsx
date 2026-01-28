@@ -295,7 +295,7 @@ export default function AdminPanel() {
             Back to Overview
           </Button>
           <Button asChild>
-            <Link href="/blog/new">
+            <Link href="/admin/blog/new">
               <Plus className="mr-2 h-4 w-4" /> Create New
             </Link>
           </Button>
@@ -334,7 +334,7 @@ export default function AdminPanel() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem asChild><Link href={`/blog/${post.slug}`}>View</Link></DropdownMenuItem>
-                        <DropdownMenuItem asChild><Link href={`/blog/${post.slug}/edit`}><Edit className="mr-2 h-4 w-4" /> Edit</Link></DropdownMenuItem>
+                        <DropdownMenuItem asChild><Link href={`/admin/blog/${post.slug}/edit`}><Edit className="mr-2 h-4 w-4" /> Edit</Link></DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(post.id)}><Trash2 className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
                       </DropdownMenuContent>

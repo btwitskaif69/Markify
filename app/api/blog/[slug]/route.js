@@ -19,11 +19,13 @@ export async function GET(request, context) {
 export async function PATCH(request, context) {
   return handleApiRequest(request, context, withPostId(updatePost), {
     requireAuth: true,
+    requireAdmin: true,
   });
 }
 
 export async function DELETE(request, context) {
   return handleApiRequest(request, context, withPostId(deletePost), {
     requireAuth: true,
+    requireAdmin: true,
   });
 }

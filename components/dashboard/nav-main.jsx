@@ -19,8 +19,7 @@ export function NavMain({ totalBookmarks }) {
   // Determine if the "All Bookmarks" link should be active.
   // It's active if the path is exactly the user's dashboard URL.
   const isAllBookmarksActive = pathname === `/dashboard/${user?.id}`;
-  const isAdminActive =
-    isAdmin && pathname === `/dashboard/${user?.id}/admin`;
+  const isAdminActive = isAdmin && pathname?.startsWith("/admin");
 
   return (
     <SidebarGroup>
@@ -44,7 +43,7 @@ export function NavMain({ totalBookmarks }) {
         </SidebarMenuItem>
         {isAdmin && user && (
           <SidebarMenuItem>
-            <Link href={`/dashboard/${user.id}/admin`}>
+          <Link href="/admin">
               <SidebarMenuButton
                 tooltip="Admin"
                 isActive={isAdminActive}

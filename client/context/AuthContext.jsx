@@ -14,8 +14,7 @@ import { secureFetch as secureApiFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL, AUTH_TIMEOUT_MS } from "@/client/lib/apiConfig";
 
 const AuthContext = createContext(null);
-const PROTECTED_PATH_PREFIXES = ["/dashboard"];
-const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
+const PROTECTED_PATH_PREFIXES = ["/dashboard", "/admin"];
 
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
@@ -186,7 +185,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const authValue = useMemo(() => {
-    const isAdmin = user ? ADMIN_EMAILS.includes(user.email) : false;
+    const isAdmin = Boolean(user?.isAdmin);
 
     return {
       user,

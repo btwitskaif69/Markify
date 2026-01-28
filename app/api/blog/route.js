@@ -11,5 +11,8 @@ export async function GET(request, context) {
 }
 
 export async function POST(request, context) {
-  return handleApiRequest(request, context, createPost, { requireAuth: true });
+  return handleApiRequest(request, context, createPost, {
+    requireAuth: true,
+    requireAdmin: true,
+  });
 }

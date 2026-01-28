@@ -57,7 +57,7 @@ const BlogEditor = () => {
   const params = useParams();
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const isEditMode = Boolean(slug);
-  const { user, isAuthenticated, isLoading, authFetch } = useAuth();
+  const { user, isAuthenticated, isLoading, isAdmin, authFetch } = useAuth();
   const router = useRouter();
 
   const [postId, setPostId] = useState(null);
@@ -132,8 +132,14 @@ const BlogEditor = () => {
   };
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) router.push("/login");
-  }, [isAuthenticated, isLoading, router]);
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    if (!isLoading && isAuthenticated && !isAdmin) {
+      router.push(user ? `/dashboard/${user.id}` : "/");
+    }
+  }, [isAuthenticated, isLoading, isAdmin, router, user]);
 
   useEffect(() => {
     const loadPost = async () => {
@@ -183,7 +189,7 @@ const BlogEditor = () => {
       if (!res.ok) throw new Error("Failed to save post.");
 
       toast.success(isDraft ? "Draft saved successfully." : (isEditMode ? "Post updated." : "Post published!"));
-      router.push(`/dashboard/${user.id}/admin`);
+      router.push("/admin");
     } catch (err) {
       toast.error(err.message || "Failed to save post.");
     } finally {
@@ -330,7 +336,7 @@ const BlogEditor = () => {
       />
       <div className="container mx-auto max-w-[1600px]">
         <div className="mb-6 flex items-center justify-between">
-          <Link href={`/dashboard/${user?.id}/admin`} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+          <Link href="/admin" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
             <ChevronLeft className="h-4 w-4" /> Back to Dashboard
           </Link>
           <h1 className="text-2xl font-bold tracking-tight">{isEditMode ? "Edit Post" : "New Post"}</h1>
@@ -470,7 +476,7 @@ const BlogEditor = () => {
           </div>
 
           <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={() => router.push(`/dashboard/${user?.id}/admin`)}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={() => router.push("/admin")}>Cancel</Button>
             <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting}>
               Save Draft
             </Button>

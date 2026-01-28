@@ -129,7 +129,7 @@ export const updatePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    if (existing.authorId !== req.user.id) {
+    if (existing.authorId !== req.user.id && !req.user.isAdmin) {
       return res.status(403).json({ message: "Not allowed to edit this post." });
     }
 
@@ -184,7 +184,7 @@ export const deletePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found." });
     }
 
-    if (existing.authorId !== req.user.id) {
+    if (existing.authorId !== req.user.id && !req.user.isAdmin) {
       return res
         .status(403)
         .json({ message: "Not allowed to delete this post." });
@@ -210,7 +210,7 @@ export const deletePost = async (req, res) => {
 export const getMyPosts = async (req, res) => {
   try {
     const posts = await prisma.blogPost.findMany({
-      where: { authorId: req.user.id },
+      where: req.user.isAdmin ? undefined : { authorId: req.user.id },
       orderBy: { createdAt: "desc" },
     });
     console.log(`Fetched ${posts.length} posts for user ${req.user.id}`);

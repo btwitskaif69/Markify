@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import prisma from "../db/prismaClient";
-
-const ADMIN_EMAILS = ["mohdkaif18th@gmail.com"];
+import { isAdminEmail } from "../utils/admin";
 
 const getAuthToken = (headers = {}) => {
   const authHeader = headers.authorization || headers.Authorization;
@@ -35,7 +34,7 @@ export const requireAuth = async (req) => {
       );
     }
 
-    req.user = user;
+    req.user = { ...user, isAdmin: isAdminEmail(user.email) };
     return null;
   } catch (error) {
     console.error(error);
@@ -47,7 +46,7 @@ export const requireAuth = async (req) => {
 };
 
 export const requireAdmin = async (req) => {
-  if (!req.user || !ADMIN_EMAILS.includes(req.user.email)) {
+  if (!req.user || !isAdminEmail(req.user.email)) {
     return NextResponse.json(
       { message: "Admin access required" },
       { status: 403 }

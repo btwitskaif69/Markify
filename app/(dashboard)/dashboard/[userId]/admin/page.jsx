@@ -1,5 +1,5 @@
-import AdminPanel from "@/components/dashboard/AdminPanel";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <AdminPanel />;
+  redirect("/admin");
 }

@@ -9,6 +9,7 @@ import {
 } from "../services/email.service";
 import { uploadImage, deleteImage } from "../services/r2.service";
 import admin from "../config/firebase";
+import { isAdminEmail } from "../utils/admin";
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -107,6 +108,7 @@ export const verifyEmail = async (req, res) => {
         email: verificationToken.email,
         password: verificationToken.hashedPassword,
         isVerified: true,
+        lastLoginAt: new Date(),
       },
     });
 
@@ -123,8 +125,9 @@ export const verifyEmail = async (req, res) => {
       console.error('Failed to send welcome email:', err)
     );
 
-    delete user.password;
-    res.status(201).json({ message: 'Account verified successfully!', user, token });
+    const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
+    delete userResponse.password;
+    res.status(201).json({ message: 'Account verified successfully!', user: userResponse, token });
   } catch (error) {
     if (error.code === 'P2002') {
       return res.status(409).json({ message: 'Conflict: Email already exists.' });
@@ -195,10 +198,15 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    const token = generateToken(user.id);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
 
-    delete user.password;
-    res.status(200).json({ message: "Login successful", user, token });
+    const token = generateToken(user.id);
+    const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
+    delete userResponse.password;
+    res.status(200).json({ message: "Login successful", user: userResponse, token });
   } catch (error) {
     console.error("loginUser error:", error);
     const message =
@@ -421,6 +429,7 @@ export const googleAuth = async (req, res) => {
           password: hashedPassword,
           avatar: picture,
           isVerified: true, // Verification trusted from Google
+          lastLoginAt: new Date(),
         },
       });
 
@@ -430,19 +439,21 @@ export const googleAuth = async (req, res) => {
       sendWelcomeEmail(user.email, user.name).catch(err => console.error('Failed to send welcome email:', err));
     } else {
       // User exists - check if they have an avatar, if not and Google provides one, update it
-      if (!user.avatar && picture) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { avatar: picture },
-        });
-      }
+      const shouldUpdateAvatar = !user.avatar && picture;
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          avatar: shouldUpdateAvatar ? picture : user.avatar,
+          lastLoginAt: new Date(),
+        },
+      });
     }
 
     // Generate App JWT
     const token = generateToken(user.id);
 
     // Return User and Token
-    const userResponse = { ...user };
+    const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
     delete userResponse.password;
 
     res.status(200).json({
