@@ -12,19 +12,32 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-const missingKeys = Object.keys(firebaseConfig).filter(key => !firebaseConfig[key]);
-export const initializationError = missingKeys.length > 0 ? `Missing keys: ${missingKeys.join(', ')}` : null;
+const missingKeys = Object.keys(firebaseConfig).filter((key) => !firebaseConfig[key]);
+export const initializationError =
+    missingKeys.length > 0 ? `Missing keys: ${missingKeys.join(", ")}` : null;
 
-if (initializationError) {
+const isBrowser = typeof window !== "undefined";
+
+if (isBrowser && initializationError) {
     console.error(`Firebase initialization failed! ${initializationError}`);
-    console.error('Make sure these environment variables are set in your .env file or deployment settings (e.g., Vercel).');
+    console.error(
+        "Make sure these environment variables are set in your .env file or deployment settings (e.g., Vercel)."
+    );
 }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
+let auth = null;
+let googleProvider = null;
+
+if (isBrowser && !initializationError) {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+}
 
 export const signInWithGoogle = async () => {
+    if (!auth || !googleProvider) {
+        throw new Error(initializationError || "Firebase auth is not initialized.");
+    }
     try {
         const result = await signInWithPopup(auth, googleProvider);
         return result.user;
