@@ -45,9 +45,18 @@ export function SignupForm({ className, ...props }) {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [lastLoginMethod, setLastLoginMethod] = useState(() => {
-    return localStorage.getItem("lastLoginMethod");
-  });
+  const [lastLoginMethod, setLastLoginMethod] = useState(null);
+
+  useEffect(() => {
+    try {
+      const storedMethod = window.localStorage.getItem("lastLoginMethod");
+      if (storedMethod) {
+        setLastLoginMethod(storedMethod);
+      }
+    } catch {
+      // Ignore storage access errors (e.g. privacy mode).
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -74,7 +83,12 @@ export function SignupForm({ className, ...props }) {
 
       toast.success("Signed up with Google successfully!");
       login(data.user, data.token);
-      localStorage.setItem("lastLoginMethod", "google");
+      try {
+        localStorage.setItem("lastLoginMethod", "google");
+      } catch {
+        // Ignore storage access errors.
+      }
+      setLastLoginMethod("google");
 
       if (data.isNewUser) {
         router.push(`/dashboard/${data.user.id}?welcome=true`);
@@ -107,7 +121,12 @@ export function SignupForm({ className, ...props }) {
       }
 
       toast.success("Verification code sent to your email!");
-      localStorage.setItem("lastLoginMethod", "email");
+      try {
+        localStorage.setItem("lastLoginMethod", "email");
+      } catch {
+        // Ignore storage access errors.
+      }
+      setLastLoginMethod("email");
       router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
       console.error("Signup error:", error);

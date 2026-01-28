@@ -1,19 +1,9 @@
-import metascraper from "metascraper";
-import metascraperTitle from "metascraper-title";
-import metascraperDescription from "metascraper-description";
-import metascraperImage from "metascraper-image";
-import metascraperUrl from "metascraper-url";
+import { extractMetadataFromHtml } from "@/server/utils/metadata";
 import keywordExtractor from "keyword-extractor";
 
-const scraper = metascraper([
-  metascraperTitle(),
-  metascraperDescription(),
-  metascraperImage(),
-  metascraperUrl(),
-]);
-
 export const fetchLinkPreview = async (req, res) => {
-  const { url } = req.query;
+  const rawUrl = req.query?.url;
+  const url = Array.isArray(rawUrl) ? rawUrl[0] : rawUrl;
   if (!url) {
     return res.status(400).json({ message: 'URL query parameter is required.' });
   }
@@ -21,10 +11,10 @@ export const fetchLinkPreview = async (req, res) => {
   try {
     const response = await fetch(url);
     const html = await response.text();
-    const metadata = await scraper({ html, url });
+    const metadata = extractMetadataFromHtml(html, url);
 
     // --- Generate Tags from Title and Description ---
-    const textToAnalyze = `${metadata.title} ${metadata.description}`;
+    const textToAnalyze = `${metadata.title || ""} ${metadata.description || ""}`;
     
     const extractedKeywords = keywordExtractor.extract(textToAnalyze, {
       language: "english",

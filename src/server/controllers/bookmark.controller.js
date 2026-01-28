@@ -3,17 +3,8 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { randomUUID } from "crypto";
-import metascraper from "metascraper";
-import metascraperImage from "metascraper-image";
-import metascraperDescription from "metascraper-description";
-import metascraperTitle from "metascraper-title";
 import keywordExtractor from "keyword-extractor";
-
-const scraper = metascraper([
-  metascraperImage(),
-  metascraperDescription(),
-  metascraperTitle(),
-]);
+import { extractMetadataFromHtml } from "@/server/utils/metadata";
 
 /**
  * Creates a new bookmark for a specific user.
@@ -420,7 +411,7 @@ export const fetchBookmarkPreview = async (req, res) => {
 
       if (response.ok) {
         const html = await response.text();
-        const metadata = await scraper({ html, url: bookmark.url });
+        const metadata = extractMetadataFromHtml(html, bookmark.url);
 
         // Extract keywords/tags from title and description
         const textToAnalyze = `${metadata.title || bookmark.title} ${metadata.description || ''}`;
@@ -495,7 +486,7 @@ export const extractUrlMetadata = async (req, res) => {
 
       if (response.ok) {
         const html = await response.text();
-        const metadata = await scraper({ html, url });
+        const metadata = extractMetadataFromHtml(html, url);
 
         // Extract keywords for tags
         const textToAnalyze = `${metadata.title || ''} ${metadata.description || ''}`;
