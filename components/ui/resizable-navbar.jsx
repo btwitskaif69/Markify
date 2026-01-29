@@ -56,16 +56,13 @@ export const NavBody = ({
         boxShadow: visible
           ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 -1px 0 0 rgba(234, 88, 12, 0.8), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
           : "none",
-        width: visible ? "fit-content" : "100%",
+        width: visible ? "70%" : "100%",
         y: visible ? 20 : 0,
       }}
       transition={{
         type: "spring",
         stiffness: 200,
         damping: 50,
-      }}
-      style={{
-        minWidth: "auto",
       }}
       className={cn(
         "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent",
@@ -90,9 +87,7 @@ export const NavItems = ({
     <motion.div
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "hidden flex-row items-center justify-center gap-1 text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800 lg:flex",
-        !visible && "absolute inset-0",
-        visible && "flex-1",
+        "hidden flex-1 flex-row items-center justify-center gap-1 text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800 lg:flex",
         className
       )}
     >
@@ -200,9 +195,8 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-    <>
-      <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full mr-2">
-        {/* <BookMarked className="size-4" /> */}
+    <a href="/" className="relative z-20 flex items-center gap-2 shrink-0">
+      <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full">
         <img
           src={logo}
           alt="Markify"
@@ -211,10 +205,8 @@ export const NavbarLogo = () => {
           className="h-5 w-5 transition-transform duration-500 ease-in-out hover:rotate-[360deg]"
         />
       </div>
-      <div className="grid flex-1 text-left text-sm leading-tight">
-        <span className="truncate text-lg font-semibold">Markify</span>
-      </div>
-    </>
+      <span className="text-lg font-semibold whitespace-nowrap">Markify</span>
+    </a>
   );
 };
 
