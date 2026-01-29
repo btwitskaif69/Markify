@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "postinstall": "prisma generate",
     "pseo:audit": "node scripts/pseo-audit.mjs",
+    "pseo:audit:strict": "node scripts/pseo-audit.mjs --strict",
     "sitemap:generate": "node scripts/generate-sitemap.mjs"
   },
   "dependencies": {

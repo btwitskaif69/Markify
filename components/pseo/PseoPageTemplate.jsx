@@ -28,8 +28,22 @@ import {
 
 const PseoPageTemplate = ({ page }) => {
   if (!page) return null;
-  const { intent, industry, hero, summary, benefits, workflow, useCases, faqs } =
-    page;
+  const {
+    intent,
+    industry,
+    hero,
+    summary,
+    overview,
+    benefits,
+    workflow,
+    useCases,
+    faqs,
+    painPoints,
+    checklist,
+    governance,
+    toolStack,
+    successSignals,
+  } = page;
   const keywordContext = buildKeywordContext(
     page.keywords,
     intent.title,
@@ -100,6 +114,21 @@ const PseoPageTemplate = ({ page }) => {
         </div>
       </section>
 
+      {overview?.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-4xl mx-auto grid gap-4">
+            <h2 className="text-2xl font-semibold text-center">
+              How {industry.name} teams structure {intent.title.toLowerCase()}
+            </h2>
+            {overview.map((paragraph) => (
+              <p key={paragraph} className="text-muted-foreground leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="container mx-auto px-4 pb-12">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6 text-center">
@@ -117,6 +146,24 @@ const PseoPageTemplate = ({ page }) => {
           </div>
         </div>
       </section>
+
+      {painPoints?.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-5xl mx-auto rounded-2xl border border-border/60 bg-muted/30 p-6 md:p-8">
+            <h2 className="text-2xl font-semibold mb-4">
+              Common {industry.name} pain points solved
+            </h2>
+            <ul className="space-y-3 text-muted-foreground">
+              {painPoints.map((item) => (
+                <li key={item} className="flex gap-3">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       <section className="container mx-auto px-4 pb-12">
         <div className="max-w-5xl mx-auto grid gap-8 md:grid-cols-[2fr_1fr]">
@@ -173,6 +220,26 @@ const PseoPageTemplate = ({ page }) => {
         </div>
       </section>
 
+      {successSignals?.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-6 text-center">
+              Success signals to track
+            </h2>
+            <div className="grid gap-6 md:grid-cols-3">
+              {successSignals.map((signal) => (
+                <Card key={signal.title} className="border-border/60 bg-card/70">
+                  <CardHeader>
+                    <CardTitle className="text-lg">{signal.title}</CardTitle>
+                    <CardDescription>{signal.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="container mx-auto px-4 pb-12">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-semibold mb-6 text-center">
@@ -190,6 +257,59 @@ const PseoPageTemplate = ({ page }) => {
           </div>
         </div>
       </section>
+
+      {governance?.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-4xl mx-auto grid gap-4">
+            <h2 className="text-2xl font-semibold text-center">
+              Keep {intent.title.toLowerCase()} resources fresh
+            </h2>
+            {governance.map((paragraph) => (
+              <p key={paragraph} className="text-muted-foreground leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {checklist?.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-5xl mx-auto rounded-2xl border border-border/60 bg-muted/30 p-6 md:p-8">
+            <h2 className="text-2xl font-semibold mb-4">
+              Implementation checklist
+            </h2>
+            <div className="grid gap-3 md:grid-cols-2 text-muted-foreground">
+              {checklist.map((item) => (
+                <div key={item} className="flex gap-3">
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {toolStack?.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-5xl mx-auto rounded-2xl border border-border/60 bg-card/70 p-6 md:p-8">
+            <h2 className="text-2xl font-semibold mb-4">
+              Markify tools used by {industry.name} teams
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {toolStack.map((tool) => (
+                <span
+                  key={tool}
+                  className="rounded-full border border-border/60 bg-muted px-3 py-1 text-sm text-muted-foreground"
+                >
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {relatedFeatures.length || relatedSolutions.length ? (
         <section className="container mx-auto px-4 pb-12">
