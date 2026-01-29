@@ -13,7 +13,7 @@ const slugUpdates = [
     { old: 'reliable-service-save-categorize-web-pages', new: 'find-a-reliable-service-to-save-and-categorize-web-pages' },
     { old: 'organize-bookmarks-desktop-mobile', new: 'how-to-organize-bookmarks-efficiently-on-desktop-and-mobile' },
     { old: 'top-applications-organizing-web-links-2026', new: 'top-applications-for-organizing-web-links-in-2026' },
-    { old: 'how-to-manage-x-twitter-bookmarks-2026', new: 'how-to-manage-x-twitter-bookmarks-in-2026' },
+    { old: 'how-to-manage-x-twitter-bookmarks-in-2026', new: 'how-to-manage-x-twitter-bookmarks-2026' },
     { old: 'best-bookmark-manager-windows-2026', new: 'best-bookmark-manager-for-windows-2026' },
     { old: 'best-bookmark-manager-mac-2026', new: 'best-bookmark-manager-for-mac-2026' },
     { old: 'best-bookmark-manager-android-2026', new: 'best-bookmark-manager-for-android-2026' },
@@ -31,7 +31,7 @@ const slugUpdates = [
     { old: 'markify-simple-online-bookmark-manager', new: 'markify-simple-online-bookmark-manager-for-all-your-links' },
     { old: 'markify-cleaner-digital-life', new: 'why-markify-is-becoming-the-go-to-tool-for-people-who-want-a-cleaner-digital-life' },
     { old: 'markify-redefining-bookmarks', new: 'how-markify-is-redefining-the-way-we-save-and-organize-bookmarks-online' },
-    { old: 'recover-deleted-bookmarks', new: 'how-to-recover-deleted-bookmarks' },
+    { old: 'how-to-recover-deleted-bookmarks', new: 'recover-deleted-bookmarks' },
     { old: 'bookmark-manager-search-tagging', new: 'bookmark-manager-search-and-tagging' },
     { old: 'bookmark-managers-cloud-sync', new: 'bookmark-managers-with-cloud-sync' },
 ];
