@@ -1,87 +1,131 @@
-
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Map of old slugs to new slugs
-const slugUpdates = [
-    { old: 'best-bookmark-manager-search-tagging', new: 'best-bookmark-manager-with-built-in-search-and-tagging' },
-    { old: 'sync-bookmarks-all-devices-2026', new: 'how-to-sync-bookmarks-across-all-my-devices-in-2026' },
-    { old: 'download-reliable-bookmark-organizer', new: 'where-to-download-a-reliable-bookmark-organizer-tool' },
-    { old: 'manage-hundreds-saved-websites', new: 'how-to-effectively-manage-hundreds-of-saved-websites' },
-    { old: 'top-bookmark-managers-cloud-sync-2026', new: 'top-bookmark-managers-with-cloud-sync-features-in-2026' },
-    { old: 'reliable-service-save-categorize-web-pages', new: 'find-a-reliable-service-to-save-and-categorize-web-pages' },
-    { old: 'organize-bookmarks-desktop-mobile', new: 'how-to-organize-bookmarks-efficiently-on-desktop-and-mobile' },
-    { old: 'top-applications-organizing-web-links-2026', new: 'top-applications-for-organizing-web-links-in-2026' },
-    { old: 'how-to-manage-x-twitter-bookmarks-in-2026', new: 'how-to-manage-x-twitter-bookmarks-2026' },
-    { old: 'best-bookmark-manager-windows-2026', new: 'best-bookmark-manager-for-windows-2026' },
-    { old: 'best-bookmark-manager-mac-2026', new: 'best-bookmark-manager-for-mac-2026' },
-    { old: 'best-bookmark-manager-android-2026', new: 'best-bookmark-manager-for-android-2026' },
-    { old: 'best-bookmark-manager-firefox-2026', new: 'best-bookmark-manager-for-firefox-2026' },
-    { old: 'best-bookmark-manager-safari-2026', new: 'best-bookmark-manager-for-safari-2026' },
-    { old: 'best-bookmark-manager-chrome-2026', new: 'best-bookmark-manager-for-chrome-2026' },
-    { old: 'where-is-bookmark-manager-safari', new: 'where-is-bookmark-manager-in-safari' },
-    { old: 'where-is-bookmark-manager-edge', new: 'where-is-bookmark-manager-in-edge' },
-    { old: 'where-is-bookmark-manager-chrome-android', new: 'where-is-bookmark-manager-in-chrome-android' },
-    { old: 'where-is-bookmark-manager-firefox', new: 'where-is-bookmark-manager-in-firefox' },
-    { old: 'digital-decluttering-browser-tabs', new: 'digital-decluttering-how-to-stop-drowning-in-browser-tabs' },
-    { old: 'why-we-built-markify', new: 'why-we-built-markify-the-web-deserves-better' },
-    { old: 'share-bookmarks-collections-markify', new: 'unlock-collaboration-share-your-bookmarks-and-collections-with-markify' },
-    { old: 'why-bookmark-manager-matters-today', new: 'why-a-bookmark-manager-matters-more-today-than-ever-a-practical-guide-to-organizing-your-digital-life' },
-    { old: 'markify-simple-online-bookmark-manager', new: 'markify-simple-online-bookmark-manager-for-all-your-links' },
-    { old: 'markify-cleaner-digital-life', new: 'why-markify-is-becoming-the-go-to-tool-for-people-who-want-a-cleaner-digital-life' },
-    { old: 'markify-redefining-bookmarks', new: 'how-markify-is-redefining-the-way-we-save-and-organize-bookmarks-online' },
-    { old: 'how-to-recover-deleted-bookmarks', new: 'recover-deleted-bookmarks' },
-    { old: 'bookmark-manager-search-tagging', new: 'bookmark-manager-search-and-tagging' },
-    { old: 'bookmark-managers-cloud-sync', new: 'bookmark-managers-with-cloud-sync' },
+const TARGET_TITLES = [
+  "Markify vs Notion for Bookmarks: When Simpler Is Better",
+  "Why We Built Markify: A Bookmark Manager That Respects Your Time",
+  "Markify for Students: Organize Research Without the Chaos",
+  "The Ultimate Bookmark Manager Comparison: Markify vs 5 Popular Tools",
+  "How to Build a Personal Knowledge Base with Markify",
+  "Markify vs Browser Bookmarks: Why Built-in Bookmarks Aren't Enough",
+  "5 Reasons Developers Choose Markify Over Browser Bookmarks",
+  "Why Markify Is the Best Bookmark Manager for Researchers in 2026",
+  "Markify vs Pocket: Bookmark Manager vs Read-it-later App",
+  "Markify vs Raindrop.io: Which Bookmark Manager Is Right for You",
+  "Best Browser Extensions for Bookmark Management in 2026",
+  "Best Bookmark Manager with Built-in Search and Tagging",
+  "How to Sync Bookmarks Across All My Devices in 2026",
+  "Where to Download a Reliable Bookmark Organizer Tool",
+  "How to Effectively Manage Hundreds of Saved Websites",
+  "Top Bookmark Managers with Cloud Sync Features in 2026",
+  "Find a Reliable Service to Save and Categorize Web Pages",
+  "How to Organize Bookmarks Efficiently on Desktop and Mobile",
+  "Top Applications for Organizing Web Links in 2026",
+  "Best Twitter Bookmark Manager 2026",
+  "How to Manage X (Twitter) Bookmarks 2026",
+  "Best New Tab Bookmark Manager 2026",
+  "Best Cross-browser Bookmark Manager 2026",
+  "Best Bookmark Manager for Windows 2026",
+  "Best Bookmark Manager for Mac 2026",
+  "Best Bookmark Manager for Android 2026",
+  "Best Bookmark Manager for Firefox 2026",
+  "Best Bookmark Manager for Safari 2026",
+  "Best Bookmark Manager for Chrome 2026",
+  "Recover Deleted Bookmarks",
+  "Bookmark Managers for Collaboration",
+  "Secure Bookmark Manager Apps",
+  "Export/Import Bookmarks Guide",
+  "Compare Bookmark Extensions",
+  "Bookmark Manager Search & Tagging",
+  "Download a Reliable Bookmark Organizer",
+  "Bookmark Managers with Cloud Sync",
+  "Organize Bookmarks Efficiently",
+  "Top Bookmark Managers 2025",
+  "Where Is Bookmark Manager in Safari",
+  "Where Is Bookmark Manager in Edge",
+  "Where Is Bookmark Manager in Chrome Android",
+  "Where Is Bookmark Manager in Firefox",
+  "How to Access Chrome Bookmark Manager",
+  "Finding Chrome Bookmark Manager",
+  "Digital Decluttering: How to Stop Drowning in Browser Tabs",
+  "Why We Built Markify: The Web Deserves Better",
+  "Unlock Collaboration: Share Your Bookmarks & Collections with Markify",
+  "Why a Bookmark Manager Matters More Today Than Ever: A Practical Guide to Organizing Your Digital Life",
+  "Markify: Simple Online Bookmark Manager for All Your Links",
+  "Why Markify Is Becoming the Go-to Tool for People Who Want a Cleaner Digital Life",
+  "How Markify Is Redefining the Way We Save and Organize Bookmarks Online",
 ];
 
+const slugify = (title) =>
+  title
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
 async function main() {
-    console.log('Updating blog slugs in database...\n');
+  console.log("Normalizing blog titles/slugs in database...\n");
 
-    let updated = 0;
-    let notFound = 0;
+  let updated = 0;
+  let notFound = 0;
+  let conflicts = 0;
 
-    for (const { old: oldSlug, new: newSlug } of slugUpdates) {
-        try {
-            const existingBlog = await prisma.blogPost.findUnique({
-                where: { slug: oldSlug },
-            });
+  for (const title of TARGET_TITLES) {
+    const desiredSlug = slugify(title);
+    try {
+      const existingBlog = await prisma.blogPost.findFirst({
+        where: {
+          OR: [
+            { slug: desiredSlug },
+            { title: { equals: title, mode: "insensitive" } },
+          ],
+        },
+      });
 
-            if (existingBlog) {
-                await prisma.blogPost.update({
-                    where: { slug: oldSlug },
-                    data: { slug: newSlug },
-                });
-                console.log(`✓ Updated: ${oldSlug} → ${newSlug}`);
-                updated++;
-            } else {
-                // Check if new slug already exists
-                const newSlugExists = await prisma.blogPost.findUnique({
-                    where: { slug: newSlug },
-                });
-                if (newSlugExists) {
-                    console.log(`⊛ Already updated: ${newSlug}`);
-                } else {
-                    console.log(`✗ Not found: ${oldSlug}`);
-                    notFound++;
-                }
-            }
-        } catch (error) {
-            console.error(`Error updating ${oldSlug}:`, error.message);
-        }
+      if (!existingBlog) {
+        console.log(`- Not found: ${title}`);
+        notFound++;
+        continue;
+      }
+
+      const slugConflict = await prisma.blogPost.findUnique({
+        where: { slug: desiredSlug },
+      });
+
+      if (slugConflict && slugConflict.id !== existingBlog.id) {
+        console.log(`! Slug conflict: ${desiredSlug} already used by another post.`);
+        conflicts++;
+        continue;
+      }
+
+      await prisma.blogPost.update({
+        where: { id: existingBlog.id },
+        data: {
+          title,
+          slug: desiredSlug,
+        },
+      });
+
+      const before = existingBlog.slug || existingBlog.title;
+      console.log(`✓ Updated: ${before} -> ${desiredSlug}`);
+      updated++;
+    } catch (error) {
+      console.error(`Error updating ${title}:`, error.message);
     }
+  }
 
-    console.log(`\n✓ Updated: ${updated}`);
-    console.log(`✗ Not found: ${notFound}`);
-    console.log('Slug update complete.');
+  console.log(`\n✓ Updated: ${updated}`);
+  console.log(`- Not found: ${notFound}`);
+  console.log(`! Conflicts: ${conflicts}`);
+  console.log("Slug/title normalization complete.");
 }
 
 main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
