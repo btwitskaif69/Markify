@@ -5,6 +5,7 @@ import { buildBreadcrumbSchema } from "@/lib/seo";
 import prisma from "@/server/db/prismaClient";
 
 export const revalidate = 3600;
+export const runtime = "nodejs";
 
 export const generateMetadata = () =>
   buildMetadata({

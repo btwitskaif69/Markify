@@ -11,11 +11,12 @@ import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
+export const runtime = "nodejs";
 
 const getPostBySlug = async (slug) => {
-  if (!slug) return null;
+  if (!slug) return { post: null, error: null };
   try {
-    return await prisma.blogPost.findUnique({
+    const post = await prisma.blogPost.findUnique({
       where: { slug },
       include: {
         author: {
@@ -23,9 +24,10 @@ const getPostBySlug = async (slug) => {
         },
       },
     });
+    return { post, error: null };
   } catch (error) {
     console.warn("Blog post fetch failed:", error?.message || error);
-    return null;
+    return { post: null, error };
   }
 };
 
@@ -73,8 +75,16 @@ const buildSeoDescription = (excerpt, title) => {
 };
 
 export const generateMetadata = async ({ params }) => {
-  const post = await getPostBySlug(params.slug);
+  const { post, error } = await getPostBySlug(params.slug);
   if (!post || !post.published) {
+    if (error) {
+      return buildMetadata({
+        title: "Markify Blog",
+        description:
+          "Read the latest Markify updates on saving, organizing, and searching bookmarks.",
+        path: `/blog/${params.slug || ""}`,
+      });
+    }
     return buildMetadata({
       title: "Blog post not found",
       description: "The requested blog post could not be found.",
@@ -100,8 +110,11 @@ export const generateMetadata = async ({ params }) => {
 };
 
 export default async function Page({ params }) {
-  const post = await getPostBySlug(params.slug);
-  if (!post || !post.published) return notFound();
+  const { post, error } = await getPostBySlug(params.slug);
+  if (!post || !post.published) {
+    if (!error) return notFound();
+    return <BlogPost initialPost={null} initialLatestPosts={[]} />;
+  }
 
   const latestPosts = await getLatestPosts(post.slug);
   const canonicalUrl = getCanonicalUrl(`/blog/${post.slug}`);
