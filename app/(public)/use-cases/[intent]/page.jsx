@@ -9,7 +9,11 @@ import {
   getPseoDetailPath,
   getPseoIndustriesForIntent,
 } from "@/lib/pseo";
-import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 import { notFound } from "next/navigation";
 
 export const revalidate = 86400;
@@ -65,7 +69,13 @@ export default function Page({ params }) {
     })),
     { name: `${intent.title} by industry` }
   );
-  const structuredData = [breadcrumbs, itemListSchema].filter(Boolean);
+  const webPageSchema = buildWebPageSchema({
+    title: `${intent.title} by industry`,
+    description: intent.description,
+    path: getPseoIntentPath(intent.slug),
+    type: "CollectionPage",
+  });
+  const structuredData = [webPageSchema, breadcrumbs, itemListSchema].filter(Boolean);
 
   return (
     <>

@@ -40,6 +40,13 @@ const STATIC_PAGES = [
     keywords: ["use cases", "programmatic seo", "industry workflows"],
   },
   {
+    title: "Industries",
+    description: "Industry-specific bookmark workflows and intent-based pages.",
+    path: "/industries",
+    type: "Page",
+    keywords: ["industries", "workflows", "programmatic seo"],
+  },
+  {
     title: "Pricing",
     description: "Simple, transparent pricing for Free, Pro, and Team plans.",
     path: "/pricing",

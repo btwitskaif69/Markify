@@ -1,7 +1,11 @@
 import Solutions from "@/app/(public)/_components/Solutions";
 import StructuredData from "@/components/SEO/StructuredData";
 import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
-import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata = buildMetadata({
@@ -23,11 +27,18 @@ export default function Page() {
     })),
     { name: "Markify Solutions" }
   );
+  const webPageSchema = buildWebPageSchema({
+    title: "Markify solutions",
+    description:
+      "Use-case driven solutions tailored to different teams and workflows.",
+    path: "/solutions",
+    type: "CollectionPage",
+  });
 
   return (
     <>
       <StructuredData
-        data={[breadcrumbs, solutionsItemListSchema].filter(Boolean)}
+        data={[webPageSchema, breadcrumbs, solutionsItemListSchema].filter(Boolean)}
       />
       <Solutions />
     </>

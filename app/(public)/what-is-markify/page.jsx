@@ -1,7 +1,11 @@
 import WhatIsMarkify from "@/app/(public)/_components/WhatIsMarkify";
 import StructuredData from "@/components/SEO/StructuredData";
 import { WHAT_IS_MARKIFY_FAQS } from "@/data/whatIsMarkifyFaqs";
-import { buildBreadcrumbSchema, buildFaqSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata = buildMetadata({
@@ -17,10 +21,17 @@ export default function Page() {
     { name: "What is Markify", path: "/what-is-markify" },
   ]);
   const faqSchema = buildFaqSchema(WHAT_IS_MARKIFY_FAQS);
+  const webPageSchema = buildWebPageSchema({
+    title: "What is Markify",
+    description:
+      "Learn how Markify compares to browser bookmarks and why teams choose it.",
+    path: "/what-is-markify",
+    type: "WebPage",
+  });
 
   return (
     <>
-      <StructuredData data={[faqSchema, breadcrumbs].filter(Boolean)} />
+      <StructuredData data={[webPageSchema, faqSchema, breadcrumbs].filter(Boolean)} />
       <WhatIsMarkify />
     </>
   );

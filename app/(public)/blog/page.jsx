@@ -1,7 +1,7 @@
 import Blog from "@/app/(public)/_components/Blog";
 import StructuredData from "@/components/SEO/StructuredData";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { buildBreadcrumbSchema } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildWebPageSchema } from "@/lib/seo";
 import prisma from "@/server/db/prismaClient";
 
 export const revalidate = 3600;
@@ -44,10 +44,17 @@ export default async function Page() {
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },
   ]);
+  const webPageSchema = buildWebPageSchema({
+    title: "Markify Blog",
+    description:
+      "Updates, tips, and workflow insights from the Markify team.",
+    path: "/blog",
+    type: "CollectionPage",
+  });
 
   return (
     <>
-      <StructuredData data={breadcrumbs} />
+      <StructuredData data={[webPageSchema, breadcrumbs].filter(Boolean)} />
       <Blog initialPosts={posts} />
     </>
   );

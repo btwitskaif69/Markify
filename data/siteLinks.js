@@ -12,6 +12,7 @@ export const PRODUCT_LINKS = [
   { label: "Features", to: "/features" },
   { label: "Solutions", to: "/solutions" },
   { label: "Use Cases", to: "/use-cases" },
+  { label: "Industries", to: "/industries" },
   { label: "Pricing", to: "/pricing" },
   { label: "What is Markify?", to: "/what-is-markify" },
   { label: "Blog", to: "/blog" },

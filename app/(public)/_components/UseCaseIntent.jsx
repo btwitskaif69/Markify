@@ -72,6 +72,9 @@ const UseCaseIntent = ({ intent, industries = [], relatedIntents = [] }) => {
                   </Link>
                 </Button>
               ))}
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/industries">Browse industries</Link>
+              </Button>
             </div>
           </div>
         </section>

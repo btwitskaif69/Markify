@@ -20,11 +20,27 @@ import {
   getPseoIntentPath,
   getPseoDetailPath,
 } from "@/lib/pseo";
+import {
+  buildKeywordContext,
+  getRelatedFeatureLinks,
+  getRelatedSolutionLinks,
+} from "@/lib/seo/internal-links";
 
 const PseoPageTemplate = ({ page }) => {
   if (!page) return null;
   const { intent, industry, hero, summary, benefits, workflow, useCases, faqs } =
     page;
+  const keywordContext = buildKeywordContext(
+    page.keywords,
+    intent.title,
+    intent.primaryKeyword,
+    intent.description,
+    industry.name,
+    industry.description,
+    industry.keywords
+  );
+  const relatedFeatures = getRelatedFeatureLinks(keywordContext, { limit: 3 });
+  const relatedSolutions = getRelatedSolutionLinks(keywordContext, { limit: 3 });
 
   return (
     <main className="bg-background text-foreground min-h-screen">
@@ -174,6 +190,53 @@ const PseoPageTemplate = ({ page }) => {
           </div>
         </div>
       </section>
+
+      {relatedFeatures.length || relatedSolutions.length ? (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="max-w-5xl mx-auto grid gap-6 md:grid-cols-2">
+            {relatedFeatures.length ? (
+              <Card className="border-border/60 bg-card/70">
+                <CardHeader>
+                  <CardTitle className="text-lg">Related features</CardTitle>
+                  <CardDescription>
+                    Explore product capabilities that support this workflow.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-3">
+                  {relatedFeatures.map((feature) => (
+                    <Button key={feature.href} asChild variant="outline" size="sm">
+                      <Link href={feature.href}>{feature.label}</Link>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {relatedSolutions.length ? (
+              <Card className="border-border/60 bg-card/70">
+                <CardHeader>
+                  <CardTitle className="text-lg">Related solutions</CardTitle>
+                  <CardDescription>
+                    See how other teams apply Markify in their workflows.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-3">
+                  {relatedSolutions.map((solution) => (
+                    <Button
+                      key={solution.href}
+                      asChild
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Link href={solution.href}>{solution.label}</Link>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       {faqs.length ? (
         <section className="container mx-auto px-4 pb-12">

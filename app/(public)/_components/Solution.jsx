@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,23 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import NotFoundPage from "@/components/NotFoundPage";
-import {
-  getRelatedSolutions,
-  getSolutionBySlug,
-  getSolutionPath,
-} from "@/data/solutions";
-
-const Solution = () => {
-  const params = useParams();
-  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-  const solution = getSolutionBySlug(slug);
-
-  if (!solution) {
-    return <NotFoundPage />;
-  }
-
-  const relatedSolutions = getRelatedSolutions(solution.slug);
+const Solution = ({ solution, relatedSolutions = [], relatedFeatures = [], relatedIntents = [] }) => {
+  if (!solution) return null;
 
   return (
     <>
@@ -137,14 +119,14 @@ const Solution = () => {
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               {relatedSolutions.map((related) => (
-                <Card key={related.slug} className="border-border/60 bg-card/70">
+                <Card key={related.href} className="border-border/60 bg-card/70">
                   <CardHeader>
-                    <CardTitle className="text-lg">{related.title}</CardTitle>
+                    <CardTitle className="text-lg">{related.label}</CardTitle>
                     <CardDescription>{related.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Button asChild variant="outline" className="w-full">
-                      <Link href={getSolutionPath(related.slug)}>View solution</Link>
+                      <Link href={related.href}>View solution</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -152,6 +134,54 @@ const Solution = () => {
             </div>
           </div>
         </section>
+
+        {relatedFeatures.length ? (
+          <section className="container mx-auto px-4 pb-16">
+            <div className="max-w-5xl mx-auto rounded-2xl border border-border/60 bg-muted/30 p-8 md:p-12">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-semibold mb-3">
+                    Features that power this workflow
+                  </h2>
+                  <p className="text-muted-foreground">
+                    Dive deeper into the product capabilities that support this solution.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {relatedFeatures.map((feature) => (
+                    <Button key={feature.href} asChild variant="outline">
+                      <Link href={feature.href}>{feature.label}</Link>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {relatedIntents.length ? (
+          <section className="container mx-auto px-4 pb-16">
+            <div className="max-w-5xl mx-auto rounded-2xl border border-border/60 bg-muted/30 p-8 md:p-12">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-semibold mb-3">
+                    Programmatic SEO intents to explore
+                  </h2>
+                  <p className="text-muted-foreground">
+                    See how teams build targeted use cases around this solution.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {relatedIntents.map((intent) => (
+                    <Button key={intent.href} asChild variant="outline">
+                      <Link href={intent.href}>{intent.label}</Link>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : null}
       </main>
 
       <Footer />

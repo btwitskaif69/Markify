@@ -12,7 +12,7 @@ import {
 import { buildMetadata } from "@/lib/seo/metadata";
 
 const pageDescription =
-  "Save links in one click, organize them into smart collections, and find any bookmark instantly. Markify is the fast, free bookmark manager built for productivity.";
+  "Save links in one click, organize smart collections, and find any bookmark instantly. Markify is the fast, free bookmark manager built for busy teams.";
 
 export const metadata = buildMetadata({
   title: "Bookmark Manager for Fast Search",

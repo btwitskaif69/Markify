@@ -1,7 +1,11 @@
 import FeaturesPage from "@/app/(public)/_components/Features";
 import StructuredData from "@/components/SEO/StructuredData";
 import { FEATURES, getFeaturePath } from "@/data/features";
-import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata = buildMetadata({
@@ -29,10 +33,19 @@ export default function Page() {
     })),
     { name: "Markify Features" }
   );
+  const webPageSchema = buildWebPageSchema({
+    title: "Markify features",
+    description:
+      "Explore the core features that power Markify bookmark workflows.",
+    path: "/features",
+    type: "CollectionPage",
+  });
 
   return (
     <>
-      <StructuredData data={[breadcrumbs, featuresItemListSchema].filter(Boolean)} />
+      <StructuredData
+        data={[webPageSchema, breadcrumbs, featuresItemListSchema].filter(Boolean)}
+      />
       <FeaturesPage />
     </>
   );

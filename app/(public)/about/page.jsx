@@ -1,6 +1,6 @@
 import About from "@/app/(public)/_components/About";
 import StructuredData from "@/components/SEO/StructuredData";
-import { buildBreadcrumbSchema } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildWebPageSchema } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata = buildMetadata({
@@ -15,10 +15,17 @@ export default function Page() {
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
   ]);
+  const webPageSchema = buildWebPageSchema({
+    title: "About Markify",
+    description:
+      "Discover the story behind Markify and the mission to simplify bookmark management.",
+    path: "/about",
+    type: "AboutPage",
+  });
 
   return (
     <>
-      <StructuredData data={breadcrumbs} />
+      <StructuredData data={[webPageSchema, breadcrumbs].filter(Boolean)} />
       <About />
     </>
   );

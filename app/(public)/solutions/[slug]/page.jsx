@@ -1,8 +1,18 @@
 import Solution from "@/app/(public)/_components/Solution";
 import StructuredData from "@/components/SEO/StructuredData";
 import { SOLUTIONS, getSolutionBySlug, getSolutionPath } from "@/data/solutions";
-import { buildBreadcrumbSchema, buildFaqSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
+import {
+  buildKeywordContext,
+  getRelatedFeatureLinks,
+  getRelatedIntentLinks,
+  getRelatedSolutionLinks,
+} from "@/lib/seo/internal-links";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -40,17 +50,40 @@ export default function Page({ params }) {
   const solution = getSolutionBySlug(params.slug);
   if (!solution) return notFound();
 
+  const keywordContext = buildKeywordContext(
+    solution.keywords,
+    solution.title,
+    solution.description
+  );
+  const relatedSolutions = getRelatedSolutionLinks(keywordContext, {
+    excludeSlugs: [solution.slug],
+    limit: 3,
+  });
+  const relatedFeatures = getRelatedFeatureLinks(keywordContext, { limit: 3 });
+  const relatedIntents = getRelatedIntentLinks(keywordContext, { limit: 3 });
+
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Solutions", path: "/solutions" },
     { name: solution.title, path: getSolutionPath(solution.slug) },
   ]);
   const faqSchema = buildFaqSchema(solution.faqs);
+  const webPageSchema = buildWebPageSchema({
+    title: solution.title,
+    description: solution.description,
+    path: getSolutionPath(solution.slug),
+    type: "WebPage",
+  });
 
   return (
     <>
-      <StructuredData data={[breadcrumbs, faqSchema].filter(Boolean)} />
-      <Solution />
+      <StructuredData data={[webPageSchema, breadcrumbs, faqSchema].filter(Boolean)} />
+      <Solution
+        solution={solution}
+        relatedSolutions={relatedSolutions}
+        relatedFeatures={relatedFeatures}
+        relatedIntents={relatedIntents}
+      />
     </>
   );
 }

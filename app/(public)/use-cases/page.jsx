@@ -6,7 +6,11 @@ import {
   getPseoIntentIndex,
   getPseoIntentPath,
 } from "@/lib/pseo";
-import { buildBreadcrumbSchema, buildItemListSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 
 export const revalidate = 86400;
 
@@ -37,7 +41,14 @@ export default function Page() {
     })),
     { name: "Markify use cases" }
   );
-  const structuredData = [breadcrumbs, itemListSchema].filter(Boolean);
+  const webPageSchema = buildWebPageSchema({
+    title: "Markify use cases",
+    description:
+      "Programmatic SEO workflows organized by intent and industry.",
+    path: getPseoHubPath(),
+    type: "CollectionPage",
+  });
+  const structuredData = [webPageSchema, breadcrumbs, itemListSchema].filter(Boolean);
 
   return (
     <>

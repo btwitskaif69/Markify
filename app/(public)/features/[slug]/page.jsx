@@ -1,8 +1,18 @@
 import Feature from "@/app/(public)/_components/Feature";
 import StructuredData from "@/components/SEO/StructuredData";
 import { FEATURES, getFeatureBySlug, getFeaturePath } from "@/data/features";
-import { buildBreadcrumbSchema, buildFaqSchema } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildWebPageSchema,
+} from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
+import {
+  buildKeywordContext,
+  getRelatedFeatureLinks,
+  getRelatedIntentLinks,
+  getRelatedSolutionLinks,
+} from "@/lib/seo/internal-links";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = false;
@@ -40,17 +50,40 @@ export default function Page({ params }) {
   const feature = getFeatureBySlug(params.slug);
   if (!feature) return notFound();
 
+  const keywordContext = buildKeywordContext(
+    feature.keywords,
+    feature.title,
+    feature.description
+  );
+  const relatedFeatures = getRelatedFeatureLinks(keywordContext, {
+    excludeSlugs: [feature.slug],
+    limit: 3,
+  });
+  const relatedSolutions = getRelatedSolutionLinks(keywordContext, { limit: 3 });
+  const relatedIntents = getRelatedIntentLinks(keywordContext, { limit: 3 });
+
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Features", path: "/features" },
     { name: feature.title, path: getFeaturePath(feature.slug) },
   ]);
   const faqSchema = buildFaqSchema(feature.faqs);
+  const webPageSchema = buildWebPageSchema({
+    title: feature.title,
+    description: feature.description,
+    path: getFeaturePath(feature.slug),
+    type: "WebPage",
+  });
 
   return (
     <>
-      <StructuredData data={[breadcrumbs, faqSchema].filter(Boolean)} />
-      <Feature />
+      <StructuredData data={[webPageSchema, breadcrumbs, faqSchema].filter(Boolean)} />
+      <Feature
+        feature={feature}
+        relatedFeatures={relatedFeatures}
+        relatedSolutions={relatedSolutions}
+        relatedIntents={relatedIntents}
+      />
     </>
   );
 }

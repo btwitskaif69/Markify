@@ -1,7 +1,12 @@
 import PricingPage from "@/app/(public)/_components/Pricing";
 import StructuredData from "@/components/SEO/StructuredData";
 import { PRICING_TIERS } from "@/data/pricingTiers";
-import { buildBreadcrumbSchema, buildProductSchema, getCanonicalUrl } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildProductSchema,
+  buildWebPageSchema,
+  getCanonicalUrl,
+} from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata = buildMetadata({
@@ -17,6 +22,13 @@ export default function Page() {
     { name: "Home", path: "/" },
     { name: "Pricing", path: "/pricing" },
   ]);
+  const webPageSchema = buildWebPageSchema({
+    title: "Markify pricing",
+    description:
+      "Compare Free, Pro, and Team plans for Markify's bookmark manager.",
+    path: "/pricing",
+    type: "WebPage",
+  });
   const productSchemas = PRICING_TIERS.map((tier) =>
     buildProductSchema({
       name: `Markify ${tier.name}`,
@@ -29,7 +41,9 @@ export default function Page() {
 
   return (
     <>
-      <StructuredData data={[breadcrumbs, ...productSchemas].filter(Boolean)} />
+      <StructuredData
+        data={[webPageSchema, breadcrumbs, ...productSchemas].filter(Boolean)}
+      />
       <PricingPage />
     </>
   );
