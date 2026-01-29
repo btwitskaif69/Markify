@@ -57,10 +57,31 @@ const TARGET_TITLES = [
   "How Markify Is Redefining the Way We Save and Organize Bookmarks Online",
 ];
 
+// Titles to skip because the topic was removed or merged.
+// Remove items here if you want them processed again.
+const SKIP_TITLES = [
+  "Why We Built Markify: A Bookmark Manager That Respects Your Time",
+  "Download a Reliable Bookmark Organizer",
+];
+
+// If an existing post uses a different title for the same topic, map it here.
+const TITLE_ALIASES = new Map([
+  [
+    "How to Manage X (Twitter) Bookmarks 2026",
+    ["How to Manage X (Twitter) Bookmarks in 2026"],
+  ],
+  ["Recover Deleted Bookmarks", ["How to Recover Deleted Bookmarks"]],
+  [
+    "Markify vs Browser Bookmarks: Why Built-in Bookmarks Aren't Enough",
+    ["Markify vs Browser Bookmarks: Why Built-in Bookmarks Aren’t Enough"],
+  ],
+]);
+
 const slugify = (title) =>
   title
     .toLowerCase()
     .replace(/&/g, "and")
+    .replace(/[’']/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 
@@ -71,14 +92,22 @@ async function main() {
   let notFound = 0;
   let conflicts = 0;
 
-  for (const title of TARGET_TITLES) {
+  const activeTitles = TARGET_TITLES.filter(
+    (title) => !SKIP_TITLES.includes(title)
+  );
+
+  for (const title of activeTitles) {
     const desiredSlug = slugify(title);
+    const aliasTitles = TITLE_ALIASES.get(title) || [];
     try {
       const existingBlog = await prisma.blogPost.findFirst({
         where: {
           OR: [
             { slug: desiredSlug },
             { title: { equals: title, mode: "insensitive" } },
+            ...aliasTitles.map((alias) => ({
+              title: { equals: alias, mode: "insensitive" },
+            })),
           ],
         },
       });

@@ -7,10 +7,15 @@ import {
   getCanonicalUrl,
 } from "@/lib/seo";
 import prisma from "@/server/db/prismaClient";
+import { redirect } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
 export const runtime = "nodejs";
+
+const LEGACY_SLUG_REDIRECTS = {
+  "bookmark-manager-search-tagging": "bookmark-manager-search-and-tagging",
+};
 
 const getPostBySlug = async (slug) => {
   if (!slug) return { post: null, error: null };
@@ -111,6 +116,10 @@ export const generateMetadata = async ({ params }) => {
 export default async function Page({ params }) {
   const { post, error } = await getPostBySlug(params.slug);
   if (!post || !post.published) {
+    const redirectSlug = LEGACY_SLUG_REDIRECTS[params.slug];
+    if (redirectSlug) {
+      return redirect(`/blog/${redirectSlug}`);
+    }
     return <BlogPost initialPost={null} initialLatestPosts={[]} />;
   }
 
