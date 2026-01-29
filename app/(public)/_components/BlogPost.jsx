@@ -19,6 +19,7 @@ const getPrerenderedPost = (slug) => {
   if (typeof window === "undefined") return null;
   const payload = window.__PRERENDER_BLOG_POST__;
   if (!payload || payload.slug !== slug) return null;
+  if (payload.published === false) return null;
   return payload;
 };
 
@@ -86,7 +87,9 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
   const params = useParams();
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const seededPost =
-    initialPost && initialPost.slug === slug ? initialPost : getPrerenderedPost(slug);
+    initialPost && initialPost.slug === slug && initialPost.published !== false
+      ? initialPost
+      : getPrerenderedPost(slug);
   const seededLatest =
     initialLatestPosts.length > 0 ? initialLatestPosts : getPrerenderedLatestPosts(slug);
   const [post, setPost] = useState(seededPost);
@@ -145,6 +148,9 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
         }
         if (!postRes.ok) throw new Error("Failed to load post.");
         const postData = await postRes.json();
+        if (postData?.published === false) {
+          throw new Error("Post not found.");
+        }
         setPost(postData);
 
         // Fetch latest posts for sidebar
