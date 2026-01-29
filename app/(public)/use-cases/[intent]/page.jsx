@@ -25,8 +25,9 @@ export const generateStaticParams = () => {
   return intents.map((intent) => ({ intent: intent.slug }));
 };
 
-export const generateMetadata = ({ params }) => {
-  const intent = getPseoIntentBySlug(params.intent);
+export const generateMetadata = async ({ params }) => {
+  const resolvedParams = await params;
+  const intent = getPseoIntentBySlug(resolvedParams?.intent);
   if (!intent) {
     return buildMetadata({
       title: "Use case not found",
@@ -48,8 +49,9 @@ export const generateMetadata = ({ params }) => {
   });
 };
 
-export default function Page({ params }) {
-  const intent = getPseoIntentBySlug(params.intent);
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const intent = getPseoIntentBySlug(resolvedParams?.intent);
   if (!intent) return notFound();
 
   const industries = getPseoIndustriesForIntent(intent.slug);

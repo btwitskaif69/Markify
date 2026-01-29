@@ -331,12 +331,27 @@ export const FEATURES = [
   },
 ];
 
-export const getFeaturePath = (slug) => `/features/${slug}`;
+const normalizeFeatureSlug = (value) => {
+  if (Array.isArray(value)) return normalizeFeatureSlug(value[0]);
+  return String(value ?? "").toLowerCase().trim();
+};
+
+const FEATURE_INDEX = new Map(
+  FEATURES.map((feature) => [normalizeFeatureSlug(feature.slug), feature])
+);
+
+export const getFeaturePath = (slug) => {
+  const normalized = normalizeFeatureSlug(slug);
+  return normalized ? `/features/${normalized}` : "/features";
+};
 
 export const getFeatureBySlug = (slug) =>
-  FEATURES.find((feature) => feature.slug === slug);
+  FEATURE_INDEX.get(normalizeFeatureSlug(slug)) || null;
 
 export const getRelatedFeatures = (slug, count = 3) => {
-  const candidates = FEATURES.filter((feature) => feature.slug !== slug);
+  const normalized = normalizeFeatureSlug(slug);
+  const candidates = FEATURES.filter(
+    (feature) => normalizeFeatureSlug(feature.slug) !== normalized
+  );
   return candidates.slice(0, count);
 };

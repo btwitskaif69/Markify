@@ -21,7 +21,8 @@ const getSharedBookmark = cache(async (shareId) => {
 });
 
 export const generateMetadata = async ({ params }) => {
-  const shareId = params.shareId;
+  const resolvedParams = await params;
+  const shareId = resolvedParams?.shareId;
   const bookmark = await getSharedBookmark(shareId);
   const path = `/shared/bookmark/${shareId}`;
 
@@ -47,8 +48,9 @@ export const generateMetadata = async ({ params }) => {
   });
 };
 
-export default function Page({ params }) {
-  const shareId = params.shareId;
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const shareId = resolvedParams?.shareId;
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Shared Bookmark", path: `/shared/bookmark/${shareId}` },

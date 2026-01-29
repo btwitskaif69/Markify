@@ -79,14 +79,16 @@ const buildSeoDescription = (excerpt, title) => {
 };
 
 export const generateMetadata = async ({ params }) => {
-  const { post, error } = await getPostBySlug(params.slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  const { post, error } = await getPostBySlug(slug);
   if (!post || !post.published) {
     if (error) {
       return buildMetadata({
         title: "Markify Blog",
         description:
           "Read the latest Markify updates on saving, organizing, and searching bookmarks.",
-        path: `/blog/${params.slug || ""}`,
+        path: `/blog/${slug || ""}`,
       });
     }
     return buildMetadata({
@@ -114,9 +116,11 @@ export const generateMetadata = async ({ params }) => {
 };
 
 export default async function Page({ params }) {
-  const { post, error } = await getPostBySlug(params.slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  const { post, error } = await getPostBySlug(slug);
   if (!post || !post.published) {
-    const redirectSlug = LEGACY_SLUG_REDIRECTS[params.slug];
+    const redirectSlug = LEGACY_SLUG_REDIRECTS[slug];
     if (redirectSlug) {
       return redirect(`/blog/${redirectSlug}`);
     }

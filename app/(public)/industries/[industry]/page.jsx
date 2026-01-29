@@ -22,8 +22,9 @@ export const dynamicParams = false;
 export const generateStaticParams = () =>
   getPseoIndustryIndex().map((industry) => ({ industry: industry.slug }));
 
-export const generateMetadata = ({ params }) => {
-  const industry = getPseoIndustryBySlug(params.industry);
+export const generateMetadata = async ({ params }) => {
+  const resolvedParams = await params;
+  const industry = getPseoIndustryBySlug(resolvedParams?.industry);
   if (!industry) {
     return buildMetadata({
       title: "Industry not found",
@@ -45,8 +46,9 @@ export const generateMetadata = ({ params }) => {
   });
 };
 
-export default function Page({ params }) {
-  const industry = getPseoIndustryBySlug(params.industry);
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const industry = getPseoIndustryBySlug(resolvedParams?.industry);
   if (!industry) return notFound();
 
   const intents = getPseoIntentsForIndustry(industry.slug);

@@ -21,7 +21,8 @@ const getSharedCollection = cache(async (shareId) => {
 });
 
 export const generateMetadata = async ({ params }) => {
-  const shareId = params.shareId;
+  const resolvedParams = await params;
+  const shareId = resolvedParams?.shareId;
   const collection = await getSharedCollection(shareId);
   const path = `/shared/collection/${shareId}`;
 
@@ -46,8 +47,9 @@ export const generateMetadata = async ({ params }) => {
   });
 };
 
-export default function Page({ params }) {
-  const shareId = params.shareId;
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const shareId = resolvedParams?.shareId;
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Shared Collection", path: `/shared/collection/${shareId}` },

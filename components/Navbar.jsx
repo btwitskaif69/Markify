@@ -23,6 +23,10 @@ import { useAuth } from "@/client/context/AuthContext";
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
+  const navItems = NAV_LINKS.map((item) => ({
+    ...item,
+    href: item?.href || item?.link || item?.to || "",
+  })).filter((item) => item.href);
 
   const toggleMobileMenu = () => setMobileOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileOpen(false);
@@ -41,7 +45,7 @@ const Navbar = () => {
       {/* Desktop Navbar */}
       <NavBody>
         <NavbarLogo />
-        <NavItems items={NAV_LINKS} onItemClick={closeMobileMenu} />
+        <NavItems items={navItems} onItemClick={closeMobileMenu} />
         <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
         <button
           onClick={handleThemeToggle}
@@ -82,10 +86,10 @@ const Navbar = () => {
         </MobileNavHeader>
 
         <MobileNavMenu isOpen={mobileOpen} onClose={closeMobileMenu}>
-          {NAV_LINKS.map((item, idx) => (
+          {navItems.map((item, idx) => (
             <Link
               key={`mobile-link-${idx}`}
-              href={item.link}
+              href={item.href}
               onClick={closeMobileMenu}
               className="w-full px-4 py-2 text-lg text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 rounded"
             >

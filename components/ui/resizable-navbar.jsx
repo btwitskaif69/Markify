@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 
 import React, { useRef, useState } from "react";
+import Link from "next/link";
 
 const logo = "/assets/logo.svg";
 
@@ -82,6 +83,12 @@ export const NavItems = ({
   visible,
 }) => {
   const [hovered, setHovered] = useState(null);
+  const resolvedItems = (items || [])
+    .map((item) => ({
+      ...item,
+      href: item?.href || item?.link || item?.to || "",
+    }))
+    .filter((item) => item.href);
 
   return (
     <motion.div
@@ -91,13 +98,13 @@ export const NavItems = ({
         className
       )}
     >
-      {items.map((item, idx) => (
-        <a
+      {resolvedItems.map((item, idx) => (
+        <Link
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
           className="relative px-3 py-2 text-neutral-600 dark:text-neutral-300 whitespace-nowrap"
           key={`link-${idx}`}
-          href={item.link}
+          href={item.href}
         >
           {hovered === idx && (
             <motion.div
@@ -106,7 +113,7 @@ export const NavItems = ({
             />
           )}
           <span className="relative z-20">{item.name}</span>
-        </a>
+        </Link>
       ))}
     </motion.div>
   );
@@ -195,7 +202,7 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-    <a href="/" className="relative z-20 flex items-center gap-2 shrink-0">
+    <Link href="/" className="relative z-20 flex items-center gap-2 shrink-0">
       <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full">
         <img
           src={logo}
@@ -206,7 +213,7 @@ export const NavbarLogo = () => {
         />
       </div>
       <span className="text-lg font-semibold whitespace-nowrap">Markify</span>
-    </a>
+    </Link>
   );
 };
 

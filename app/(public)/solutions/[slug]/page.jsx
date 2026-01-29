@@ -15,7 +15,9 @@ import {
 } from "@/lib/seo/internal-links";
 import { notFound } from "next/navigation";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+
+export const revalidate = 86400;
 
 export const generateStaticParams = () =>
   SOLUTIONS.map((solution) => ({ slug: solution.slug }));
@@ -31,13 +33,15 @@ const buildSolutionMetadata = (solution) => {
   });
 };
 
-export const generateMetadata = ({ params }) => {
-  const solution = getSolutionBySlug(params.slug);
+export const generateMetadata = async ({ params }) => {
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  const solution = getSolutionBySlug(slug);
   if (!solution) {
     return buildMetadata({
       title: "Solution not found",
       description: "The requested solution could not be found.",
-      path: `/solutions/${params.slug}`,
+      path: getSolutionPath(slug || ""),
       noindex: true,
       nofollow: true,
     });
@@ -46,8 +50,9 @@ export const generateMetadata = ({ params }) => {
   return buildSolutionMetadata(solution);
 };
 
-export default function Page({ params }) {
-  const solution = getSolutionBySlug(params.slug);
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const solution = getSolutionBySlug(resolvedParams?.slug);
   if (!solution) return notFound();
 
   const keywordContext = buildKeywordContext(

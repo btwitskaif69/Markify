@@ -295,12 +295,27 @@ export const SOLUTIONS = [
   },
 ];
 
-export const getSolutionPath = (slug) => `/solutions/${slug}`;
+const normalizeSolutionSlug = (value) => {
+  if (Array.isArray(value)) return normalizeSolutionSlug(value[0]);
+  return String(value ?? "").toLowerCase().trim();
+};
+
+const SOLUTION_INDEX = new Map(
+  SOLUTIONS.map((solution) => [normalizeSolutionSlug(solution.slug), solution])
+);
+
+export const getSolutionPath = (slug) => {
+  const normalized = normalizeSolutionSlug(slug);
+  return normalized ? `/solutions/${normalized}` : "/solutions";
+};
 
 export const getSolutionBySlug = (slug) =>
-  SOLUTIONS.find((solution) => solution.slug === slug);
+  SOLUTION_INDEX.get(normalizeSolutionSlug(slug)) || null;
 
 export const getRelatedSolutions = (slug, count = 3) => {
-  const candidates = SOLUTIONS.filter((solution) => solution.slug !== slug);
+  const normalized = normalizeSolutionSlug(slug);
+  const candidates = SOLUTIONS.filter(
+    (solution) => normalizeSolutionSlug(solution.slug) !== normalized
+  );
   return candidates.slice(0, count);
 };

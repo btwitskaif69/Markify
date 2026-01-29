@@ -37,7 +37,8 @@ const getBlogEntries = async () => {
 };
 
 export async function GET(request, { params }) {
-  const pageIndex = Number(params.page);
+  const resolvedParams = await params;
+  const pageIndex = Number(resolvedParams?.page);
   if (!Number.isFinite(pageIndex) || pageIndex < 0) {
     return new Response("Not found", { status: 404 });
   }

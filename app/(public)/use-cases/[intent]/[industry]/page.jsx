@@ -20,8 +20,9 @@ export const generateStaticParams = () => {
   return getPseoStaticParams({ limit, offset });
 };
 
-export const generateMetadata = ({ params }) => {
-  const page = getPseoPageBySlugs(params.intent, params.industry);
+export const generateMetadata = async ({ params }) => {
+  const resolvedParams = await params;
+  const page = getPseoPageBySlugs(resolvedParams?.intent, resolvedParams?.industry);
   if (!page) {
     return buildPseoMetadata({
       title: "Use case not found",
@@ -37,8 +38,9 @@ export const generateMetadata = ({ params }) => {
   return buildPseoMetadata({ page, quality });
 };
 
-export default function Page({ params }) {
-  const page = getPseoPageBySlugs(params.intent, params.industry);
+export default async function Page({ params }) {
+  const resolvedParams = await params;
+  const page = getPseoPageBySlugs(resolvedParams?.intent, resolvedParams?.industry);
   if (!page) return notFound();
 
   const structuredData = buildPseoStructuredData(page);
