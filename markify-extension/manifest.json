@@ -1,17 +1,19 @@
 {
     "manifest_version": 3,
     "name": "Markify - Save Bookmarks",
-    "version": "1.0.0",
-    "description": "Save any webpage to Markify with one click. Organize your bookmarks the modern way.",
+    "version": "1.1.0",
+    "description": "Save any webpage to Markify with one click. Quick save, floating button, and smart metadata extraction.",
     "permissions": [
         "activeTab",
         "storage",
-        "contextMenus"
+        "contextMenus",
+        "scripting"
     ],
     "host_permissions": [
         "https://www.markify.tech/*",
         "https://markify.tech/*",
-        "http://localhost:3000/*"
+        "http://localhost:3000/*",
+        "<all_urls>"
     ],
     "action": {
         "default_popup": "popup/popup.html",
@@ -33,10 +35,34 @@
     "commands": {
         "save-bookmark": {
             "suggested_key": {
-                "default": "Ctrl+Shift+M",
-                "mac": "Command+Shift+M"
+                "default": "Alt+Shift+M",
+                "mac": "Alt+Shift+M"
             },
-            "description": "Save current page to Markify"
+            "description": "Save current page (opens popup)"
+        },
+        "quick-save": {
+            "suggested_key": {
+                "default": "Alt+Shift+S",
+                "mac": "Alt+Shift+S"
+            },
+            "description": "Quick save current page"
+        },
+        "toggle-floating-button": {
+            "suggested_key": {
+                "default": "Alt+Shift+F",
+                "mac": "Alt+Shift+F"
+            },
+            "description": "Toggle floating save button"
         }
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "content/content.css"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
 }

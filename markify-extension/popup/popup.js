@@ -104,17 +104,18 @@ async function loadSaveView() {
 
     try {
         // Check for pending save from context menu or keyboard shortcut
-        const storage = await chrome.storage.local.get(['pending_save_url', 'pending_save_title']);
+        const storage = await chrome.storage.local.get(['pending_save_url', 'pending_save_title', 'pending_description']);
 
-        let pageUrl, pageTitle;
+        let pageUrl, pageTitle, pendingDescription;
 
         if (storage.pending_save_url) {
             // Use pending save data
             pageUrl = storage.pending_save_url;
             pageTitle = storage.pending_save_title || '';
+            pendingDescription = storage.pending_description || '';
 
             // Clear pending data
-            await chrome.storage.local.remove(['pending_save_url', 'pending_save_title']);
+            await chrome.storage.local.remove(['pending_save_url', 'pending_save_title', 'pending_description']);
         } else {
             // Get current tab
             const tab = await new Promise(resolve => {
@@ -133,6 +134,11 @@ async function loadSaveView() {
         elements.urlInput.value = pageUrl;
         elements.titleInput.value = pageTitle;
 
+        // Set pending description if available (from Save Selection)
+        if (pendingDescription) {
+            elements.descriptionInput.value = pendingDescription;
+        }
+
         // Store current data
         currentPageData.url = pageUrl;
         currentPageData.title = pageTitle;
@@ -144,7 +150,8 @@ async function loadSaveView() {
         showView('saveView');
 
         // Try to extract metadata (in background, don't block)
-        extractAndFillMetadata(pageUrl);
+        // Skip if we have pending description (user selected text intentionally)
+        extractAndFillMetadata(pageUrl, !!pendingDescription);
 
     } catch (error) {
         console.error('Load save view error:', error);
@@ -154,7 +161,7 @@ async function loadSaveView() {
 }
 
 // Extract metadata and fill form
-async function extractAndFillMetadata(url) {
+async function extractAndFillMetadata(url, skipDescription = false) {
     try {
         const response = await MarkifyAPI.extractMetadata(url);
 
@@ -166,7 +173,8 @@ async function extractAndFillMetadata(url) {
                 elements.titleInput.value = title;
             }
 
-            if (description) {
+            // Only update description if not skipped (user may have selected text intentionally)
+            if (description && !skipDescription && !elements.descriptionInput.value) {
                 elements.descriptionInput.value = description;
             }
 

@@ -1,76 +1,69 @@
 # Markify Chrome Extension
 
-Save any webpage to Markify with one click. Organize your bookmarks the modern way.
+Save any webpage to Markify with one click. Multiple quick-save options for power users.
+
+## Installation
+
+1. Open `chrome://extensions/`
+2. Enable "Developer mode" (top right)
+3. Click "Load unpacked"
+4. Select the `markify-extension` folder
 
 ## Features
 
-- 🔖 **One-Click Save** - Save the current page instantly
-- 📁 **Collection Picker** - Organize into your collections
-- 🏷️ **Auto-Fill** - Title, description, and tags extracted automatically
-- ⌨️ **Keyboard Shortcut** - `Ctrl+Shift+M` (or `Cmd+Shift+M` on Mac)
-- 🖱️ **Right-Click Menu** - "Add to Markify" context option
-- 🌙 **Dark Mode** - Beautiful dark theme matching Markify
+### 🖱️ Save Methods
 
-## Installation (Developer Mode)
+| Method | How to Use | Speed |
+|--------|------------|-------|
+| **Quick Save ⚡** | Right-click → "Quick Save to Markify ⚡" | Instant |
+| **Save with Options** | Right-click → "Add to Markify" | Opens popup |
+| **Save Selection** | Select text → right-click → "Save Selection to Markify" | Popup with text as description |
+| **Floating Button** | Press `Ctrl+Shift+B` to toggle | On-page button |
 
-1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top-right corner)
-3. Click **Load unpacked**
-4. Select this `markify-extension` folder
-5. The Markify icon will appear in your toolbar
+### ⌨️ Keyboard Shortcuts
 
-## Usage
+| Shortcut | Action |
+|----------|--------|
+| `Alt+Shift+M` | Open save popup |
+| `Alt+Shift+S` | Quick save (instant) |
+| `Alt+Shift+F` | Toggle floating button |
 
-1. **First time**: Click the extension icon and log in with your Markify account
-2. **Save a page**: Click the icon (or press `Ctrl+Shift+M`) on any webpage
-3. **Edit details**: Modify the pre-filled title, description, or tags
-4. **Choose collection**: Select from the dropdown or leave as "Unsorted"
-5. **Click Save**: Your bookmark is saved to Markify!
+### ✨ Other Features
 
-## File Structure
+- Auto-extract title, description, and tags
+- Preview image extraction
+- Collection selection
+- Duplicate detection
+- Dark theme UI
+
+## Files
 
 ```
 markify-extension/
-├── manifest.json      # Extension configuration
-├── background.js      # Service worker (context menu, shortcuts)
-├── popup/
-│   ├── popup.html     # Popup UI
-│   ├── popup.css      # Styles
-│   └── popup.js       # Logic
+├── manifest.json        # Extension config (v1.1.0)
+├── background.js        # Service worker
+├── popup/               # Popup UI
+│   ├── popup.html
+│   ├── popup.css
+│   └── popup.js
+├── content/             # Page-injected scripts
+│   ├── content.js       # Floating button + notifications
+│   └── content.css
 ├── utils/
-│   └── api.js         # API client
-└── icons/             # Extension icons
+│   └── api.js           # API client
+└── icons/               # Extension icons
 ```
 
 ## Development
 
-To test changes:
-1. Make your edits
-2. Go to `chrome://extensions/`
-3. Click the refresh icon on the Markify extension card
-4. Changes will be applied immediately
+Switch to localhost for testing:
 
-## Keyboard Shortcuts
+```javascript
+// In utils/api.js, change:
+const API_BASE = 'http://localhost:3000/api';
+```
 
-You can customize the keyboard shortcut:
-1. Go to `chrome://extensions/shortcuts`
-2. Find "Markify - Save Bookmarks"
-3. Set your preferred key combination
+## Requirements
 
-## Troubleshooting
-
-**Login not working?**
-- Ensure you have an active Markify account at [markify.tech](https://www.markify.tech)
-- Check your email and password
-
-**Bookmark not saving?**
-- Make sure you're logged in (click the icon to check)
-- The page URL must be valid (not chrome:// pages)
-
-**Extension icon not visible?**
-- Click the puzzle piece icon in Chrome toolbar
-- Pin the Markify extension
-
-## License
-
-MIT License - Part of the [Markify](https://github.com/btwitskaif69/Markify) project.
+- Chrome 88+ (Manifest V3 support)
+- Logged-in Markify account
