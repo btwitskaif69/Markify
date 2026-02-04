@@ -1,156 +1,198 @@
 /* Markify Extension - Content Script Styles */
-/* Notification toast and floating button */
+/* Floating button & notifications with shadcn design system */
 
-/* Notification Toast */
+/* ================================
+   NOTIFICATION TOAST
+   ================================ */
 .markify-notification {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 24px;
+    right: 24px;
     z-index: 2147483647;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 20px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 14px 18px;
+    min-width: 200px;
+    max-width: 360px;
+
+    /* shadcn dark theme */
+    background: hsl(240 10% 3.9%);
+    border: 1px solid hsl(240 3.7% 15.9%);
+    border-radius: 8px;
+    box-shadow:
+        0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1),
+        0 0 0 1px rgb(0 0 0 / 0.05);
+
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 14px;
-    color: #ffffff;
+    color: hsl(0 0% 98%);
+
+    /* Animation */
     opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(100%) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .markify-notification--visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
 }
 
 .markify-notification__icon {
-    width: 28px;
-    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .markify-notification--success .markify-notification__icon {
-    background: linear-gradient(135deg, #10B981, #059669);
-    color: white;
+    background: hsl(142.1 76.2% 36.3% / 0.15);
+    color: hsl(142.1 76.2% 50%);
 }
 
 .markify-notification--error .markify-notification__icon {
-    background: linear-gradient(135deg, #EF4444, #DC2626);
-    color: white;
+    background: hsl(0 84.2% 60.2% / 0.15);
+    color: hsl(0 84.2% 60.2%);
 }
 
 .markify-notification--warning .markify-notification__icon {
-    background: linear-gradient(135deg, #F59E0B, #D97706);
-    color: white;
+    background: hsl(47.9 95.8% 53.1% / 0.15);
+    color: hsl(47.9 95.8% 53.1%);
 }
 
 .markify-notification__message {
     font-weight: 500;
+    line-height: 1.4;
 }
 
-/* Floating Button */
+/* ================================
+   FLOATING BUTTON
+   ================================ */
 .markify-floating-button {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 32px;
+    right: 32px;
     z-index: 2147483646;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Animation */
     opacity: 0;
-    transform: scale(0.8);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.8) translateY(10px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .markify-floating-button--visible {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
 }
 
 .markify-floating-button__main {
-    width: 56px;
-    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    width: 54px;
+    height: 54px;
+
+    /* Primary button style (orange) */
+    background: hsl(24.6 95% 53.1%);
+    border: none;
     border-radius: 50%;
+
+    /* Shadows */
+    box-shadow:
+        0 4px 14px hsl(24.6 95% 53.1% / 0.35),
+        0 2px 6px rgb(0 0 0 / 0.15);
+
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
-    transition: all 0.2s ease;
     color: white;
+    transition: all 0.2s ease;
 }
 
 .markify-floating-button__main:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(249, 115, 22, 0.5);
+    transform: scale(1.08);
+    box-shadow:
+        0 6px 20px hsl(24.6 95% 53.1% / 0.45),
+        0 2px 8px rgb(0 0 0 / 0.2);
 }
 
 .markify-floating-button__main:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
 }
 
 .markify-floating-button__main svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
 }
 
-/* Menu */
+/* ================================
+   FLOATING BUTTON MENU
+   ================================ */
 .markify-floating-button__menu {
     position: absolute;
-    bottom: 70px;
+    bottom: 66px;
     right: 0;
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    /* Animation */
     opacity: 0;
     visibility: hidden;
-    transform: translateY(10px);
-    transition: all 0.2s ease;
+    transform: translateY(8px) scale(0.95);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .markify-floating-button--expanded .markify-floating-button__menu {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
 .markify-floating-button__option {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 12px 16px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: white;
+
+    /* Card style (dark) */
+    background: hsl(240 10% 3.9%);
+    border: 1px solid hsl(240 3.7% 15.9%);
+    border-radius: 8px;
+
+    color: hsl(0 0% 98%);
     font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
+
+    box-shadow:
+        0 4px 12px rgb(0 0 0 / 0.25),
+        0 2px 4px rgb(0 0 0 / 0.1);
+
+    transition: all 0.15s ease;
 }
 
 .markify-floating-button__option:hover {
-    background: linear-gradient(135deg, #252541 0%, #1e2a47 100%);
-    transform: translateX(-5px);
-    border-color: rgba(249, 115, 22, 0.5);
+    background: hsl(240 3.7% 15.9%);
+    border-color: hsl(24.6 95% 53.1% / 0.5);
+    transform: translateX(-4px);
 }
 
 .markify-floating-button__option span {
-    font-size: 16px;
+    font-size: 15px;
 }
 
-/* Animation for main button when expanded */
+/* Main button when expanded */
 .markify-floating-button--expanded .markify-floating-button__main {
-    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+    background: hsl(24.6 95% 45%);
+    box-shadow:
+        0 4px 14px hsl(24.6 95% 53.1% / 0.25),
+        0 2px 6px rgb(0 0 0 / 0.15);
 }

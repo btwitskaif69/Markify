@@ -37,7 +37,7 @@ export const addBookmark = async (req, res) => {
         title,
         url,
         description,
-        category,
+        category: category || 'Other',
         tags,
         isFavorite,
         userId: userId,
