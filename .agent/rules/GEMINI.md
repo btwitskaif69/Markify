@@ -271,3 +271,69 @@ When user's prompt is NOT in English:
 - **Test**: `playwright_runner.py`, `test_runner.py`
 
 ---
+
+## 🚀 MARKIFY-SPECIFIC SKILLS (MANDATORY)
+
+> 🔴 **ALWAYS READ AND APPLY** the following skills when working on Markify tasks.
+
+### Blog & Content Writing
+
+| Skill | When to Use |
+|-------|-------------|
+| `blog-writing-mastery` | **ANY blog content** - combines copywriting, voice, marketing, SEO |
+| `blog-copywriting` | Headlines, hooks, structure, reader psychology |
+| `organic-voice` | Make content sound human, avoid AI patterns |
+| `content-marketing` | SaaS content strategy, pain points, conversions |
+| `copywriting` | Marketing copy for pages, CTAs, headlines |
+
+### SEO & Optimization
+
+| Skill | When to Use |
+|-------|-------------|
+| `seo-fundamentals` | Core SEO, E-E-A-T, Core Web Vitals |
+| `seo-geo` | SEO + GEO for AI search engines (ChatGPT, Perplexity) |
+| `seo-audit` | Technical SEO review, meta tags, rankings |
+| `geo-fundamentals` | Generative Engine Optimization for AI |
+| `audit-website` | Full website audit (230+ rules) |
+
+### Frontend & UI
+
+| Skill | When to Use |
+|-------|-------------|
+| `frontend-design` | Web components, pages, UI design |
+| `nextjs-react-expert` | React/Next.js patterns, performance |
+| `vercel-react-best-practices` | Vercel Engineering performance guidelines |
+| `tailwind-patterns` | Tailwind v4, CSS-first config |
+| `shadcn-ui` | shadcn component integration |
+| `web-design-guidelines` | UI compliance review |
+
+### Database & Security
+
+| Skill | When to Use |
+|-------|-------------|
+| `prisma-expert` | Schema design, migrations, queries |
+| `security-review-2` | Security audits, vulnerability checks |
+| `clean-code` | Code standards (ALWAYS apply) |
+
+### Discovery
+
+| Skill | When to Use |
+|-------|-------------|
+| `find-skills` | Discover and install new skills |
+
+---
+
+### 📋 SKILL USAGE CHECKLIST (RUN BEFORE EVERY TASK)
+
+> 🔴 **Before starting ANY Markify task, ask yourself:**
+
+1. **Writing blog/content?** → Read `blog-writing-mastery`, `organic-voice`
+2. **SEO/visibility work?** → Read `seo-geo`, `seo-audit`, `seo-fundamentals`
+3. **Building UI/components?** → Read `frontend-design`, `shadcn-ui`, `tailwind-patterns`
+4. **Database/Prisma changes?** → Read `prisma-expert`
+5. **Before deploy/review?** → Run `security-review-2`, `audit-website`
+
+**Failure to use applicable skills = QUALITY FAILURE**
+
+---
+
