@@ -54,13 +54,13 @@ const Hero = () => {
 
               {/* Heading */}
               <h1 className="mt-6 flex w-full flex-col items-center text-center text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl md:text-7xl lg:text-8xl">
-                <span className="inline-block text-center md:whitespace-nowrap">Save, Organize, and Access</span>
-                <span className="inline-block text-center md:whitespace-nowrap">Your Bookmarks Smarter</span>
+                <span className="inline-block text-center md:whitespace-nowrap">Your Saved Links, Organized</span>
+                <span className="inline-block text-center md:whitespace-nowrap">With a Smarter Bookmark Manager</span>
               </h1>
 
               {/* Subheading */}
-              <p className="mb-5 mt-4 max-w-3xl text-center text-lg text-muted-foreground md:text-2xl">
-                Keep every link organized, searchable, and accessible with Markify&apos;s clean, modern bookmark manager.
+              <p className="mb-5 mt-4 max-w-5xl text-center text-lg text-muted-foreground md:text-2xl">
+                Keep every link organized in collections, instantly searchable, and always in sync — with Markify’s clean, modern bookmark manager and one-click browser extension.
               </p>
 
               {/* Buttons */}
