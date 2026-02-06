@@ -5,7 +5,6 @@ import { lazy, Suspense } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/home/Hero';
-import DashboardPreview from '@/components/home/DashboardPreview';
 import Marquee from '@/components/home/Marquee';
 import LazySection from "@/components/LazySection";
 
@@ -30,11 +29,6 @@ const Home = () => {
       <main>
         {/* Hero stays here - critical for FCP */}
         <Hero />
-
-        {/* Dashboard preview - critical for LCP */}
-        <section className="relative z-20 flex justify-center items-center px-4 -mt-25 sm:-mt-30 md:-mt-20 lg:-mt-45 mb-10">
-          <DashboardPreview />
-        </section>
 
         <Marquee />
 
