@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Marquee } from "@/components/ui/marquee";
+import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
@@ -7,12 +7,17 @@ import { API_BASE_URL } from "@/client/lib/apiConfig";
 // Individual review card component
 function ReviewCard({ name, avatar, rating, content }) {
     return (
-        <figure
+        <motion.figure
             className={cn(
-                "relative w-80 cursor-pointer overflow-hidden rounded-xl border p-4",
+                "relative cursor-pointer overflow-hidden rounded-xl border p-4",
                 "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-                "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+                "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]",
+                "transition-colors duration-200"
             )}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            viewport={{ once: false }}
         >
             <div className="flex flex-row items-center gap-3">
                 <img
@@ -41,10 +46,10 @@ function ReviewCard({ name, avatar, rating, content }) {
                     </div>
                 </div>
             </div>
-            <blockquote className="mt-3 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
+            <blockquote className="mt-3 text-sm text-gray-600 dark:text-gray-300">
                 "{content}"
             </blockquote>
-        </figure>
+        </motion.figure>
     );
 }
 
@@ -75,47 +80,46 @@ export default function ReviewsMarquee() {
         return null;
     }
 
-    // Split reviews into two rows for visual effect
-    const firstRow = reviews.slice(0, Math.ceil(reviews.length / 2));
-    const secondRow = reviews.slice(Math.ceil(reviews.length / 2));
+    // Split reviews into three columns
+    const columns = [[], [], []];
+    reviews.forEach((review, index) => {
+        columns[index % 3].push(review);
+    });
 
     return (
-        <section className="py-16 overflow-hidden">
-            <div className="container mx-auto px-4 mb-8 text-center">
-                <h2 className="text-3xl font-bold mb-2">What Our Users Say</h2>
-                <p className="text-muted-foreground">Real reviews from real users</p>
-            </div>
+        <section className="py-16">
+            <div className="container mx-auto px-4 md:px-6">
+                <motion.div
+                    className="text-center mb-12"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    viewport={{ once: false }}
+                >
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                        What Our <span className="italic">Users</span> Say
+                    </h2>
+                    <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                        Real reviews from real users who love organizing with Markify.
+                    </p>
+                </motion.div>
 
-            <div className="relative flex flex-col gap-4">
-                <Marquee pauseOnHover className="[--duration:30s]">
-                    {firstRow.map((review) => (
-                        <ReviewCard
-                            key={review.id}
-                            name={review.user?.name || "Anonymous"}
-                            avatar={review.user?.avatar}
-                            rating={review.rating}
-                            content={review.content}
-                        />
+                {/* 3 Column Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    {columns.map((column, colIndex) => (
+                        <div key={colIndex} className="flex flex-col gap-4 md:gap-6">
+                            {column.map((review, index) => (
+                                <ReviewCard
+                                    key={review.id}
+                                    name={review.user?.name || "Anonymous"}
+                                    avatar={review.user?.avatar}
+                                    rating={review.rating}
+                                    content={review.content}
+                                />
+                            ))}
+                        </div>
                     ))}
-                </Marquee>
-
-                {secondRow.length > 0 && (
-                    <Marquee reverse pauseOnHover className="[--duration:30s]">
-                        {secondRow.map((review) => (
-                            <ReviewCard
-                                key={review.id}
-                                name={review.user?.name || "Anonymous"}
-                                avatar={review.user?.avatar}
-                                rating={review.rating}
-                                content={review.content}
-                            />
-                        ))}
-                    </Marquee>
-                )}
-
-                {/* Gradient overlays */}
-                <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background"></div>
-                <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background"></div>
+                </div>
             </div>
         </section>
     );

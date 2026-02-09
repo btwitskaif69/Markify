@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Globe } from "@/components/ui/globe";
 import { AnimatedList } from "@/components/ui/animated-list";
@@ -32,24 +32,24 @@ const features = [
     },
 ];
 
-const globeConfig = {
+const getGlobeConfig = (isDark) => ({
     width: 800,
     height: 800,
     devicePixelRatio: 2,
     phi: 0,
     theta: 0.3,
-    dark: 1, // Enable dark mode
+    dark: isDark ? 1 : 0,
     diffuse: 1.2,
     mapSamples: 16000,
-    mapBrightness: 6,
-    baseColor: [0.3, 0.3, 0.3],
-    markerColor: [0.1, 0.8, 1],
-    glowColor: [1, 1, 1],
+    mapBrightness: isDark ? 6 : 1.5,
+    baseColor: isDark ? [0.3, 0.3, 0.3] : [0.95, 0.95, 0.95],
+    markerColor: [0.89, 0.36, 0.09], // Deep orange - matches primary color
+    glowColor: [0.89, 0.45, 0.15], // Warm orange glow
     markers: [
         { location: [37.7595, -122.4367], size: 0.03 },
         { location: [40.7128, -74.006], size: 0.1 },
     ],
-};
+});
 
 const FeatureItem = ({ name, description, icon }) => (
     <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border/50">
@@ -114,6 +114,26 @@ const AnalyticsBeamCard = () => {
 };
 
 const BentoGridSection = () => {
+    const [isDark, setIsDark] = useState(true);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        setIsDark(document.documentElement.classList.contains("dark"));
+
+        const observer = new MutationObserver(() => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    const globeConfig = getGlobeConfig(isDark);
     return (
         <section className="w-full py-16 md:py-24 bg-background">
             <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -206,7 +226,7 @@ const BentoGridSection = () => {
                                     <Calendar className="w-8 h-8 text-green-500" />
                                     <Search className="w-8 h-8 text-purple-500" />
                                 </OrbitingCircles>
-                                <img src="/assets/logo.svg" alt="Markify" className="w-12 h-12" />
+                                <img src="/assets/logo.svg" alt="Markify" className="w-12 h-12 [filter:brightness(0)_saturate(100%)_invert(42%)_sepia(93%)_saturate(1352%)_hue-rotate(360deg)_brightness(98%)_contrast(100%)]" />
                             </div>
                             {/* Text Content */}
                             <div className="flex-1 text-center lg:text-left">

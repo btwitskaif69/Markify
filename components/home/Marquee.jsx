@@ -66,7 +66,7 @@ const Marquee = () => {
                                     alt={`${logo.name} logo`}
                                     loading="lazy"
                                     decoding="async"
-                                    className={`h-8 md:h-10 w-auto object-contain brightness-0 ${isDark ? 'invert' : ''}`}
+                                    className={`h-5 md:h-6 w-auto object-contain brightness-0 ${isDark ? 'invert' : ''}`}
                                 />
                             </div>
                         ))}
