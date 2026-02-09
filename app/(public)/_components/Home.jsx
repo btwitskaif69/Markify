@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/home/Hero';
 import Marquee from '@/components/home/Marquee';
+import FeatureHighlight from '@/components/home/FeatureHighlight';
+import BentoGridSection from '@/components/home/BentoGridSection';
 import LazySection from "@/components/LazySection";
 
 // Lazy load below-fold components
@@ -14,7 +16,7 @@ const HowItWorks = lazy(() => import('@/components/home/HowItWorks'));
 const Stats = lazy(() => import('@/components/home/Stats'));
 
 const FAQ = lazy(() => import('@/components/home/FAQ'));
-const CTA = lazy(() => import('@/components/home/CTA'));
+const StressFreeCTA = lazy(() => import('@/components/home/StressFreeCTA'));
 const ReviewsMarquee = lazy(() => import('@/components/home/ReviewsMarquee'));
 const Footer = lazy(() => import('@/components/Footer'));
 
@@ -31,6 +33,16 @@ const Home = () => {
         <Hero />
 
         <Marquee />
+
+        <FeatureHighlight />
+
+        <BentoGridSection />
+
+        <LazySection fallback={<BelowFoldPlaceholder />}>
+          <Suspense fallback={<BelowFoldPlaceholder />}>
+            <StressFreeCTA />
+          </Suspense>
+        </LazySection>
 
         <section className="py-16">
           <div className="container mx-auto px-6 md:px-12">
@@ -150,12 +162,7 @@ const Home = () => {
           </Suspense>
         </LazySection>
 
-        {/* Final CTA */}
-        <LazySection fallback={<BelowFoldPlaceholder />}>
-          <Suspense fallback={<BelowFoldPlaceholder />}>
-            <CTA />
-          </Suspense>
-        </LazySection>
+
       </main >
 
       <LazySection>

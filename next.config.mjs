@@ -5,10 +5,16 @@ const nextConfig = {
     return [
       { source: "/home", destination: "/", permanent: true },
       { source: "/home/", destination: "/", permanent: true },
+      { source: "/Home", destination: "/", permanent: true },
+      { source: "/Home/", destination: "/", permanent: true },
     ];
   },
   async headers() {
     return [
+      {
+        source: "/site.webmanifest",
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
       {
         // Allow Chrome extension to access API routes
         source: "/api/:path*",
@@ -23,4 +29,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-

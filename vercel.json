@@ -2,6 +2,15 @@
   "version": 2,
   "headers": [
     {
+      "source": "/site.webmanifest",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {
@@ -39,6 +48,16 @@
     },
     {
       "source": "/home/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/Home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/Home/",
       "destination": "/",
       "permanent": true
     }
