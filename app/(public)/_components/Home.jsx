@@ -36,13 +36,15 @@ const Home = () => {
 
         <BentoGridSection />
 
-        <WhyChooseMarkify />
 
         <LazySection fallback={<BelowFoldPlaceholder />}>
           <Suspense fallback={<BelowFoldPlaceholder />}>
             <StressFreeCTA />
           </Suspense>
         </LazySection>
+
+        <WhyChooseMarkify />
+
 
         {/* Reviews */}
         <LazySection fallback={<BelowFoldPlaceholder />}>

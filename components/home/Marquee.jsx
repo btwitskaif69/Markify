@@ -44,9 +44,12 @@ const Marquee = () => {
             <div className="max-w-7xl mx-auto px-4 md:px-6">
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center mb-8 md:mb-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
                         Powered by the Best Technology
                     </h2>
+                    <p className="text-base md:text-lg text-muted-foreground max-w-2xl">
+                        Built on a modern, battle-tested stack to deliver speed, reliability, and a seamless experience across every device.
+                    </p>
                 </div>
 
                 {/* Logo Cards */}
@@ -66,7 +69,7 @@ const Marquee = () => {
                                     alt={`${logo.name} logo`}
                                     loading="lazy"
                                     decoding="async"
-                                    className={`h-5 md:h-6 w-auto object-contain brightness-0 ${isDark ? 'invert' : ''}`}
+                                    className={`h-7 md:h-8 w-auto object-contain brightness-0 ${isDark ? 'invert' : ''}`}
                                 />
                             </div>
                         ))}

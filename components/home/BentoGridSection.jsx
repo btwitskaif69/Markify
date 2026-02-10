@@ -7,6 +7,7 @@ import { AnimatedList } from "@/components/ui/animated-list";
 import { OrbitingCircles } from "@/components/ui/orbiting-circles";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { ImagesBadge } from "@/components/ui/images-badge";
+import BotDetection from "@/components/bot-detection";
 import { BarChart3, Zap, Calendar, Search, Bookmark, FolderPlus, Tag, Share2, Chrome, Globe2 } from "lucide-react";
 
 const features = [
@@ -69,7 +70,7 @@ const AnalyticsBeamCard = () => {
 
     return (
         <motion.div
-            className="relative overflow-hidden rounded-3xl bg-card border border-border p-6"
+            className="relative overflow-hidden rounded-3xl bg-background border border-border p-6"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -145,7 +146,7 @@ const BentoGridSection = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
                         <span className="italic">Save time</span> and get more done
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -158,7 +159,7 @@ const BentoGridSection = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                     {/* Large Card - Globe */}
                     <motion.div
-                        className="lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-card border border-border p-6 md:p-8 min-h-[400px] lg:min-h-[500px]"
+                        className="lg:col-span-2 lg:row-span-2 relative overflow-hidden rounded-3xl bg-background border border-border p-6 md:p-8 min-h-[400px] lg:min-h-[500px]"
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
@@ -190,7 +191,7 @@ const BentoGridSection = () => {
 
                     {/* Small Card 2 - Features List */}
                     <motion.div
-                        className="relative overflow-hidden rounded-3xl bg-card border border-border p-6"
+                        className="relative overflow-hidden rounded-3xl bg-background border border-border p-6"
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
@@ -211,45 +212,52 @@ const BentoGridSection = () => {
 
                     {/* Bottom Card - Integrations with Orbiting Circles */}
                     <motion.div
-                        className="lg:col-span-2 relative overflow-hidden rounded-3xl bg-card border border-border p-6 md:p-8"
+                        className="relative overflow-hidden rounded-3xl bg-background border border-border p-6 min-h-[400px] flex flex-col justify-between"
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.4 }}
                         viewport={{ once: false }}
                     >
-                        <div className="flex flex-col lg:flex-row lg:items-center gap-8">
-                            {/* Orbiting Circles */}
-                            <div className="relative h-[200px] w-[200px] mx-auto lg:mx-0 flex-shrink-0 flex items-center justify-center">
-                                <OrbitingCircles iconSize={40} radius={70}>
-                                    <Chrome className="w-8 h-8 text-blue-500" />
-                                    <Globe2 className="w-8 h-8 text-orange-500" />
-                                    <Calendar className="w-8 h-8 text-green-500" />
-                                    <Search className="w-8 h-8 text-purple-500" />
-                                </OrbitingCircles>
-                                <img src="/assets/logo.svg" alt="Markify" className="w-12 h-12 [filter:brightness(0)_saturate(100%)_invert(42%)_sepia(93%)_saturate(1352%)_hue-rotate(360deg)_brightness(98%)_contrast(100%)]" />
-                            </div>
-                            {/* Text Content */}
-                            <div className="flex-1 text-center lg:text-left">
-                                <h3 className="text-lg md:text-xl font-bold text-foreground mb-2">
-                                    Seamless Integrations with Your Favorite Tools
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Connect Markify with your favorite browsers and tools to streamline
-                                    workflows and boost productivity. Works with Chrome, Firefox, Edge, and more.
-                                </p>
-                            </div>
+                        <h3 className="text-lg md:text-xl font-bold text-foreground">
+                            Seamless Integrations
+                        </h3>
+                        <div className="relative h-[200px] w-[200px] mx-auto flex-shrink-0 flex items-center justify-center">
+                            <OrbitingCircles iconSize={40} radius={70}>
+                                <Chrome className="w-8 h-8 text-blue-500" />
+                                <Globe2 className="w-8 h-8 text-orange-500" />
+                                <Calendar className="w-8 h-8 text-green-500" />
+                                <Search className="w-8 h-8 text-purple-500" />
+                            </OrbitingCircles>
+                            <img src="/assets/logo.svg" alt="Markify" className="w-12 h-12 [filter:brightness(0)_saturate(100%)_invert(42%)_sepia(93%)_saturate(1352%)_hue-rotate(360deg)_brightness(98%)_contrast(100%)]" />
                         </div>
+                        <p className="text-sm text-muted-foreground">
+                            Works with Chrome, Firefox, Edge, and more.
+                        </p>
+                    </motion.div>
+
+                    {/* Bot Detection Card */}
+                    <motion.div
+                        className="relative overflow-hidden rounded-3xl min-h-[400px]"
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.45 }}
+                        viewport={{ once: false }}
+                    >
+                        <BotDetection
+                            cardTitle="Smart Security"
+                            cardDescription="Your bookmarks are protected with AI-driven bot detection that keeps your data safe from unauthorized access and spam."
+                        />
                     </motion.div>
 
                     {/* New Card - Collections with ImagesBadge */}
                     <motion.div
-                        className="relative overflow-hidden rounded-3xl bg-card border border-border p-6 flex flex-col items-center justify-center"
+                        className="relative overflow-hidden rounded-3xl bg-background border border-border p-6 min-h-[400px] flex flex-col justify-between"
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.35 }}
                         viewport={{ once: false }}
                     >
-                        <h3 className="text-lg md:text-xl font-bold text-foreground mb-6">
+                        <h3 className="text-lg md:text-xl font-bold text-foreground">
                             Your Collections
                         </h3>
                         <div className="flex items-center justify-center min-h-[120px]">
@@ -260,9 +268,9 @@ const BentoGridSection = () => {
                                     "/images/dashboard-preview-light-1160.webp",
                                     "/images/dashboard-preview-dark-1160.webp"
                                 ]}
-                                folderSize={{ width: 80, height: 60 }}
-                                teaserImageSize={{ width: 50, height: 35 }}
-                                hoverImageSize={{ width: 120, height: 80 }}
+                                folderSize={{ width: 140, height: 105 }}
+                                teaserImageSize={{ width: 80, height: 55 }}
+                                hoverImageSize={{ width: 160, height: 110 }}
                                 hoverTranslateY={-80}
                                 hoverSpread={50}
                                 hoverRotation={15}
@@ -270,10 +278,11 @@ const BentoGridSection = () => {
                                 className="flex-col gap-3"
                             />
                         </div>
-                        <p className="text-sm text-muted-foreground text-center mt-4">
+                        <p className="text-sm text-muted-foreground">
                             Organize your bookmarks into visual collections.
                         </p>
                     </motion.div>
+
 
                 </div>
             </div>
