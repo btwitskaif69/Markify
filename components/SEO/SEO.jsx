@@ -93,16 +93,19 @@ const SEO = ({
       <meta property="og:description" content={metaDescription} />
       <meta property="og:image" content={resolvedImage} />
       <meta property="og:image:alt" content={resolvedImageAlt} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:type" content="image/jpeg" />
       <meta property="og:site_name" content={SITE_CONFIG.name} />
       <meta property="og:locale" content={SITE_CONFIG.locale} />
 
       {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={canonicalUrl} />
-      <meta property="twitter:title" content={fullTitle} />
-      <meta property="twitter:description" content={metaDescription} />
-      <meta property="twitter:image" content={resolvedImage} />
-      <meta property="twitter:image:alt" content={resolvedImageAlt} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={canonicalUrl} />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={metaDescription} />
+      <meta name="twitter:image" content={resolvedImage} />
+      <meta name="twitter:image:alt" content={resolvedImageAlt} />
       {twitterHandle ? <meta name="twitter:site" content={twitterHandle} /> : null}
       {twitterHandle ? <meta name="twitter:creator" content={twitterHandle} /> : null}
 

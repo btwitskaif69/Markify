@@ -50,15 +50,13 @@ const FeatureHighlight = () => {
                         transition={{ duration: 0.6 }}
                         viewport={{ once: true }}
                     >
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-6">
-                            <span className="italic">Faster,</span> smarter Bookmark
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-foreground leading-tight mb-6">
+                            <span className="italic">Your All-in-One</span> Bookmark Manager for a Clutter-Free
                             <br />
-                            Management
+                            Browsing Experience
                         </h2>
                         <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                            Our intuitive platform provides everything you need to efficiently
-                            manage your bookmarks, from real-time sync to detailed organization
-                            and powerful search.
+                            Save websites instantly, organize them into custom collections, and find what you need in seconds. Markify transforms the way you manage bookmarks across all your devices.
                         </p>
                     </motion.div>
 
