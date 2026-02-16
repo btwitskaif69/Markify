@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     saveToken(null);
     saveUser(null);
     toast.success("You have been logged out.");
-    router.push("/login");
+    router.replace("/login");
   }, [router]);
 
   // Helper for fetch with encryption support and timeout

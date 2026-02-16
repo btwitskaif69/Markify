@@ -37,6 +37,12 @@ export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const isSharedView = pathname?.endsWith("/shared");
 
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      router.replace("/login");
+    }
+  }, [isAuthLoading, user, router]);
+
   // Check for welcome param (new user onboarding)
   useEffect(() => {
     if (searchParams.get("welcome") === "true") {
@@ -159,8 +165,12 @@ export default function Dashboard() {
     setShareItem(updatedItem);
   };
 
-  if (isAuthLoading) {
-    return <div className="flex justify-center items-center h-screen">Authenticating...</div>;
+  if (isAuthLoading || !user) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        {isAuthLoading ? "Authenticating..." : "Redirecting to login..."}
+      </div>
+    );
   }
 
   return (

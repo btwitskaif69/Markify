@@ -6,12 +6,19 @@ const API_URL = API_BASE_URL;
 
 export function useBookmarkActions(authFetch, user, setAllBookmarks, collections) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const userId = user?.id;
+
   const handleSubmit = useCallback(async (bookmarkData, editingBookmark, previewData, closeDialog) => {
+    if (!editingBookmark && !userId) {
+      toast.error("Please log in again.");
+      return;
+    }
+
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null;
     const url = isEditing
       ? `${API_URL}/bookmarks/${bookmarkId}`
-      : `${API_URL}/users/${user.id}/bookmarks`;
+      : `${API_URL}/users/${userId}/bookmarks`;
     const method = isEditing ? "PATCH" : "POST";
     const dataToSubmit = { ...bookmarkData, previewImage: previewData?.image || null };
 
@@ -41,7 +48,7 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     } finally {
       setIsSubmitting(false);
     }
-  }, [authFetch, user.id, setAllBookmarks]);
+  }, [authFetch, userId, setAllBookmarks]);
 
   const handleDelete = useCallback(async (id) => {
     let originalBookmarks;
@@ -227,10 +234,12 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
           }
 
           // Reload bookmarks to show the newly imported ones
-          const reloadResponse = await authFetch(`${API_URL}/users/${user.id}/bookmarks`);
-          if (reloadResponse.ok) {
-            const updatedBookmarks = await reloadResponse.json();
-            setAllBookmarks(updatedBookmarks);
+          if (userId) {
+            const reloadResponse = await authFetch(`${API_URL}/users/${userId}/bookmarks`);
+            if (reloadResponse.ok) {
+              const updatedBookmarks = await reloadResponse.json();
+              setAllBookmarks(updatedBookmarks);
+            }
           }
 
           resolve(true);
@@ -247,7 +256,7 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
 
       fileInput.click();
     });
-  }, [authFetch, user.id, setAllBookmarks]);
+  }, [authFetch, userId, setAllBookmarks]);
 
   /**
    * Deletes multiple bookmarks at once using the bulk delete endpoint

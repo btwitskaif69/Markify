@@ -86,7 +86,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     if (isAuthLoading) return;
 
     if (!user) {
-      router.push("/login");
+      router.replace("/login");
       return;
     }
     if (user.id !== userId) {

@@ -25,7 +25,7 @@ import PasswordInput from "@/components/password-input-2";
 const API_URL = `${API_BASE_URL}/users/initiate-signup`;
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
 
-import { signInWithGoogle, initializationError } from "@/client/lib/firebase";
+import { signInWithGoogle } from "@/client/lib/firebase";
 
 export function SignupForm({ className, ...props }) {
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
@@ -145,13 +145,6 @@ export function SignupForm({ className, ...props }) {
       />
       <Card className={cn("w-full max-w-md", className)} {...props}>
         <CardHeader>
-          {initializationError && (
-            <div className="mb-4 p-3 rounded-md bg-red-950/50 border border-red-900 text-red-200 text-sm">
-              <p className="font-semibold mb-1">Configuration Error</p>
-              <p>{initializationError}</p>
-              <p className="mt-1 text-xs text-red-300">Check your environment variables.</p>
-            </div>
-          )}
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>
             Enter your details below to create your new account.
