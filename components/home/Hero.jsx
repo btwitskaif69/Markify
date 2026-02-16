@@ -53,9 +53,9 @@ const Hero = () => {
             </div>
 
             {/* Heading */}
-            <h1 className="mt-6 flex w-full flex-col items-center text-center text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl md:text-7xl lg:text-8xl">
-              <span className="inline-block text-center md:whitespace-nowrap">The Only Bookmark Manager</span>
-              <span className="inline-block text-center md:whitespace-nowrap">You'll Ever Need</span>
+            <h1 className="mt-6 flex w-full flex-col items-center text-center text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl md:text-7xl lg:text-8xl ">
+              <span className="inline-block text-center md:whitespace-nowrap ">The <span className="bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent">Only</span> Bookmark Manager</span>
+              <span className="inline-block text-center md:whitespace-nowrap ">You'll Ever <span className="bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent">Need</span></span>
             </h1>
 
             {/* Subheading */}

@@ -24,7 +24,7 @@ const StressFreeCTA = () => {
                             containerClassName="inline"
                             textClassName="!text-[inherit] !font-medium !leading-[inherit]"
                         >
-                            Take the first step towards a
+                            Start saving and organizing
                         </ScrollReveal>
                         <motion.span
                             initial={{ opacity: 0, scale: 0.9 }}
@@ -33,8 +33,8 @@ const StressFreeCTA = () => {
                             transition={{ duration: 0.5, delay: 0.2 }}
                             className="inline-flex items-center gap-2 bg-background px-5 py-2 rounded-full text-2xl md:text-4xl lg:text-5xl border border-white/10 shadow-lg transform hover:scale-105 transition-transform duration-300"
                         >
-                            <span className="text-3xl md:text-5xl">😇</span>
-                            <span className="text-primary">stress-free</span>
+                            <span className="text-3xl md:text-5xl">🔖</span>
+                            <span className="text-primary">Bookmarks</span>
                         </motion.span>
                         <ScrollReveal
                             enableBlur={false}
@@ -45,7 +45,7 @@ const StressFreeCTA = () => {
                             containerClassName="inline"
                             textClassName="!text-[inherit] !font-medium !leading-[inherit]"
                         >
-                            bookmark experience
+                            the smart way across devices
                         </ScrollReveal>
                     </h2>
 
@@ -59,7 +59,7 @@ const StressFreeCTA = () => {
                             containerClassName="inline"
                             textClassName="!text-[inherit] !font-medium !leading-[inherit]"
                         >
-                            Organize, sync, and manage everything with
+                            Sync, search, and manage everything with complete
                         </ScrollReveal>
                         <motion.span
                             initial={{ opacity: 0, scale: 0.9 }}
@@ -68,8 +68,8 @@ const StressFreeCTA = () => {
                             transition={{ duration: 0.5, delay: 0.3 }}
                             className="inline-flex items-center gap-2 bg-background px-5 py-2 rounded-full text-2xl md:text-4xl lg:text-5xl border border-white/10 shadow-lg transform hover:scale-105 transition-transform duration-300"
                         >
-                            <span className="text-primary">Markify</span>
-                            <span className="text-3xl md:text-5xl">👋</span>
+                            <span className="text-primary">Ease</span>
+                            <span className="text-3xl md:text-5xl">🚀</span>
                         </motion.span>
                     </h2>
 
@@ -83,7 +83,7 @@ const StressFreeCTA = () => {
                             containerClassName="inline"
                             textClassName="!text-[inherit] !font-medium !leading-[inherit]"
                         >
-                            Simplify your workflow and boost productivity
+                            Trusted by thousands worldwide
                         </ScrollReveal>
                     </h2>
                 </div>

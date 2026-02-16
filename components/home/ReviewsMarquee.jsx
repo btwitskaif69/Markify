@@ -10,29 +10,37 @@ function ReviewCard({ name, avatar, rating, content }) {
     return (
         <figure
             className={cn(
-                "relative w-full cursor-pointer overflow-hidden rounded-xl border p-4",
-                "border-gray-950/[.1] bg-background hover:bg-gray-950/[.05]",
-                "dark:border-gray-50/[.1] dark:bg-background dark:hover:bg-gray-50/[.15]",
-                "shadow-[inset_25px_25px_40px_-20px_rgba(234,137,58,0.25),inset_-25px_-25px_40px_-20px_rgba(234,137,58,0.25)]",
-                "dark:shadow-[inset_25px_25px_40px_-20px_rgba(234,137,58,0.35),inset_-25px_-25px_40px_-20px_rgba(234,137,58,0.35)]",
+                "relative w-full cursor-pointer overflow-hidden rounded-xl border border-border p-4",
                 "transition-all duration-200"
             )}
         >
-            <div className="flex flex-row items-center gap-3">
+            {/* Copper Forge Background with Top Left & Bottom Right Glows */}
+            <div
+                className="absolute inset-0 z-0"
+                style={{
+                    backgroundImage: `
+                        radial-gradient(circle at top left, color-mix(in srgb, var(--primary), transparent 75%), transparent 40%),
+                        radial-gradient(circle at bottom right, color-mix(in srgb, var(--primary), transparent 75%), transparent 40%)
+                    `,
+                    backgroundColor: "var(--background)",
+                }}
+            />
+
+            <div className="relative z-10 flex flex-row items-center gap-3">
                 <img
                     className="rounded-full h-10 w-10 object-cover"
-                    alt={name}
                     src={
                         avatar ||
                         `https://avatar.vercel.sh/${encodeURIComponent(name)}`
                     }
+                    alt={name}
                     width={40}
                     height={40}
                     loading="lazy"
                     decoding="async"
                 />
                 <div className="flex flex-col">
-                    <figcaption className="text-sm font-medium dark:text-white">
+                    <figcaption className="text-sm font-medium text-foreground">
                         {name}
                     </figcaption>
                     <div className="flex gap-0.5">
@@ -42,15 +50,15 @@ function ReviewCard({ name, avatar, rating, content }) {
                                 className={cn(
                                     "h-3 w-3",
                                     star <= rating
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-gray-300"
+                                        ? "fill-primary text-primary"
+                                        : "text-muted/20"
                                 )}
                             />
                         ))}
                     </div>
                 </div>
             </div>
-            <blockquote className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+            <blockquote className="relative z-10 mt-3 text-sm text-muted-foreground">
                 &ldquo;{content}&rdquo;
             </blockquote>
         </figure>
@@ -90,7 +98,7 @@ export default function ReviewsMarquee() {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
                         What Our <span className="italic">Users</span> Say
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">

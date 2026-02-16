@@ -22,22 +22,34 @@ const otherToolsFlaws = [
 
 const helpCards = [
     {
-        title: "Effortless",
+        title: "Smart",
         highlight: "Organization",
         description:
-            "Keep all your bookmarks organized and visible in one place. Markify helps you save, tag, and prioritize links easily, ensuring nothing falls through the cracks.",
+            "Tag, categorize, and search your bookmarks effortlessly. Markify helps you save, tag, and prioritize links easily.",
     },
     {
-        title: "Seamless",
-        highlight: "Cross-Browser Sync",
+        title: "Sync",
+        highlight: "Everywhere",
         description:
-            "Access your bookmarks from any browser, anytime. Markify's collaborative tools make it easy to share collections and keep everyone in sync.",
+            "Access your saved links on desktop, mobile, and tablet. Your bookmarks follow you wherever you go.",
     },
     {
-        title: "Comprehensive",
-        highlight: "Search & Discovery",
+        title: "Lightning-Fast",
+        highlight: "Search",
         description:
-            "Stay on top of your saved content with powerful search and AI-powered discovery. Markify gives you the insights you need to find the right link in seconds.",
+            "Find any bookmark in milliseconds with intelligent search. Never lose track of important content again.",
+    },
+    {
+        title: "Visual",
+        highlight: "Previews",
+        description:
+            "See thumbnail previews of every saved page. Identify content at a glance without opening tabs.",
+    },
+    {
+        title: "Secure &",
+        highlight: "Private",
+        description:
+            "Your bookmarks are encrypted and always under your control. Privacy is built into Markify's core.",
     },
 ];
 
@@ -56,12 +68,11 @@ const WhyChooseMarkify = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
                         Why Choose <span className="italic">Markify</span>?
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                        An immediate contrast of Markify's functionalities against other
-                        bookmark management utilities. Discover why we excel.
+                        More Than Just a Bookmark Manager – It's Your Personal Web Library
                     </p>
                 </motion.div>
 
@@ -69,25 +80,34 @@ const WhyChooseMarkify = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-20 md:mb-28">
                     {/* Markify Card */}
                     <motion.div
-                        className="relative overflow-hidden rounded-3xl bg-card border border-border p-6 md:p-8"
+                        className="relative overflow-hidden rounded-3xl border border-border p-6 md:p-8"
                         initial={{ opacity: 0, x: -40 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
                         viewport={{ once: false }}
                     >
-                        {/* Subtle glow effect */}
-                        <div className="absolute -top-20 -left-20 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl" />
+                        {/* Copper Forge Background with Top Left & Bottom Right Glows */}
+                        <div
+                            className="absolute inset-0 z-0"
+                            style={{
+                                backgroundImage: `
+                                    radial-gradient(circle at top left, color-mix(in srgb, var(--primary), transparent 75%), transparent 40%),
+                                    radial-gradient(circle at bottom right, color-mix(in srgb, var(--primary), transparent 75%), transparent 40%)
+                                `,
+                                backgroundColor: "var(--background)",
+                            }}
+                        />
 
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                <Bookmark className="w-5 h-5 text-amber-500" />
+                        <div className="relative z-10 flex items-center gap-3 mb-6">
+                            <div className="p-2 rounded-lg bg-transparent border border-primary/20">
+                                <Bookmark className="w-5 h-5 text-primary" />
                             </div>
                             <h3 className="text-xl md:text-2xl font-bold text-foreground">
                                 Markify
                             </h3>
                         </div>
 
-                        <ul className="space-y-4">
+                        <ul className="relative z-10 space-y-4">
                             {markifyFeatures.map((feature, index) => (
                                 <motion.li
                                     key={index}
@@ -110,19 +130,31 @@ const WhyChooseMarkify = () => {
 
                     {/* Other Tools Card */}
                     <motion.div
-                        className="relative overflow-hidden rounded-3xl bg-card border border-border p-6 md:p-8"
+                        className="relative overflow-hidden rounded-3xl border border-border p-6 md:p-8"
                         initial={{ opacity: 0, x: 40 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
                         viewport={{ once: false }}
                     >
-                        <div className="flex items-center gap-3 mb-6">
+                        {/* Copper Forge Background with Top Left & Bottom Right Glows (Red Variant) */}
+                        <div
+                            className="absolute inset-0 z-0"
+                            style={{
+                                backgroundImage: `
+                                    radial-gradient(circle at top left, color-mix(in srgb, var(--destructive), transparent 75%), transparent 40%),
+                                    radial-gradient(circle at bottom right, color-mix(in srgb, var(--destructive), transparent 75%), transparent 40%)
+                                `,
+                                backgroundColor: "var(--background)",
+                            }}
+                        />
+
+                        <div className="relative z-10 flex items-center gap-3 mb-6">
                             <h3 className="text-xl md:text-2xl font-bold text-muted-foreground">
                                 Other tools
                             </h3>
                         </div>
 
-                        <ul className="space-y-4">
+                        <ul className="relative z-10 space-y-4">
                             {otherToolsFlaws.map((flaw, index) => (
                                 <motion.li
                                     key={index}
@@ -152,7 +184,7 @@ const WhyChooseMarkify = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
                         How <span className="italic">Markify</span> helps you
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -163,54 +195,49 @@ const WhyChooseMarkify = () => {
 
                 {/* Help Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* First row - 2 cards */}
-                    {helpCards.slice(0, 2).map((card, index) => (
+                    {helpCards.map((card, index) => (
                         <motion.div
                             key={index}
-                            className="relative overflow-hidden rounded-3xl bg-card border border-border p-6 md:p-8 group"
+                            className={`relative overflow-hidden rounded-3xl border border-border p-6 md:p-8 group ${index === 4 ? "md:col-span-2" : ""
+                                }`}
                             initial={{ opacity: 0, y: 40 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
+                            transition={{
+                                duration: 0.6,
+                                delay: 0.1 + index * 0.1,
+                            }}
                             viewport={{ once: false }}
                         >
-                            {/* Hover glow effect */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            {/* Copper Forge Background with Top Left & Bottom Right Glows */}
+                            <div
+                                className="absolute inset-0 z-0"
+                                style={{
+                                    backgroundImage: `
+                                    radial-gradient(circle at top left, color-mix(in srgb, var(--primary), transparent 75%), transparent 40%),
+                                    radial-gradient(circle at bottom right, color-mix(in srgb, var(--primary), transparent 75%), transparent 40%)
+                                `,
+                                    backgroundColor: "var(--background)",
+                                }}
+                            />
 
-                            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 relative z-10">
-                                <span className="italic font-normal text-muted-foreground">
-                                    {card.title}
-                                </span>{" "}
-                                {card.highlight}
-                            </h3>
-                            <p className="text-sm md:text-base text-muted-foreground leading-relaxed relative z-10">
-                                {card.description}
-                            </p>
+                            <div
+                                className={`relative z-10 ${index === 4
+                                    ? "max-w-2xl mx-auto text-center"
+                                    : ""
+                                    }`}
+                            >
+                                <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
+                                    <span className="italic font-normal text-muted-foreground mr-1">
+                                        {card.title}
+                                    </span>
+                                    {card.highlight}
+                                </h3>
+                                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                                    {card.description}
+                                </p>
+                            </div>
                         </motion.div>
                     ))}
-
-                    {/* Second row - 1 full-width card */}
-                    <motion.div
-                        className="md:col-span-2 relative overflow-hidden rounded-3xl bg-card border border-border p-6 md:p-8 group"
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        viewport={{ once: false }}
-                    >
-                        {/* Hover glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                        <div className="max-w-2xl mx-auto text-center">
-                            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3 relative z-10">
-                                <span className="italic font-normal text-muted-foreground">
-                                    {helpCards[2].title}
-                                </span>{" "}
-                                {helpCards[2].highlight}
-                            </h3>
-                            <p className="text-sm md:text-base text-muted-foreground leading-relaxed relative z-10">
-                                {helpCards[2].description}
-                            </p>
-                        </div>
-                    </motion.div>
                 </div>
             </div>
         </section>
