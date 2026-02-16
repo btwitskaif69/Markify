@@ -153,7 +153,7 @@ const BlogEditor = () => {
         const res = await fetch(`${API_URL}/blog/${slug}`);
         if (!res.ok) throw new Error("Failed to load post.");
         const data = await res.json();
-        if (data.authorId && user && data.authorId !== user.id) {
+        if (data.authorId && user && data.authorId !== user.id && !isAdmin) {
           toast.error("You are not allowed to edit this post.");
           router.push("/admin?view=blog");
           return;

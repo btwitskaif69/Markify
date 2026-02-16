@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import redis from "../db/redis";
 import prisma from "../db/prismaClient";
 import { deleteImage } from "../services/r2.service.js";
@@ -111,6 +112,8 @@ export const createPost = async (req, res) => {
 
     // Invalidate cache
     await clearBlogCache();
+    // Revalidate Next.js cache
+    revalidatePath("/blog");
 
     res.status(201).json(post);
   } catch (error) {
@@ -175,6 +178,13 @@ export const updatePost = async (req, res) => {
       }
     }
 
+    // Revalidate Next.js cache
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${existing.slug}`);
+    if (slug !== existing.slug) {
+      revalidatePath(`/blog/${slug}`);
+    }
+
     res.status(200).json(updated);
   } catch (error) {
     console.error(error);
@@ -210,6 +220,10 @@ export const deletePost = async (req, res) => {
     if (process.env.UPSTASH_REDIS_REST_URL) {
       await redis.del(`cache:/api/blog/${existing.slug}`);
     }
+
+    // Revalidate Next.js cache
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${existing.slug}`);
 
     res.status(204).send();
   } catch (error) {
@@ -254,6 +268,8 @@ export const bulkUpdatePosts = async (req, res) => {
     });
 
     await clearBlogCache();
+    // Revalidate Next.js cache
+    revalidatePath("/blog");
 
     res.status(200).json({ message: "Posts updated successfully." });
   } catch (error) {
