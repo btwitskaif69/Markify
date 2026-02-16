@@ -48,7 +48,7 @@ const PricingPlans = () => {
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-500/[0.02] to-transparent pointer-events-none" />
 
-            <div className="max-w-5xl mx-auto px-4 md:px-6 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
                 {/* Header */}
                 <motion.div
                     className="text-center mb-12 md:mb-16"
@@ -57,9 +57,8 @@ const PricingPlans = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                        Choose the <span className="italic">Right Plan</span> for
-                        <br className="hidden md:block" /> Your Team
+                    <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal whitespace-nowrap">
+                        Choose the <span className="italic">Right Plan</span> for Your Team
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         Expand your workflow as per your requirements
