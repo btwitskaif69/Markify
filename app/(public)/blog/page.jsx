@@ -11,7 +11,7 @@ export const generateMetadata = () =>
   buildMetadata({
     title: "Bookmarking Tips & Updates",
     description:
-      "Read the latest bookmark management tips, product updates, and workflow ideas from the Markify team.",
+      "Read Markify blog posts on bookmark organization, workflow automation, productivity systems, and product updates for faster link management.",
     path: "/blog",
   });
 
@@ -47,7 +47,7 @@ export default async function Page() {
   const webPageSchema = buildWebPageSchema({
     title: "Markify Blog",
     description:
-      "Updates, tips, and workflow insights from the Markify team.",
+      "Read Markify blog posts on bookmark organization, workflow automation, productivity systems, and product updates.",
     path: "/blog",
     type: "CollectionPage",
   });

@@ -12,7 +12,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 export const metadata = buildMetadata({
   title: "Bookmark Manager Pricing & Plans",
   description:
-    "Compare Free, Pro, and Team plans for Markify's bookmark manager with transparent pricing and no hidden fees.",
+    "Compare Markify Free, Pro, and Team plans with transparent pricing, feature limits, and collaboration options for individuals and teams.",
   path: "/pricing",
 });
 
@@ -25,7 +25,7 @@ export default function Page() {
   const webPageSchema = buildWebPageSchema({
     title: "Markify pricing",
     description:
-      "Compare Free, Pro, and Team plans for Markify's bookmark manager.",
+      "Compare Markify Free, Pro, and Team plans with transparent pricing and feature limits.",
     path: "/pricing",
     type: "WebPage",
   });
