@@ -25,7 +25,7 @@ import SEO from "@/components/SEO/SEO";
 const API_URL = `${API_BASE_URL}/users/login`;
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/users/google-auth`;
 
-import { signInWithGoogle, initializationError } from "@/client/lib/firebase";
+import { signInWithGoogle } from "@/client/lib/firebase";
 
 export function LoginForm({ className, ...props }) {
   const { login, isAuthenticated, user, isLoading: authLoading } = useAuth();
@@ -145,13 +145,6 @@ export function LoginForm({ className, ...props }) {
       />
       <Card className={cn("w-full max-w-md bg-black border-zinc-800 text-white", className)} {...props}>
         <CardHeader>
-          {initializationError && (
-            <div className="mb-4 p-3 rounded-md bg-red-950/50 border border-red-900 text-red-200 text-sm">
-              <p className="font-semibold mb-1">Configuration Error</p>
-              <p>{initializationError}</p>
-              <p className="mt-1 text-xs text-red-300">Check your environment variables.</p>
-            </div>
-          )}
           <CardTitle className="text-2xl text-white">Login to your account</CardTitle>
           <CardDescription className="text-zinc-400">
             Enter your email and password below to login.
