@@ -51,7 +51,7 @@ const FeatureHighlight = () => {
                         viewport={{ once: true }}
                     >
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium text-foreground leading-tight mb-6">
-                            <span className="italic">Your All-in-One</span> Bookmark Manager for a Clutter-Free
+                            <span className="instrument-serif-regular-italic">Your All-in-One</span> Bookmark Manager for a Clutter-Free
                             <br />
                             Browsing Experience
                         </h2>

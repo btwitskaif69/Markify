@@ -37,7 +37,7 @@ const FinalCTA = () => {
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 relative z-10">
                         Ready to manage your
                         <br />
-                        bookmarks like a <span className="italic">pro</span>?
+                        bookmarks like a <span className="instrument-serif-regular-italic">pro</span>?
                     </h2>
 
                     <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-8 relative z-10">

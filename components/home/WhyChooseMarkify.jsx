@@ -68,8 +68,8 @@ const WhyChooseMarkify = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
-                        Why Choose <span className="italic">Markify</span>?
+                    <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
+                        Why Choose <span className="instrument-serif-regular-italic">Markify</span>?
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         More Than Just a Bookmark Manager – It's Your Personal Web Library
@@ -184,8 +184,8 @@ const WhyChooseMarkify = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
-                        How <span className="italic">Markify</span> helps you
+                    <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
+                        How <span className="instrument-serif-regular-italic">Markify</span> helps you
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         Markify offers ready-made solutions to get you going fast. Easily

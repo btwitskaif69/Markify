@@ -146,8 +146,8 @@ const BentoGridSection = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
-                        <span className="italic">Save time</span> and get more done
+                    <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
+                        <span className="instrument-serif-regular-italic">Save time</span> and get more done
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         Elevate your productivity. Manage bookmarks effortlessly by organizing

@@ -57,8 +57,8 @@ const PricingPlans = () => {
                     transition={{ duration: 0.6 }}
                     viewport={{ once: false }}
                 >
-                    <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal whitespace-nowrap">
-                        Choose the <span className="italic">Right Plan</span> for Your Team
+                    <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium bg-clip-text text-transparent leading-normal whitespace-nowrap" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
+                        Choose the <span className="instrument-serif-regular-italic">Right Plan</span> for Your Team
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         Expand your workflow as per your requirements

@@ -44,7 +44,7 @@ const Marquee = () => {
             <div className="max-w-7xl mx-auto px-4 md:px-6">
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center mb-8 md:mb-10">
-                    <h2 className="text-2xl md:text-6xl font-medium bg-gradient-to-b from-foreground to-primary/90 bg-clip-text text-transparent leading-normal">
+                    <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
                         Powered by the Best Technology
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl">
