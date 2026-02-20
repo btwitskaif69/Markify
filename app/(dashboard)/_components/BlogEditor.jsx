@@ -155,7 +155,7 @@ const BlogEditor = () => {
         const data = await res.json();
         if (data.authorId && user && data.authorId !== user.id && !isAdmin) {
           toast.error("You are not allowed to edit this post.");
-          router.push("/admin?view=blog");
+          router.push("/admin/manage-blogs");
           return;
         }
         setPostId(data.id);
@@ -165,7 +165,7 @@ const BlogEditor = () => {
         setCoverImage(data.coverImage || "");
       } catch (err) {
         toast.error(err.message || "Failed to load post.");
-        router.push("/admin?view=blog");
+        router.push("/admin/manage-blogs");
       } finally {
         setIsInitialLoading(false);
       }
@@ -194,7 +194,7 @@ const BlogEditor = () => {
       if (!res.ok) throw new Error("Failed to save post.");
 
       toast.success(isDraft ? "Draft saved successfully." : (isEditMode ? "Post updated." : "Post published!"));
-      router.push("/admin?view=blog");
+      router.push("/admin/manage-blogs");
     } catch (err) {
       toast.error(err.message || "Failed to save post.");
     } finally {
