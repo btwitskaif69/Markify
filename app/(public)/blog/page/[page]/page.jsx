@@ -24,9 +24,6 @@ const getPageData = async (pageNumber) => {
           excerpt: true,
           coverImage: true,
           createdAt: true,
-          author: {
-            select: { name: true, avatar: true },
-          },
         },
         orderBy: { createdAt: "desc" },
         skip: (pageNumber - 1) * PAGE_SIZE,

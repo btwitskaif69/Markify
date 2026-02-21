@@ -1,4 +1,3 @@
-import { getPseoRouteCount, getPseoRoutes } from "@/lib/pseo";
 import { getCanonicalUrl } from "@/lib/seo";
 import {
   buildSitemapXml,
@@ -51,51 +50,6 @@ const getBlogEntries = async () => {
   }
 };
 
-const slugify = (value = "") =>
-  String(value)
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
-const getAuthorEntries = async () => {
-  try {
-    const authorGroups = await prisma.blogPost.groupBy({
-      by: ["authorId"],
-      where: { published: true },
-      _max: {
-        updatedAt: true,
-      },
-    });
-    if (!authorGroups.length) return [];
-    const users = await prisma.user.findMany({
-      where: {
-        id: { in: authorGroups.map((group) => group.authorId) },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-    const userNameById = new Map(users.map((user) => [user.id, user.name]));
-
-    return authorGroups
-      .map((entry) => {
-        const slug = slugify(userNameById.get(entry.authorId) || "");
-        if (!slug) return null;
-        return toEntry(`/authors/${slug}`, {
-          lastModified: entry._max?.updatedAt?.toISOString?.() || undefined,
-          changefreq: "weekly",
-          priority: 0.5,
-        });
-      })
-      .filter(Boolean);
-  } catch (error) {
-    console.warn("Sitemap author fetch failed:", error?.message || error);
-    return [];
-  }
-};
-
 export async function GET(request, { params }) {
   const resolvedParams = await params;
   const pageIndex = Number(resolvedParams?.page);
@@ -105,35 +59,17 @@ export async function GET(request, { params }) {
 
   const staticEntries = getStaticSitemapEntries();
   const blogEntries = await getBlogEntries();
-  const authorEntries = await getAuthorEntries();
-  const staticList = [...staticEntries, ...blogEntries, ...authorEntries];
+  const staticList = [...staticEntries, ...blogEntries];
   const staticCount = staticList.length;
 
   const start = pageIndex * SITEMAP_CHUNK_SIZE;
   const end = start + SITEMAP_CHUNK_SIZE;
 
-  const pseoCount = getPseoRouteCount();
-  if (start >= staticCount + pseoCount) {
+  if (start >= staticCount) {
     return new Response("Not found", { status: 404 });
   }
 
-  let entries = [];
-  if (start < staticCount) {
-    entries = staticList.slice(start, Math.min(end, staticCount));
-  }
-
-  if (end > staticCount) {
-    const offset = Math.max(0, start - staticCount);
-    const limit = end - Math.max(start, staticCount);
-    const pseoRoutes = getPseoRoutes({ offset, limit });
-    const pseoEntries = pseoRoutes.map((route) =>
-      toEntry(route.path, {
-        changefreq: "weekly",
-        priority: 0.6,
-      })
-    );
-    entries = entries.concat(pseoEntries);
-  }
+  const entries = staticList.slice(start, Math.min(end, staticCount));
 
   return new Response(buildSitemapXml(entries), {
     headers: {

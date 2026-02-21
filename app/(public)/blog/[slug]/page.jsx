@@ -5,23 +5,16 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import {
   buildArticleSchema,
   buildBreadcrumbSchema,
-  buildFaqSchema,
-  buildHowToSchema,
   getCanonicalUrl,
 } from "@/lib/seo";
-import { getBlogContentModel, getBlogFaqs, getBlogHowToSteps } from "@/lib/content/blog-meta";
-import {
-  buildKeywordContext,
-  getRelatedFeatureLinks,
-  getRelatedIntentLinks,
-  getRelatedSolutionLinks,
-} from "@/lib/seo/internal-links";
+import { getBlogContentModel } from "@/lib/content/blog-meta";
 import prisma from "@/server/db/prismaClient";
 import { permanentRedirect } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
 export const runtime = "nodejs";
+const BLOG_AUTHOR_NAME = "Mohd Kaif";
 
 const LEGACY_SLUG_REDIRECTS = {
   "bookmark-manager-search-tagging": "bookmark-manager-search-and-tagging",
@@ -32,11 +25,6 @@ const getPostBySlug = async (slug) => {
   try {
     const post = await prisma.blogPost.findUnique({
       where: { slug },
-      include: {
-        author: {
-          select: { name: true, avatar: true },
-        },
-      },
     });
     return { post, error: null };
   } catch (error) {
@@ -56,9 +44,6 @@ const getLatestPosts = async (slug) => {
         excerpt: true,
         coverImage: true,
         createdAt: true,
-        author: {
-          select: { name: true, avatar: true },
-        },
       },
       orderBy: { createdAt: "desc" },
       take: 3,
@@ -122,7 +107,7 @@ export const generateMetadata = async ({ params }) => {
     image: post.coverImage,
     publishedTime: post.createdAt?.toISOString?.() || post.createdAt,
     modifiedTime: post.updatedAt?.toISOString?.() || post.updatedAt,
-    author: post.author?.name || "Markify Team",
+    author: BLOG_AUTHOR_NAME,
     keywords: [
       contentModel?.primaryKeyword,
       ...(contentModel?.secondaryKeywords || []),
@@ -143,34 +128,7 @@ export default async function Page({ params }) {
   }
 
   const latestPosts = await getLatestPosts(post.slug);
-  const contentModel = getBlogContentModel(post);
   const canonicalUrl = getCanonicalUrl(`/blog/${post.slug}`);
-  const faqSchema = buildFaqSchema(getBlogFaqs(contentModel));
-  const howToSteps = getBlogHowToSteps(post, contentModel);
-  const howToSchema = buildHowToSchema({
-    name: contentModel?.question || post.title,
-    description: contentModel?.description || post.excerpt,
-    steps: howToSteps,
-  });
-
-  const keywordContext = buildKeywordContext(
-    contentModel?.primaryKeyword,
-    contentModel?.secondaryKeywords,
-    post.title,
-    post.excerpt
-  );
-  const relatedLinks = {
-    features: getRelatedFeatureLinks(keywordContext, { limit: 3 }),
-    solutions: getRelatedSolutionLinks(keywordContext, { limit: 3 }),
-    intents: getRelatedIntentLinks(keywordContext, { limit: 3 }),
-  };
-
-  const enrichedPost = {
-    ...post,
-    canonicalUrl,
-    contentModel,
-    relatedLinks,
-  };
 
   const articleSchema = buildArticleSchema({
     title: post.title,
@@ -179,7 +137,7 @@ export default async function Page({ params }) {
     url: canonicalUrl,
     datePublished: post.createdAt,
     dateModified: post.updatedAt || post.createdAt,
-    authorName: post.author?.name || "Markify Team",
+    authorName: BLOG_AUTHOR_NAME,
   });
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
@@ -189,8 +147,8 @@ export default async function Page({ params }) {
 
   return (
     <>
-      <StructuredData data={[articleSchema, breadcrumbs, faqSchema, howToSchema].filter(Boolean)} />
-      <BlogPost initialPost={enrichedPost} initialLatestPosts={latestPosts} />
+      <StructuredData data={[articleSchema, breadcrumbs].filter(Boolean)} />
+      <BlogPost initialPost={post} initialLatestPosts={latestPosts} />
     </>
   );
 }

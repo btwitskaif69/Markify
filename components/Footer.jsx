@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
-import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
 import {
   GET_STARTED_LINKS,
   PRODUCT_LINKS,
@@ -12,18 +11,10 @@ import {
 const logo = "/assets/logo.svg";
 
 function Footer() {
-  const solutionLinks = SOLUTIONS.slice(0, 4).map((solution) => ({
-    label: solution.title,
-    href: getSolutionPath(solution.slug),
-  }));
-
   return (
     <footer className="relative bg-background text-foreground overflow-hidden pb-8 pt-24 border-t border-border/40">
-      {/* Content Container */}
       <div className="container relative z-10 mx-auto px-4 md:px-6 lg:px-8">
-        {/* Top Section: Logo & Links */}
         <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8 mb-32">
-          {/* Brand / Logo Section */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center gap-3 mb-6 group w-fit">
               <div className="bg-primary p-2 rounded-xl">
@@ -43,9 +34,7 @@ function Footer() {
             </Link>
           </div>
 
-          {/* Navigation Columns */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-16 w-full lg:w-auto">
-            {/* Column 1: Product */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 lg:gap-16 w-full lg:w-auto">
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
                 Product
@@ -64,26 +53,6 @@ function Footer() {
               </ul>
             </div>
 
-            {/* Column 2: Solutions */}
-            <div className="space-y-6">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
-                Solutions
-              </h3>
-              <ul className="space-y-4 text-sm text-muted-foreground">
-                {solutionLinks.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="hover:text-primary transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Column 3: Resources */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
                 Resources
@@ -102,7 +71,6 @@ function Footer() {
               </ul>
             </div>
 
-            {/* Column 4: Get Started */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
                 Get Started
@@ -132,7 +100,6 @@ function Footer() {
               </ul>
             </div>
 
-            {/* Column 5: Social */}
             <div className="space-y-6">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
                 Social
@@ -183,27 +150,28 @@ function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Legal */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-muted-foreground font-medium pt-8 border-t border-border/40">
-          <p>© 2026 Markify Inc. All rights reserved.</p>
+          <p>(c) 2026 Markify Inc. All rights reserved.</p>
           <div className="flex gap-8">
-            <Link href="/privacy" className="hover:text-primary transition-colors duration-200">
-              Privacy policy
+            <Link href="/" className="hover:text-primary transition-colors duration-200">
+              Home
             </Link>
-            <Link href="/terms" className="hover:text-primary transition-colors duration-200">
-              Terms of service
+            <Link href="/about" className="hover:text-primary transition-colors duration-200">
+              About
             </Link>
-            <Link href="/refund-policy" className="hover:text-primary transition-colors duration-200">
-              Refund policy
+            <Link href="/pricing" className="hover:text-primary transition-colors duration-200">
+              Pricing
             </Link>
-            <Link href="/cookies" className="hover:text-primary transition-colors duration-200">
-              Cookie settings
+            <Link href="/blog" className="hover:text-primary transition-colors duration-200">
+              Blog
+            </Link>
+            <Link href="/contact" className="hover:text-primary transition-colors duration-200">
+              Contact
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Massive Background Watermark */}
       <div
         className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none flex justify-center items-end"
         aria-hidden="true"
@@ -212,8 +180,6 @@ function Footer() {
           Markify
         </h1>
       </div>
-
-      {/* Overlay Gradient for Fade effect */}
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none"></div>
     </footer>
   );

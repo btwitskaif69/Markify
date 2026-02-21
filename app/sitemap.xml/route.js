@@ -1,4 +1,3 @@
-import { getPseoRouteCount } from "@/lib/pseo";
 import {
   buildSitemapIndexXml,
   buildSitemapPageUrl,
@@ -22,26 +21,10 @@ const getBlogCount = async () => {
   }
 };
 
-const getAuthorCount = async () => {
-  try {
-    const authors = await prisma.blogPost.findMany({
-      where: { published: true },
-      select: { authorId: true },
-      distinct: ["authorId"],
-    });
-    return authors.length;
-  } catch (error) {
-    console.warn("Sitemap author count failed:", error?.message || error);
-    return 0;
-  }
-};
-
 export async function GET() {
   const staticCount = getStaticSitemapEntries().length;
   const blogCount = await getBlogCount();
-  const authorCount = await getAuthorCount();
-  const pseoCount = getPseoRouteCount();
-  const totalUrls = staticCount + blogCount + authorCount + pseoCount;
+  const totalUrls = staticCount + blogCount;
   const totalPages = Math.max(1, Math.ceil(totalUrls / SITEMAP_CHUNK_SIZE));
 
   const sitemapUrls = Array.from({ length: totalPages }, (_, index) =>

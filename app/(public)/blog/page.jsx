@@ -41,9 +41,6 @@ const getBlogPosts = async ({ page = 1, pageSize = PAGE_SIZE } = {}) => {
         excerpt: true,
         coverImage: true,
         createdAt: true,
-        author: {
-          select: { name: true, avatar: true },
-        },
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,

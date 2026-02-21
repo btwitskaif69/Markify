@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -214,7 +214,7 @@ const Contact = () => {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6"
             >
               <MessageSquare className="h-4 w-4" />
-              We'd love to hear from you
+              We&apos;d love to hear from you
             </motion.div>
 
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
@@ -237,7 +237,7 @@ const Contact = () => {
             animate="visible"
             className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto mb-16"
           >
-            {stats.map((stat, index) => (
+            {stats.map((stat) => (
               <motion.div
                 key={stat.label}
                 variants={itemVariants}
@@ -260,7 +260,7 @@ const Contact = () => {
             className="lg:col-span-2 space-y-6"
           >
             {/* Contact Method Cards */}
-            {contactMethods.map((method, index) => (
+            {contactMethods.map((method) => (
               <motion.div
                 key={method.title}
                 variants={cardVariants}
@@ -356,9 +356,9 @@ const Contact = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Learn more about what Markify can do for you.
               </p>
-              <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
                   {[
-                  { label: "Features", href: "/features" },
+                  { label: "Home", href: "/" },
                   { label: "Pricing", href: "/pricing" },
                   { label: "Blog", href: "/blog" },
                   { label: "About", href: "/about" }
@@ -414,7 +414,7 @@ const Contact = () => {
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Send us a message</h2>
                     <p className="text-muted-foreground">
-                      Fill out the form below and we'll get back to you as soon as possible.
+                      Fill out the form below and we&apos;ll get back to you as soon as possible.
                     </p>
                   </div>
 
@@ -545,11 +545,8 @@ const Contact = () => {
                     </motion.div>
 
                     <p className="text-xs text-muted-foreground text-center pt-2">
-                      By submitting this form, you agree to our{" "}
-                      <Link href="/privacy" className="text-primary hover:underline">
-                        Privacy Policy
-                      </Link>
-                      .
+                      By submitting this form, you agree that we may use your
+                      details to respond to your message.
                     </p>
                   </form>
                 </>
@@ -580,17 +577,17 @@ const Contact = () => {
                 Ready to organize your bookmarks?
               </h2>
               <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
-                Join thousands of users who've transformed their digital workspace with Markify.
+                Join thousands of users who&apos;ve transformed their digital workspace with Markify.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/signup">
+                <Link href="/pricing">
                   <Button size="lg" variant="secondary" className="rounded-full px-8 font-medium">
-                    Get Started Free
+                    View Pricing
                   </Button>
                 </Link>
-                <Link href="/features">
+                <Link href="/about">
                   <Button size="lg" variant="ghost" className="rounded-full px-8 font-medium text-white border-white/30 hover:bg-white/10">
-                    Explore Features
+                    Learn About Markify
                   </Button>
                 </Link>
               </div>

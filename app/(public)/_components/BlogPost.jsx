@@ -14,20 +14,9 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
 import { formatDateUTC } from "@/lib/date";
-import TrustSignals from "@/components/content/TrustSignals";
-import {
-  AlternativesSection,
-  KeyStatsWithSources,
-  QuestionFirstAnswer,
-  TldrSummary,
-} from "@/components/content/AiAnswerBlocks";
-import {
-  CiteThisPage,
-  CopyAnswerButton,
-  ShareSnippetButtons,
-} from "@/components/content/ContentActions";
 
 const API_URL = API_BASE_URL;
+const BLOG_AUTHOR_NAME = "Mohd Kaif";
 
 const getPrerenderedPost = (slug) => {
   if (typeof window === "undefined") return null;
@@ -190,33 +179,7 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
     () => renderContent(post?.content),
     [post?.content]
   );
-  const contentModel = post?.contentModel || null;
-  const pagePath = post?.slug ? `/blog/${post.slug}` : "/blog";
-  const canonicalUrl = useMemo(() => {
-    if (post?.canonicalUrl) return post.canonicalUrl;
-    if (!post?.slug || typeof window === "undefined") return "";
-    return `${window.location.origin}/blog/${post.slug}`;
-  }, [post?.canonicalUrl, post?.slug]);
-  const quickQuestion =
-    contentModel?.question ||
-    (post?.title ? `What should you know about ${post.title}?` : "");
-  const quickAnswer =
-    contentModel?.shortAnswer ||
-    (post?.excerpt
-      ? `${post.excerpt} This page also includes implementation details, related alternatives, and internal links for deeper context.`
-      : "");
-  const tldrPoints = contentModel?.tldr || [];
-  const keyStats = contentModel?.keyStats || [];
-  const alternativeItems = contentModel?.alternatives || [];
-  const relatedFeatureLinks = post?.relatedLinks?.features || [];
-  const relatedSolutionLinks = post?.relatedLinks?.solutions || [];
-  const relatedIntentLinks = post?.relatedLinks?.intents || [];
-  const evergreenLinks = [
-    { href: "/about", label: "About Markify" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/authors", label: "Authors" },
-    { href: "/editorial-policy", label: "Editorial policy" },
-  ];
+  const authorName = BLOG_AUTHOR_NAME;
 
   return (
     <>
@@ -282,7 +245,7 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
                   <div className="flex items-center gap-6 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
-                      <span>{post.author?.name || "Markify Team"}</span>
+                      <span>{authorName}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
@@ -306,25 +269,6 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
               <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
                 {/* Main Content */}
                 <div className="min-w-0">
-                  <div className="mb-8 space-y-4">
-                    <TrustSignals
-                      lastUpdated={contentModel?.lastUpdated || post.updatedAt || post.createdAt}
-                      reviewedBy={contentModel?.reviewedBy}
-                      citations={contentModel?.citations || []}
-                    />
-                    <div className="flex flex-wrap gap-2">
-                      <CopyAnswerButton answer={quickAnswer} pagePath={pagePath} />
-                      <ShareSnippetButtons
-                        title={post.title}
-                        url={canonicalUrl}
-                        answer={quickAnswer}
-                        pagePath={pagePath}
-                      />
-                    </div>
-                    <QuestionFirstAnswer question={quickQuestion} answer={quickAnswer} />
-                    <TldrSummary points={tldrPoints} />
-                    <KeyStatsWithSources stats={keyStats} />
-                  </div>
                   <div
                     className="prose prose-lg dark:prose-invert max-w-none"
                     dangerouslySetInnerHTML={renderedContent}
@@ -332,76 +276,13 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
 
                   <hr className="my-12 border-border" />
 
-                  <div className="flex flex-col gap-6">
-                    <AlternativesSection items={alternativeItems} />
-                    <CiteThisPage
-                      title={post.title}
-                      url={canonicalUrl}
-                      lastUpdated={contentModel?.lastUpdated || post.updatedAt || post.createdAt}
-                      author={contentModel?.reviewedBy || post.author?.name}
-                      pagePath={pagePath}
-                    />
-                    <div className="flex justify-between items-center">
-                      <p className="text-muted-foreground italic">
-                        Thanks for reading!
-                      </p>
-                      <Button asChild variant="outline">
-                        <Link href="/blog">Read more articles</Link>
-                      </Button>
-                    </div>
-
-                    <div className="p-6 rounded-xl border border-border bg-card/50">
-                      <h3 className="text-lg font-semibold mb-3">Explore More</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Continue with related pages in this topic cluster:
-                      </p>
-                      <div className="grid gap-3 text-sm">
-                        <div className="flex flex-wrap gap-3">
-                          <span className="font-medium text-foreground">Hub:</span>
-                          <Link href="/blog" className="text-primary hover:underline">
-                            Blog home
-                          </Link>
-                        </div>
-                        {relatedFeatureLinks.length ? (
-                          <div className="flex flex-wrap gap-3">
-                            <span className="font-medium text-foreground">Related features:</span>
-                            {relatedFeatureLinks.map((item) => (
-                              <Link key={item.href} href={item.href} className="text-primary hover:underline">
-                                {item.label}
-                              </Link>
-                            ))}
-                          </div>
-                        ) : null}
-                        {relatedSolutionLinks.length ? (
-                          <div className="flex flex-wrap gap-3">
-                            <span className="font-medium text-foreground">Related solutions:</span>
-                            {relatedSolutionLinks.map((item) => (
-                              <Link key={item.href} href={item.href} className="text-primary hover:underline">
-                                {item.label}
-                              </Link>
-                            ))}
-                          </div>
-                        ) : null}
-                        {relatedIntentLinks.length ? (
-                          <div className="flex flex-wrap gap-3">
-                            <span className="font-medium text-foreground">Related workflows:</span>
-                            {relatedIntentLinks.map((item) => (
-                              <Link key={item.href} href={item.href} className="text-primary hover:underline">
-                                {item.label}
-                              </Link>
-                            ))}
-                          </div>
-                        ) : null}
-                        <div className="flex flex-wrap gap-3">
-                          <span className="font-medium text-foreground">Trust pages:</span>
-                          {evergreenLinks.map((item) => (
-                            <Link key={item.href} href={item.href} className="text-primary hover:underline">
-                              {item.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-muted-foreground italic">
+                      Thanks for reading!
+                    </p>
+                    <Button asChild variant="outline">
+                      <Link href="/blog">Read more articles</Link>
+                    </Button>
                   </div>
                 </div>
 

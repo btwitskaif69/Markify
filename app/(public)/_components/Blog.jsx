@@ -21,6 +21,7 @@ import { secureFetch } from "@/client/lib/secureApi";
 import { formatDateUTC } from "@/lib/date";
 
 const API_URL = API_BASE_URL;
+const BLOG_AUTHOR_NAME = "Mohd Kaif";
 
 const getPrerenderedPosts = () => {
   if (typeof window === "undefined") return [];
@@ -55,7 +56,7 @@ const BlogCard = memo(({ post }) => (
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
             <span>
-              {post.author?.name ? post.author.name : "Markify"}
+              {BLOG_AUTHOR_NAME}
             </span>
             <span>
               {post.createdAt
@@ -152,20 +153,8 @@ const Blog = ({ initialPosts = [], pagination = null }) => {
                 Learn More About Markify
               </Link>
               <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link href="/features" className="text-primary hover:underline">
-                Explore Features
-              </Link>
-              <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link href="/solutions" className="text-primary hover:underline">
-                Browse Solutions
-              </Link>
-              <span className="text-muted-foreground" aria-hidden="true">|</span>
               <Link href="/pricing" className="text-primary hover:underline">
                 Pricing Plans
-              </Link>
-              <span className="text-muted-foreground" aria-hidden="true">|</span>
-              <Link href="/contact" className="text-primary hover:underline">
-                Contact Us
               </Link>
             </div>
           </div>
