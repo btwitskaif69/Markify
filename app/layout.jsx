@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import { Suspense } from "react";
 import "./globals.css";
 import "@/font.css";
 import Providers from "./providers";
@@ -33,8 +33,8 @@ export const metadata = {
   },
   verification: gscVerificationToken
     ? {
-        google: gscVerificationToken,
-      }
+      google: gscVerificationToken,
+    }
     : undefined,
 };
 
@@ -44,7 +44,9 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
         <GoogleAnalytics />
-        <TrackingProvider />
+        <Suspense fallback={null}>
+          <TrackingProvider />
+        </Suspense>
       </body>
     </html>
   );

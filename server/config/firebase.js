@@ -11,6 +11,11 @@ if (!admin.apps.length) {
                 cleanKey = cleanKey.slice(1, -1);
             }
 
+            // Fix unescaped literal newlines in the private_key string (common when pasting into Vercel)
+            cleanKey = cleanKey.replace(/("private_key"\s*:\s*")([^"]*)(")/g, (match, prefix, content, suffix) => {
+                return prefix + content.replace(/\r?\n/g, '\\n') + suffix;
+            });
+
             const serviceAccount = JSON.parse(cleanKey);
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount),
