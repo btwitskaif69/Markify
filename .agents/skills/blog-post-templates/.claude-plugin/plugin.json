@@ -1,0 +1,19 @@
+{
+  "name": "blog-post-templates",
+  "version": "1.0.0",
+  "description": "Create compelling blog content using five time-tested templates: Beginner's Guide, Pillar, Definition, How-To, and Numbered Listicle.",
+  "author": {
+    "name": "Markify"
+  },
+  "license": "MIT",
+  "keywords": [
+    "blog writing",
+    "content marketing",
+    "blog templates",
+    "copywriting",
+    "seo content"
+  ],
+  "skills": [
+    "./SKILL.md"
+  ]
+}
