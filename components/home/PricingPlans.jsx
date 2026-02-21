@@ -1,10 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+    Card,
+    Header,
+    Plan,
+    PlanName,
+    Badge,
+    Price,
+    MainPrice,
+    Period,
+    OriginalPrice,
+    Description,
+    Body,
+    List,
+    ListItem,
+} from "@/components/ui/pricing-card";
 
 const plans = [
     {
@@ -49,122 +63,120 @@ const PricingPlans = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-500/[0.02] to-transparent pointer-events-none" />
 
             <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-                {/* Header */}
-                <motion.div
-                    className="text-center mb-12 md:mb-16"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    viewport={{ once: false }}
-                >
+                {/* Section Header */}
+                <div className="text-center mb-12 md:mb-16">
                     <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium bg-clip-text text-transparent leading-normal whitespace-nowrap" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
                         Choose the <span className="instrument-serif-regular-italic">Right Plan</span> for Your Team
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         Expand your workflow as per your requirements
                     </p>
-                </motion.div>
+                </div>
 
                 {/* Pricing Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     {plans.map((plan, index) => (
-                        <motion.div
+                        <Card
                             key={plan.name}
-                            className={cn(
-                                "relative overflow-hidden rounded-3xl border p-6 md:p-8 flex flex-col",
-                                plan.popular
-                                    ? "bg-gradient-to-b from-amber-500/10 to-card border-amber-500/30"
-                                    : "bg-card border-border"
-                            )}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
-                            viewport={{ once: false }}
+                            className="max-w-none"
                         >
-                            {/* Header */}
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium text-foreground">
-                                    {plan.name}
-                                </h3>
-                                {plan.popular && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">
-                                            Bill yearly
-                                        </span>
-                                        <button
-                                            onClick={() => setIsYearly(!isYearly)}
-                                            className={cn(
-                                                "relative w-10 h-5 rounded-full transition-colors duration-200",
-                                                isYearly ? "bg-amber-500" : "bg-muted"
-                                            )}
-                                        >
-                                            <span
-                                                className={cn(
-                                                    "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200",
-                                                    isYearly && "translate-x-5"
-                                                )}
-                                            />
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Price */}
-                            <div className="mb-2">
-                                <span
-                                    className={cn(
-                                        "text-4xl md:text-5xl font-bold",
-                                        plan.popular ? "text-amber-500" : "text-foreground"
-                                    )}
-                                >
-                                    {plan.popular && isYearly ? plan.yearlyPrice : plan.price}
-                                </span>
-                                <span className="text-muted-foreground">/month</span>
-                            </div>
-
-                            <p className="text-sm text-muted-foreground mb-6">
-                                {plan.description}
-                            </p>
-
-                            {/* Button */}
-                            <Link
-                                href="/pricing"
+                            <Header
+                                glassEffect={plan.popular}
                                 className={cn(
-                                    "w-full py-3 px-4 rounded-full text-center font-medium transition-all duration-200 mb-2",
+                                    "rounded-2xl",
                                     plan.popular
-                                        ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
-                                        : "bg-muted hover:bg-muted/80 text-foreground"
+                                        ? "bg-amber-500/5 border-amber-500/20"
+                                        : ""
                                 )}
                             >
-                                {plan.buttonText}
-                            </Link>
+                                <Plan>
+                                    <PlanName className="text-foreground text-lg font-medium">
+                                        {plan.name}
+                                    </PlanName>
+                                    {plan.popular && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-muted-foreground">
+                                                Bill yearly
+                                            </span>
+                                            <button
+                                                onClick={() => setIsYearly(!isYearly)}
+                                                className={cn(
+                                                    "relative w-10 h-5 rounded-full transition-colors duration-200",
+                                                    isYearly ? "bg-amber-500" : "bg-muted"
+                                                )}
+                                            >
+                                                <span
+                                                    className={cn(
+                                                        "absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200",
+                                                        isYearly && "translate-x-5"
+                                                    )}
+                                                />
+                                            </button>
+                                        </div>
+                                    )}
+                                    {plan.popular && <Badge>Popular</Badge>}
+                                </Plan>
 
-                            <p className="text-xs text-center text-muted-foreground mb-6">
-                                Free forever
-                            </p>
+                                <Price>
+                                    <MainPrice
+                                        className={cn(
+                                            "text-4xl md:text-5xl",
+                                            plan.popular ? "text-amber-500" : "text-foreground"
+                                        )}
+                                    >
+                                        {plan.popular && isYearly ? plan.yearlyPrice : plan.price}
+                                    </MainPrice>
+                                    <Period>/month</Period>
+                                    {plan.popular && isYearly && (
+                                        <OriginalPrice>{plan.price}</OriginalPrice>
+                                    )}
+                                </Price>
 
-                            {/* Features */}
-                            <ul className="space-y-3 mt-auto">
-                                {plan.features.map((feature, idx) => (
-                                    <li key={idx} className="flex items-start gap-2">
-                                        <Check
-                                            className={cn(
-                                                "w-4 h-4 mt-0.5 flex-shrink-0",
-                                                plan.popular ? "text-amber-500" : "text-muted-foreground"
-                                            )}
-                                        />
-                                        <span className="text-sm text-muted-foreground">
-                                            {feature}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </motion.div>
+                                <Description className="text-sm">
+                                    {plan.description}
+                                </Description>
+                            </Header>
+
+                            <Body>
+                                {/* Button */}
+                                <Link
+                                    href="/pricing"
+                                    className={cn(
+                                        "block w-full py-3 px-4 rounded-full text-center font-medium transition-all duration-200",
+                                        plan.popular
+                                            ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
+                                            : "bg-muted hover:bg-muted/80 text-foreground"
+                                    )}
+                                >
+                                    {plan.buttonText}
+                                </Link>
+
+                                <p className="text-xs text-center text-muted-foreground">
+                                    Free forever
+                                </p>
+
+                                {/* Features */}
+                                <List>
+                                    {plan.features.map((feature, idx) => (
+                                        <ListItem key={idx}>
+                                            <Check
+                                                className={cn(
+                                                    "w-4 h-4 mt-0.5 flex-shrink-0",
+                                                    plan.popular ? "text-amber-500" : "text-muted-foreground"
+                                                )}
+                                            />
+                                            <span>{feature}</span>
+                                        </ListItem>
+                                    ))}
+                                </List>
+                            </Body>
+                        </Card>
                     ))}
                 </div>
             </div>
-        </section>
+        </section >
     );
 };
 
 export default PricingPlans;
+
