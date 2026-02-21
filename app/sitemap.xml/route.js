@@ -11,9 +11,27 @@ export const runtime = "nodejs";
 
 const getBlogCount = async () => {
   try {
-    return await prisma.blogPost.count({ where: { published: true } });
+    const totalPosts = await prisma.blogPost.count({ where: { published: true } });
+    const pageSize = 12;
+    const totalPages = Math.max(1, Math.ceil(totalPosts / pageSize));
+    const archivePages = Math.max(0, totalPages - 1);
+    return totalPosts + archivePages;
   } catch (error) {
     console.warn("Sitemap blog count failed:", error?.message || error);
+    return 0;
+  }
+};
+
+const getAuthorCount = async () => {
+  try {
+    const authors = await prisma.blogPost.findMany({
+      where: { published: true },
+      select: { authorId: true },
+      distinct: ["authorId"],
+    });
+    return authors.length;
+  } catch (error) {
+    console.warn("Sitemap author count failed:", error?.message || error);
     return 0;
   }
 };
@@ -21,8 +39,9 @@ const getBlogCount = async () => {
 export async function GET() {
   const staticCount = getStaticSitemapEntries().length;
   const blogCount = await getBlogCount();
+  const authorCount = await getAuthorCount();
   const pseoCount = getPseoRouteCount();
-  const totalUrls = staticCount + blogCount + pseoCount;
+  const totalUrls = staticCount + blogCount + authorCount + pseoCount;
   const totalPages = Math.max(1, Math.ceil(totalUrls / SITEMAP_CHUNK_SIZE));
 
   const sitemapUrls = Array.from({ length: totalPages }, (_, index) =>

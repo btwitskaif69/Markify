@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
 const publicDir = path.join(rootDir, "public");
-const sitemapDir = path.join(publicDir, "sitemap");
+const sitemapDir = path.join(publicDir, "generated-sitemaps");
 
 const toEntry = (pathValue, { lastModified, changefreq, priority } = {}) => ({
   url: getCanonicalUrl(pathValue),
@@ -27,20 +27,76 @@ const toEntry = (pathValue, { lastModified, changefreq, priority } = {}) => ({
 
 const getBlogEntries = async () => {
   try {
-    const posts = await prisma.blogPost.findMany({
-      where: { published: true },
-      select: { slug: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-    });
-    return posts.map((post) =>
+    const pageSize = 12;
+    const [posts, totalPosts] = await Promise.all([
+      prisma.blogPost.findMany({
+        where: { published: true },
+        select: { slug: true, updatedAt: true },
+        orderBy: { updatedAt: "desc" },
+      }),
+      prisma.blogPost.count({ where: { published: true } }),
+    ]);
+    const totalPages = Math.max(1, Math.ceil(totalPosts / pageSize));
+    const postEntries = posts.map((post) =>
       toEntry(`/blog/${post.slug}`, {
         lastModified: post.updatedAt?.toISOString?.() || undefined,
         changefreq: "monthly",
         priority: 0.6,
       })
     );
+    const archiveEntries = Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) =>
+      toEntry(`/blog/page/${index + 2}`, {
+        changefreq: "weekly",
+        priority: 0.4,
+      })
+    );
+    return postEntries.concat(archiveEntries);
   } catch (error) {
     console.warn("Sitemap blog fetch failed:", error?.message || error);
+    return [];
+  }
+};
+
+const slugify = (value = "") =>
+  String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const getAuthorEntries = async () => {
+  try {
+    const authorGroups = await prisma.blogPost.groupBy({
+      by: ["authorId"],
+      where: { published: true },
+      _max: { updatedAt: true },
+    });
+    if (!authorGroups.length) return [];
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: authorGroups.map((group) => group.authorId) },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    const userNameById = new Map(users.map((user) => [user.id, user.name]));
+
+    return authorGroups
+      .map((group) => {
+        const slug = slugify(userNameById.get(group.authorId) || "");
+        if (!slug) return null;
+        return toEntry(`/authors/${slug}`, {
+          lastModified: group._max?.updatedAt?.toISOString?.() || undefined,
+          changefreq: "weekly",
+          priority: 0.5,
+        });
+      })
+      .filter(Boolean);
+  } catch (error) {
+    console.warn("Sitemap author fetch failed:", error?.message || error);
     return [];
   }
 };
@@ -84,8 +140,10 @@ const buildPageEntries = ({ staticEntries, blogEntries, pageIndex }) => {
 const main = async () => {
   const staticEntries = getStaticSitemapEntries();
   const blogEntries = await getBlogEntries();
+  const authorEntries = await getAuthorEntries();
   const pseoCount = getPseoRouteCount();
-  const totalUrls = staticEntries.length + blogEntries.length + pseoCount;
+  const totalUrls =
+    staticEntries.length + blogEntries.length + authorEntries.length + pseoCount;
   const totalPages = Math.max(1, Math.ceil(totalUrls / SITEMAP_CHUNK_SIZE));
 
   await ensureDir(sitemapDir);
@@ -93,7 +151,7 @@ const main = async () => {
   for (let pageIndex = 0; pageIndex < totalPages; pageIndex += 1) {
     const entries = buildPageEntries({
       staticEntries,
-      blogEntries,
+      blogEntries: blogEntries.concat(authorEntries),
       pageIndex,
     });
     const xml = buildSitemapXml(entries);
@@ -104,11 +162,11 @@ const main = async () => {
     buildSitemapPageUrl(index)
   );
   const indexXml = buildSitemapIndexXml(sitemapUrls);
-  await writeFile(path.join(publicDir, "sitemap.xml"), indexXml);
+  await writeFile(path.join(publicDir, "generated-sitemap.xml"), indexXml);
 
   console.log("Sitemap generated:");
-  console.log(`- ${path.join("public", "sitemap.xml")}`);
-  console.log(`- ${path.join("public", "sitemap", "0")}..${totalPages - 1}`);
+  console.log(`- ${path.join("public", "generated-sitemap.xml")}`);
+  console.log(`- ${path.join("public", "generated-sitemaps", "0")}..${totalPages - 1}`);
   console.log(`Total URLs: ${totalUrls}`);
 };
 

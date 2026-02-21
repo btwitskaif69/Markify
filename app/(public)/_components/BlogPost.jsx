@@ -1,7 +1,9 @@
 "use client";
+/* eslint-disable react/prop-types */
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -12,6 +14,18 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
 import { formatDateUTC } from "@/lib/date";
+import TrustSignals from "@/components/content/TrustSignals";
+import {
+  AlternativesSection,
+  KeyStatsWithSources,
+  QuestionFirstAnswer,
+  TldrSummary,
+} from "@/components/content/AiAnswerBlocks";
+import {
+  CiteThisPage,
+  CopyAnswerButton,
+  ShareSnippetButtons,
+} from "@/components/content/ContentActions";
 
 const API_URL = API_BASE_URL;
 
@@ -176,6 +190,34 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
     () => renderContent(post?.content),
     [post?.content]
   );
+  const contentModel = post?.contentModel || null;
+  const pagePath = post?.slug ? `/blog/${post.slug}` : "/blog";
+  const canonicalUrl = useMemo(() => {
+    if (post?.canonicalUrl) return post.canonicalUrl;
+    if (!post?.slug || typeof window === "undefined") return "";
+    return `${window.location.origin}/blog/${post.slug}`;
+  }, [post?.canonicalUrl, post?.slug]);
+  const quickQuestion =
+    contentModel?.question ||
+    (post?.title ? `What should you know about ${post.title}?` : "");
+  const quickAnswer =
+    contentModel?.shortAnswer ||
+    (post?.excerpt
+      ? `${post.excerpt} This page also includes implementation details, related alternatives, and internal links for deeper context.`
+      : "");
+  const tldrPoints = contentModel?.tldr || [];
+  const keyStats = contentModel?.keyStats || [];
+  const alternativeItems = contentModel?.alternatives || [];
+  const relatedFeatureLinks = post?.relatedLinks?.features || [];
+  const relatedSolutionLinks = post?.relatedLinks?.solutions || [];
+  const relatedIntentLinks = post?.relatedLinks?.intents || [];
+  const evergreenLinks = [
+    { href: "/about", label: "About Markify" },
+    { href: "/pricing", label: "Pricing" },
+    { href: "/authors", label: "Authors" },
+    { href: "/editorial-policy", label: "Editorial policy" },
+  ];
+
   return (
     <>
       <Navbar />
@@ -208,14 +250,13 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
             {/* Hero Section */}
             <header className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] bg-muted overflow-hidden">
               {post.coverImage ? (
-                <img
+                <Image
                   src={post.coverImage}
                   alt={post.title}
-                  width={1600}
-                  height={900}
-                  fetchpriority="high"
-                  decoding="async"
-                  className="w-full h-full object-cover"
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-primary/10 to-background flex items-center justify-center">
@@ -265,6 +306,25 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
               <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
                 {/* Main Content */}
                 <div className="min-w-0">
+                  <div className="mb-8 space-y-4">
+                    <TrustSignals
+                      lastUpdated={contentModel?.lastUpdated || post.updatedAt || post.createdAt}
+                      reviewedBy={contentModel?.reviewedBy}
+                      citations={contentModel?.citations || []}
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      <CopyAnswerButton answer={quickAnswer} pagePath={pagePath} />
+                      <ShareSnippetButtons
+                        title={post.title}
+                        url={canonicalUrl}
+                        answer={quickAnswer}
+                        pagePath={pagePath}
+                      />
+                    </div>
+                    <QuestionFirstAnswer question={quickQuestion} answer={quickAnswer} />
+                    <TldrSummary points={tldrPoints} />
+                    <KeyStatsWithSources stats={keyStats} />
+                  </div>
                   <div
                     className="prose prose-lg dark:prose-invert max-w-none"
                     dangerouslySetInnerHTML={renderedContent}
@@ -273,6 +333,14 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
                   <hr className="my-12 border-border" />
 
                   <div className="flex flex-col gap-6">
+                    <AlternativesSection items={alternativeItems} />
+                    <CiteThisPage
+                      title={post.title}
+                      url={canonicalUrl}
+                      lastUpdated={contentModel?.lastUpdated || post.updatedAt || post.createdAt}
+                      author={contentModel?.reviewedBy || post.author?.name}
+                      pagePath={pagePath}
+                    />
                     <div className="flex justify-between items-center">
                       <p className="text-muted-foreground italic">
                         Thanks for reading!
@@ -285,36 +353,53 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
                     <div className="p-6 rounded-xl border border-border bg-card/50">
                       <h3 className="text-lg font-semibold mb-3">Explore More</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Discover how Markify can transform your workflow:
+                        Continue with related pages in this topic cluster:
                       </p>
-                      <div className="flex flex-wrap gap-4 text-sm">
-                        <Link href="/about" className="text-primary hover:underline">
-                          About Markify
-                        </Link>
-                        <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link href="/solutions" className="text-primary hover:underline">
-                          Browse Solutions
-                        </Link>
-                        <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link href="/features" className="text-primary hover:underline">
-                          Explore Features
-                        </Link>
-                        <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link href="/use-cases" className="text-primary hover:underline">
-                          Browse Use Cases
-                        </Link>
-                        <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link href="/pricing" className="text-primary hover:underline">
-                          View Pricing
-                        </Link>
-                        <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link href="/signup" className="text-primary hover:underline">
-                          Sign Up Free
-                        </Link>
-                        <span className="text-muted-foreground" aria-hidden="true">|</span>
-                        <Link href="/contact" className="text-primary hover:underline">
-                          Contact Us
-                        </Link>
+                      <div className="grid gap-3 text-sm">
+                        <div className="flex flex-wrap gap-3">
+                          <span className="font-medium text-foreground">Hub:</span>
+                          <Link href="/blog" className="text-primary hover:underline">
+                            Blog home
+                          </Link>
+                        </div>
+                        {relatedFeatureLinks.length ? (
+                          <div className="flex flex-wrap gap-3">
+                            <span className="font-medium text-foreground">Related features:</span>
+                            {relatedFeatureLinks.map((item) => (
+                              <Link key={item.href} href={item.href} className="text-primary hover:underline">
+                                {item.label}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                        {relatedSolutionLinks.length ? (
+                          <div className="flex flex-wrap gap-3">
+                            <span className="font-medium text-foreground">Related solutions:</span>
+                            {relatedSolutionLinks.map((item) => (
+                              <Link key={item.href} href={item.href} className="text-primary hover:underline">
+                                {item.label}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                        {relatedIntentLinks.length ? (
+                          <div className="flex flex-wrap gap-3">
+                            <span className="font-medium text-foreground">Related workflows:</span>
+                            {relatedIntentLinks.map((item) => (
+                              <Link key={item.href} href={item.href} className="text-primary hover:underline">
+                                {item.label}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                        <div className="flex flex-wrap gap-3">
+                          <span className="font-medium text-foreground">Trust pages:</span>
+                          {evergreenLinks.map((item) => (
+                            <Link key={item.href} href={item.href} className="text-primary hover:underline">
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -335,13 +420,12 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
                             <Card className="overflow-hidden border-border/50 hover:border-primary/30 transition-colors bg-card/50 backdrop-blur-sm !py-0">
                               <div className="aspect-video w-full bg-muted overflow-hidden">
                                 {latest.coverImage ? (
-                                  <img
+                                  <Image
                                     src={latest.coverImage}
                                     alt={latest.title}
                                     width={640}
                                     height={360}
-                                    loading="lazy"
-                                    decoding="async"
+                                    sizes="(max-width: 1024px) 100vw, 320px"
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                   />
                                 ) : (
@@ -381,13 +465,12 @@ const BlogPost = ({ initialPost, initialLatestPosts = [] }) => {
                         <Card className="overflow-hidden border-border/50 hover:border-primary/30 transition-colors !py-0">
                           <div className="aspect-video w-full bg-muted overflow-hidden">
                             {latest.coverImage ? (
-                              <img
+                              <Image
                                 src={latest.coverImage}
                                 alt={latest.title}
                                 width={640}
                                 height={360}
-                                loading="lazy"
-                                decoding="async"
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               />
                             ) : (

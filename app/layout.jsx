@@ -1,8 +1,18 @@
+/* eslint-disable react/prop-types */
 import "./globals.css";
 import "@/font.css";
 import Providers from "./providers";
 import { SITE_CONFIG } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import TrackingProvider from "@/components/analytics/TrackingProvider";
+
+const ENV = globalThis?.process?.env || {};
+const gscVerificationToken =
+  ENV.NEXT_PUBLIC_GSC_VERIFICATION ||
+  ENV.NEXT_PUBLIC_GSC_VERIFICATION_TOKEN ||
+  ENV.GSC_VERIFICATION_TOKEN ||
+  undefined;
 
 export const metadata = {
   ...buildMetadata({
@@ -21,6 +31,11 @@ export const metadata = {
     ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  verification: gscVerificationToken
+    ? {
+        google: gscVerificationToken,
+      }
+    : undefined,
 };
 
 export default function RootLayout({ children }) {
@@ -28,6 +43,8 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <Providers>{children}</Providers>
+        <GoogleAnalytics />
+        <TrackingProvider />
       </body>
     </html>
   );

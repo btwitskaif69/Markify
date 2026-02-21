@@ -36,6 +36,10 @@ const main = () => {
   const stats = {
     total: routes.length,
     thin: [],
+    lowFaq: [],
+    lowChecklist: [],
+    missingRelated: [],
+    weakUniqueValue: [],
     missing: [],
   };
   const titleMap = new Map();
@@ -52,6 +56,21 @@ const main = () => {
     const quality = getPseoQualitySignals(page);
     if (quality.wordCount < minWords) {
       stats.thin.push({ path: route.path, wordCount: quality.wordCount });
+    }
+    if ((quality.faqCount || 0) < 3) {
+      stats.lowFaq.push({ path: route.path, faqCount: quality.faqCount || 0 });
+    }
+    if ((quality.checklistCount || 0) < 3) {
+      stats.lowChecklist.push({
+        path: route.path,
+        checklistCount: quality.checklistCount || 0,
+      });
+    }
+    if (!quality.hasRelatedIntents || !quality.hasRelatedIndustries) {
+      stats.missingRelated.push({ path: route.path });
+    }
+    if (!quality.hasUniqueValue) {
+      stats.weakUniqueValue.push({ path: route.path });
     }
 
     const titleKey = toKey(page.seo?.title || page.title);
@@ -79,6 +98,10 @@ const main = () => {
   console.log("=================");
   console.log(`Total pages: ${stats.total}`);
   console.log(`Thin pages (<${minWords} words): ${stats.thin.length}`);
+  console.log(`Low FAQ depth (<3): ${stats.lowFaq.length}`);
+  console.log(`Low checklist depth (<3): ${stats.lowChecklist.length}`);
+  console.log(`Missing related-link coverage: ${stats.missingRelated.length}`);
+  console.log(`Weak unique-value structure: ${stats.weakUniqueValue.length}`);
   console.log(`Missing pages: ${stats.missing.length}`);
   console.log(`Duplicate titles: ${duplicateTitles.length}`);
   console.log(`Duplicate descriptions: ${duplicateDescriptions.length}`);
@@ -92,6 +115,34 @@ const main = () => {
     if (stats.thin.length > 20) {
       console.log(`...and ${stats.thin.length - 20} more`);
     }
+  }
+
+  if (stats.lowFaq.length) {
+    console.log("\nLow FAQ depth:");
+    stats.lowFaq.slice(0, 20).forEach((item) => {
+      console.log(`- ${item.path} (${item.faqCount} FAQs)`);
+    });
+  }
+
+  if (stats.lowChecklist.length) {
+    console.log("\nLow checklist depth:");
+    stats.lowChecklist.slice(0, 20).forEach((item) => {
+      console.log(`- ${item.path} (${item.checklistCount} checklist items)`);
+    });
+  }
+
+  if (stats.missingRelated.length) {
+    console.log("\nMissing related-link coverage:");
+    stats.missingRelated.slice(0, 20).forEach((item) => {
+      console.log(`- ${item.path}`);
+    });
+  }
+
+  if (stats.weakUniqueValue.length) {
+    console.log("\nWeak unique-value structure:");
+    stats.weakUniqueValue.slice(0, 20).forEach((item) => {
+      console.log(`- ${item.path}`);
+    });
   }
 
   if (duplicateTitles.length) {
@@ -121,6 +172,10 @@ const main = () => {
   if (
     strict &&
     (stats.thin.length ||
+      stats.lowFaq.length ||
+      stats.lowChecklist.length ||
+      stats.missingRelated.length ||
+      stats.weakUniqueValue.length ||
       duplicateTitles.length ||
       duplicateDescriptions.length ||
       duplicateH1s.length)

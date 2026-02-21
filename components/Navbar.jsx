@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Navbar as ResizableNavbar,
@@ -22,23 +22,29 @@ import { useAuth } from "@/client/context/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const navItems = NAV_LINKS.map((item) => ({
     ...item,
     href: item?.href || item?.link || item?.to || "",
   })).filter((item) => item.href);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const toggleMobileMenu = () => setMobileOpen((prev) => !prev);
   const closeMobileMenu = () => setMobileOpen(false);
 
-  // 1. Get theme and setTheme from the useTheme() hook
   const { theme, setTheme } = useTheme();
-
-  // 2. Pass theme and setTheme to useThemeToggle
   const { isDark, animationConfig, handleThemeToggle } = useThemeToggle(
     theme,
     setTheme
   );
+
+  const showDashboard = mounted && isAuthenticated && user;
+  const buttonHref = showDashboard ? `/dashboard/${user.id}` : "/signup";
+  const buttonLabel = showDashboard ? "Dashboard" : "Sign Up";
 
   return (
     <ResizableNavbar>
@@ -59,8 +65,8 @@ const Navbar = () => {
             <Moon className="h-6 w-6 text-gray-500" />
           )}
         </button>
-        <NavbarButton as={Link} href={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"}>
-          {isAuthenticated ? "Dashboard" : "Sign Up"}
+        <NavbarButton as={Link} href={buttonHref}>
+          {buttonLabel}
         </NavbarButton>
       </NavBody>
 
@@ -96,8 +102,8 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          <NavbarButton as={Link} href={isAuthenticated && user ? `/dashboard/${user.id}` : "/signup"} className="w-full mt-4">
-            {isAuthenticated ? "Dashboard" : "Sign Up"}
+          <NavbarButton as={Link} href={buttonHref} className="w-full mt-4">
+            {buttonLabel}
           </NavbarButton>
         </MobileNavMenu>
       </MobileNav>

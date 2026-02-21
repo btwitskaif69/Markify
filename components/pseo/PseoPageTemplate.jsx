@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +21,23 @@ import {
   getPseoIntentPath,
   getPseoDetailPath,
 } from "@/lib/pseo";
+import { getCanonicalUrl } from "@/lib/seo";
 import {
   buildKeywordContext,
   getRelatedFeatureLinks,
   getRelatedSolutionLinks,
 } from "@/lib/seo/internal-links";
+import {
+  AlternativesSection,
+  QuestionFirstAnswer,
+  TldrSummary,
+} from "@/components/content/AiAnswerBlocks";
+import {
+  CiteThisPage,
+  CopyAnswerButton,
+  ShareSnippetButtons,
+} from "@/components/content/ContentActions";
+import TrustSignals from "@/components/content/TrustSignals";
 
 const PseoPageTemplate = ({ page }) => {
   if (!page) return null;
@@ -55,6 +68,21 @@ const PseoPageTemplate = ({ page }) => {
   );
   const relatedFeatures = getRelatedFeatureLinks(keywordContext, { limit: 3 });
   const relatedSolutions = getRelatedSolutionLinks(keywordContext, { limit: 3 });
+  const canonicalUrl = getCanonicalUrl(page.path);
+  const quickQuestion = `How can ${industry.name} teams improve ${intent.title.toLowerCase()}?`;
+  const quickAnswer = summary.slice(0, 2).join(" ");
+  const alternatives = [
+    ...page.related.intents.map((relatedIntent) => ({
+      name: `${relatedIntent.title} for ${industry.name}`,
+      href: getPseoDetailPath(relatedIntent.slug, industry.slug),
+      summary: `Compare this workflow against ${relatedIntent.title.toLowerCase()} goals.`,
+    })),
+    ...page.related.industries.map((relatedIndustry) => ({
+      name: `${intent.title} for ${relatedIndustry.name}`,
+      href: getPseoDetailPath(intent.slug, relatedIndustry.slug),
+      summary: `See how ${relatedIndustry.name} teams apply the same intent.`,
+    })),
+  ].slice(0, 4);
 
   return (
     <main className="bg-background text-foreground min-h-screen">
@@ -101,6 +129,27 @@ const PseoPageTemplate = ({ page }) => {
               <Link href="/pricing">View pricing</Link>
             </Button>
           </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-8">
+        <div className="max-w-4xl mx-auto space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <CopyAnswerButton answer={quickAnswer} pagePath={page.path} />
+            <ShareSnippetButtons
+              title={page.title}
+              url={canonicalUrl}
+              answer={quickAnswer}
+              pagePath={page.path}
+            />
+          </div>
+          <TrustSignals
+            lastUpdated={page.lastUpdated}
+            reviewedBy="Markify Editorial Team"
+            citations={[]}
+          />
+          <QuestionFirstAnswer question={quickQuestion} answer={quickAnswer} />
+          <TldrSummary points={summary.slice(0, 3)} />
         </div>
       </section>
 
@@ -377,6 +426,19 @@ const PseoPageTemplate = ({ page }) => {
           </div>
         </section>
       ) : null}
+
+      <section className="container mx-auto px-4 pb-12">
+        <div className="max-w-4xl mx-auto space-y-4">
+          <AlternativesSection items={alternatives} />
+          <CiteThisPage
+            title={page.title}
+            url={canonicalUrl}
+            lastUpdated={page.lastUpdated}
+            author="Markify Editorial Team"
+            pagePath={page.path}
+          />
+        </div>
+      </section>
 
       <section className="container mx-auto px-4 pb-12">
         <div className="max-w-5xl mx-auto grid gap-8 md:grid-cols-2">

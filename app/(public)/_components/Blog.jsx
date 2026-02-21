@@ -1,7 +1,9 @@
 "use client";
+/* eslint-disable react/prop-types */
 
 import { useEffect, useState, memo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
@@ -36,14 +38,13 @@ const BlogCard = memo(({ post }) => (
       <Card className="h-full flex flex-col overflow-hidden border-border/60 bg-card/80 hover:bg-card hover:shadow-xl hover:border-primary/40 transition-all duration-200 !py-0 backdrop-blur-sm hover:-translate-y-1">
         <div className="aspect-video overflow-hidden bg-muted">
           {post.coverImage ? (
-            <img
+            <Image
               src={post.coverImage}
               alt={post.title}
               width={640}
               height={360}
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-              decoding="async"
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-muted-foreground bg-muted/50">
@@ -83,7 +84,7 @@ const BlogCard = memo(({ post }) => (
 
 BlogCard.displayName = "BlogCard";
 
-const Blog = ({ initialPosts = [] }) => {
+const Blog = ({ initialPosts = [], pagination = null }) => {
   const seededPosts = initialPosts.length ? initialPosts : getPrerenderedPosts();
   const hasSeededPosts = seededPosts.length > 0;
   const [posts, setPosts] = useState(seededPosts);
@@ -187,10 +188,46 @@ const Blog = ({ initialPosts = [] }) => {
             )}
 
             {!isLoading && !error && posts.length > 0 && (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {posts.map((post) => (
-                  <BlogCard key={post.id} post={post} />
-                ))}
+              <div className="space-y-8">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {posts.map((post) => (
+                    <BlogCard key={post.id} post={post} />
+                  ))}
+                </div>
+                {pagination && pagination.totalPages > 1 ? (
+                  <nav
+                    className="mx-auto flex max-w-3xl items-center justify-between rounded-xl border border-border/70 bg-card/60 px-4 py-3"
+                    aria-label="Blog pagination"
+                  >
+                    {pagination.currentPage > 1 ? (
+                      <Link
+                        href={
+                          pagination.currentPage - 1 === 1
+                            ? "/blog"
+                            : `/blog/page/${pagination.currentPage - 1}`
+                        }
+                        className="text-sm font-medium text-primary hover:underline"
+                      >
+                        Previous page
+                      </Link>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Previous page</span>
+                    )}
+                    <span className="text-sm text-muted-foreground">
+                      Page {pagination.currentPage} of {pagination.totalPages}
+                    </span>
+                    {pagination.currentPage < pagination.totalPages ? (
+                      <Link
+                        href={`/blog/page/${pagination.currentPage + 1}`}
+                        className="text-sm font-medium text-primary hover:underline"
+                      >
+                        Next page
+                      </Link>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Next page</span>
+                    )}
+                  </nav>
+                ) : null}
               </div>
             )}
           </div>

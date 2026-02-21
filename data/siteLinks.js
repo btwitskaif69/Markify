@@ -18,6 +18,8 @@ export const PRODUCT_LINKS = [
 
 export const RESOURCE_LINKS = [
   { label: "About", to: "/about" },
+  { label: "Authors", to: "/authors" },
+  { label: "Editorial Policy", to: "/editorial-policy" },
   { label: "Contact", to: "/contact" },
   { label: "Privacy Policy", to: "/privacy" },
   { label: "Terms of Service", to: "/terms" },

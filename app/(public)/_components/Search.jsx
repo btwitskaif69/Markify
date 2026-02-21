@@ -61,6 +61,20 @@ const STATIC_PAGES = [
     keywords: ["blog", "updates", "guides"],
   },
   {
+    title: "Authors",
+    description: "Meet the Markify authors and editorial contributors.",
+    path: "/authors",
+    type: "Page",
+    keywords: ["authors", "editorial", "contributors"],
+  },
+  {
+    title: "Editorial Policy",
+    description: "How Markify reviews, cites, and updates content.",
+    path: "/editorial-policy",
+    type: "Policy",
+    keywords: ["editorial policy", "content quality", "eeat"],
+  },
+  {
     title: "Contact",
     description: "Get in touch with the Markify team.",
     path: "/contact",
@@ -237,7 +251,7 @@ const SearchPage = () => {
               <>
                 <p className="text-sm text-muted-foreground mb-6">
                   {results.length} result{results.length === 1 ? "" : "s"} for{" "}
-                  <span className="text-foreground font-medium">"{query}"</span>
+                  <span className="text-foreground font-medium">&quot;{query}&quot;</span>
                 </p>
                 {results.length === 0 ? (
                   <div className="rounded-2xl border border-border bg-card/60 p-8 text-center">

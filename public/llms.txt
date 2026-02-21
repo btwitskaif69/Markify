@@ -7,6 +7,8 @@
 - https://www.markify.tech/pricing
 - https://www.markify.tech/use-cases
 - https://www.markify.tech/blog
+- https://www.markify.tech/authors
+- https://www.markify.tech/editorial-policy
 - https://www.markify.tech/contact
 
 ## Product Notes
@@ -18,3 +20,4 @@
 - https://www.markify.tech/privacy
 - https://www.markify.tech/terms
 - https://www.markify.tech/refund-policy
+- https://www.markify.tech/editorial-policy

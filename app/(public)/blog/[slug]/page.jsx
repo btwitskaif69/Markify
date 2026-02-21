@@ -1,13 +1,23 @@
+/* eslint-disable react/prop-types */
 import BlogPost from "@/app/(public)/_components/BlogPost";
 import StructuredData from "@/components/SEO/StructuredData";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   buildArticleSchema,
   buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildHowToSchema,
   getCanonicalUrl,
 } from "@/lib/seo";
+import { getBlogContentModel, getBlogFaqs, getBlogHowToSteps } from "@/lib/content/blog-meta";
+import {
+  buildKeywordContext,
+  getRelatedFeatureLinks,
+  getRelatedIntentLinks,
+  getRelatedSolutionLinks,
+} from "@/lib/seo/internal-links";
 import prisma from "@/server/db/prismaClient";
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -102,6 +112,7 @@ export const generateMetadata = async ({ params }) => {
 
   const seoTitle = buildSeoTitle(post.title);
   const seoDescription = buildSeoDescription(post.excerpt, post.title);
+  const contentModel = getBlogContentModel(post);
 
   return buildMetadata({
     title: seoTitle,
@@ -112,23 +123,55 @@ export const generateMetadata = async ({ params }) => {
     publishedTime: post.createdAt?.toISOString?.() || post.createdAt,
     modifiedTime: post.updatedAt?.toISOString?.() || post.updatedAt,
     author: post.author?.name || "Markify Team",
+    keywords: [
+      contentModel?.primaryKeyword,
+      ...(contentModel?.secondaryKeywords || []),
+    ].filter(Boolean),
   });
 };
 
 export default async function Page({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const { post, error } = await getPostBySlug(slug);
+  const { post } = await getPostBySlug(slug);
   if (!post || !post.published) {
     const redirectSlug = LEGACY_SLUG_REDIRECTS[slug];
     if (redirectSlug) {
-      return redirect(`/blog/${redirectSlug}`);
+      return permanentRedirect(`/blog/${redirectSlug}`);
     }
     return <BlogPost initialPost={null} initialLatestPosts={[]} />;
   }
 
   const latestPosts = await getLatestPosts(post.slug);
+  const contentModel = getBlogContentModel(post);
   const canonicalUrl = getCanonicalUrl(`/blog/${post.slug}`);
+  const faqSchema = buildFaqSchema(getBlogFaqs(contentModel));
+  const howToSteps = getBlogHowToSteps(post, contentModel);
+  const howToSchema = buildHowToSchema({
+    name: contentModel?.question || post.title,
+    description: contentModel?.description || post.excerpt,
+    steps: howToSteps,
+  });
+
+  const keywordContext = buildKeywordContext(
+    contentModel?.primaryKeyword,
+    contentModel?.secondaryKeywords,
+    post.title,
+    post.excerpt
+  );
+  const relatedLinks = {
+    features: getRelatedFeatureLinks(keywordContext, { limit: 3 }),
+    solutions: getRelatedSolutionLinks(keywordContext, { limit: 3 }),
+    intents: getRelatedIntentLinks(keywordContext, { limit: 3 }),
+  };
+
+  const enrichedPost = {
+    ...post,
+    canonicalUrl,
+    contentModel,
+    relatedLinks,
+  };
+
   const articleSchema = buildArticleSchema({
     title: post.title,
     description: post.excerpt,
@@ -146,8 +189,8 @@ export default async function Page({ params }) {
 
   return (
     <>
-      <StructuredData data={[articleSchema, breadcrumbs]} />
-      <BlogPost initialPost={post} initialLatestPosts={latestPosts} />
+      <StructuredData data={[articleSchema, breadcrumbs, faqSchema, howToSchema].filter(Boolean)} />
+      <BlogPost initialPost={enrichedPost} initialLatestPosts={latestPosts} />
     </>
   );
 }
