@@ -46,8 +46,8 @@ const helpCards = [
             "See thumbnail previews of every saved page. Identify content at a glance without opening tabs.",
     },
     {
-        title: "Secure &",
-        highlight: "Private",
+        title: "Secure",
+        highlight: "& Private",
         description:
             "Your bookmarks are encrypted and always under your control. Privacy is built into Markify's core.",
     },
@@ -226,11 +226,14 @@ const WhyChooseMarkify = () => {
                                     : ""
                                     }`}
                             >
-                                <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
-                                    <span className="italic font-normal text-muted-foreground mr-1">
+                                <h3 className={`text-xl md:text-2xl font-bold text-foreground mb-3 flex items-center flex-wrap ${index === 4 ? "justify-center" : ""}`}>
+                                    <span
+                                        className="instrument-serif-regular-italic font-normal mr-2 bg-clip-text text-transparent text-2xl md:text-3xl"
+                                        style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}
+                                    >
                                         {card.title}
                                     </span>
-                                    {card.highlight}
+                                    <span>{card.highlight}</span>
                                 </h3>
                                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                                     {card.description}
