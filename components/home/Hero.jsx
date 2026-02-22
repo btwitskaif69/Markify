@@ -70,14 +70,6 @@ const Hero = () => {
                   Get Started
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                aria-label="Learn more about Markify bookmark manager"
-                className="text-lg rounded-full border-foreground/20 hover:bg-foreground/10 w-full sm:w-auto min-w-[170px]"
-              >
-                Learn More
-              </Button>
             </div>
           </div>
         </div>
