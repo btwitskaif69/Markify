@@ -78,7 +78,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
         }
       }
     },
-    [authFetch, userId]
+    [authFetch, userId, user?.id]
   );
 
   // Load collections once
@@ -135,6 +135,15 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     setIsFetchingMore(false);
   };
 
+  // Refetch first page (used after import/sync actions)
+  const refetchBookmarks = useCallback(async () => {
+    setIsLoading(true);
+    setPage(0);
+    setHasMore(true);
+    await fetchBookmarks(0);
+    setIsLoading(false);
+  }, [fetchBookmarks]);
+
   // Filter bookmarks by active collection
   const bookmarks = useMemo(() => {
     if (!activeCollectionId) return allBookmarks;
@@ -157,6 +166,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     error,
     hasMore,
     fetchMoreBookmarks,
+    refetchBookmarks,
     isFetchingMore,
     activeCollectionId,
     activeCollection,

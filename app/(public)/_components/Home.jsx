@@ -8,12 +8,12 @@ import Marquee from '@/components/home/Marquee';
 import FeatureHighlight from '@/components/home/FeatureHighlight';
 import BentoGridSection from '@/components/home/BentoGridSection';
 import WhyChooseMarkify from '@/components/home/WhyChooseMarkify';
+import ReviewsMarquee from '@/components/home/ReviewsMarquee';
 import PricingPlans from '@/components/home/PricingPlans';
 import LazySection from "@/components/LazySection";
 
 // Lazy load below-fold components
 const StressFreeCTA = lazy(() => import('@/components/home/StressFreeCTA'));
-const ReviewsMarquee = lazy(() => import('@/components/home/ReviewsMarquee'));
 const FAQSection = lazy(() => import('@/components/home/FAQSection'));
 const FinalCTA = lazy(() => import('@/components/home/FinalCTA'));
 const Footer = lazy(() => import('@/components/Footer'));
@@ -47,11 +47,7 @@ const Home = () => {
 
 
         {/* Reviews */}
-        <LazySection fallback={<BelowFoldPlaceholder />}>
-          <Suspense fallback={<BelowFoldPlaceholder />}>
-            <ReviewsMarquee />
-          </Suspense>
-        </LazySection>
+        <ReviewsMarquee />
 
         {/* Pricing */}
         <LazySection fallback={<BelowFoldPlaceholder />}>

@@ -63,7 +63,8 @@ export default function Dashboard() {
     setCollections,
     isLoading,
     error,
-    activeCollection
+    activeCollection,
+    refetchBookmarks,
   } = useDashboardData(user, authFetch, isAuthLoading);
 
   const {
@@ -72,8 +73,6 @@ export default function Dashboard() {
     handleBulkDelete,
     handleToggleFavorite,
     handleMoveBookmark,
-    handleImportBookmarks,
-    handleSyncLocalBookmarks,
     isSubmitting
   } = useBookmarkActions(authFetch, user, setAllBookmarks, collections);
 
@@ -188,6 +187,7 @@ export default function Dashboard() {
           onDeleteCollection={openDeleteConfirm}
           onShareCollection={handleShareCollection}
           totalBookmarks={allBookmarks.length}
+          onRefetchBookmarks={refetchBookmarks}
         />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">

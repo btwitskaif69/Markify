@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import PropTypes from "prop-types";
 import { useAuth } from "@/client/context/AuthContext";
 import { toast } from "sonner";
-import { Upload, Download, Settings, FileJson, FileSpreadsheet, FileCode } from "lucide-react";
+import { Upload, Download, Settings, FileJson, FileSpreadsheet, FileCode, RefreshCw } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -21,6 +22,7 @@ import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { parseBookmarksHtml } from "@/lib/bookmarkParser";
 
 const API_URL = API_BASE_URL;
+const BACKGROUND_PREVIEW_CONCURRENCY = 4;
 
 // Helper to convert bookmarks to CSV
 const bookmarksToCSV = (bookmarks) => {
@@ -106,6 +108,74 @@ export default function ImportExport({ onRefetch }) {
   const { authFetch, user } = useAuth();
   const fileInputRef = useRef(null);
   const [importFormat, setImportFormat] = useState(null);
+  const [isSyncingBrowser, setIsSyncingBrowser] = useState(false);
+
+  const enrichPreviewsInBackground = (bookmarkIds) => {
+    if (!bookmarkIds || bookmarkIds.length === 0) return;
+
+    const total = bookmarkIds.length;
+    const queue = [...bookmarkIds];
+    let processedCount = 0;
+    let enrichedCount = 0;
+
+    toast.info(`Background metadata fetch started for ${total} bookmarks.`, {
+      id: 'enrichment-progress'
+    });
+
+    const worker = async () => {
+      while (queue.length > 0) {
+        const bookmarkId = queue.shift();
+        if (!bookmarkId) return;
+
+        try {
+          const response = await authFetch(`${API_URL}/bookmarks/${bookmarkId}/fetch-preview`, {
+            method: 'POST',
+          });
+
+          if (response.ok) {
+            const result = await response.json().catch(() => null);
+            if (!result || result.success !== false) {
+              enrichedCount++;
+            }
+          }
+        } catch (err) {
+          console.warn(`Failed to enrich bookmark ${bookmarkId}:`, err);
+        } finally {
+          processedCount++;
+          if (processedCount % 5 === 0 || processedCount === total) {
+            toast.info(`Fetched ${processedCount}/${total} bookmarks...`, {
+              id: 'enrichment-progress'
+            });
+          }
+
+          if (onRefetch && (processedCount % 15 === 0 || processedCount === total)) {
+            void onRefetch();
+          }
+        }
+      }
+    };
+
+    const workers = Array.from(
+      { length: Math.min(BACKGROUND_PREVIEW_CONCURRENCY, total) },
+      () => worker()
+    );
+
+    void Promise.all(workers)
+      .then(async () => {
+        toast.success(`Background metadata fetch complete: ${enrichedCount}/${total} updated.`, {
+          id: 'enrichment-progress'
+        });
+        if (onRefetch) {
+          await onRefetch();
+        }
+      })
+      .catch((err) => {
+        console.error("Background enrichment error:", err);
+        toast.error("Background metadata fetch failed.", {
+          id: 'enrichment-progress'
+        });
+      });
+  };
 
   // Export handlers
   const handleExport = async (format) => {
@@ -210,39 +280,10 @@ export default function ImportExport({ onRefetch }) {
         onRefetch();
       }
 
-      // Fetch previews one by one for newly created bookmarks (in background)
-      if (data.createdIds && data.createdIds.length > 0) {
-        toast.info(`Fetching metadata for ${data.createdIds.length} bookmarks...`, {
-          id: 'enrichment-progress'
-        });
-
-        let enrichedCount = 0;
-        for (const bookmarkId of data.createdIds) {
-          try {
-            await authFetch(`${API_URL}/bookmarks/${bookmarkId}/fetch-preview`, {
-              method: 'POST',
-            });
-            enrichedCount++;
-
-            // Update progress every 5 bookmarks or at the end
-            if (enrichedCount % 5 === 0 || enrichedCount === data.createdIds.length) {
-              toast.info(`Fetched ${enrichedCount}/${data.createdIds.length} bookmarks...`, {
-                id: 'enrichment-progress'
-              });
-            }
-          } catch (err) {
-            console.warn(`Failed to enrich bookmark ${bookmarkId}:`, err);
-          }
-        }
-
-        toast.success(`Done! ${enrichedCount} bookmarks enriched with metadata.`, {
-          id: 'enrichment-progress'
-        });
-
-        // Refresh again to show updated previews
-        if (onRefetch) {
-          onRefetch();
-        }
+      // Run metadata enrichment in background without blocking the UI.
+      if (data.createdIds?.length > 0) {
+        toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
+        enrichPreviewsInBackground(data.createdIds);
       }
     } catch (error) {
       toast.error(error.message || `Invalid ${importFormat?.toUpperCase()} file.`);
@@ -259,6 +300,43 @@ export default function ImportExport({ onRefetch }) {
       case 'csv': return '.csv';
       case 'html': return '.html,.htm';
       default: return '*';
+    }
+  };
+
+  const handleSyncBrowserBookmarks = async () => {
+    if (isSyncingBrowser) return;
+
+    setIsSyncingBrowser(true);
+    try {
+      const response = await authFetch(`${API_URL}/bookmarks/sync-local`, {
+        method: "POST",
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to sync browser bookmarks.");
+
+      if (data.createdCount === 0) {
+        toast.success("All browser bookmarks are already synced.");
+      } else {
+        const source = data.source ? ` from ${data.source}` : "";
+        toast.success(
+          `${data.createdCount} bookmarks synced${source}. ${data.skippedCount} duplicates skipped.`
+        );
+      }
+
+      if (onRefetch) {
+        await onRefetch();
+      }
+
+      if (data.createdIds?.length > 0) {
+        toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
+        enrichPreviewsInBackground(data.createdIds);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to sync browser bookmarks.");
+      console.error("Browser sync error:", error);
+    } finally {
+      setIsSyncingBrowser(false);
     }
   };
 
@@ -308,6 +386,18 @@ export default function ImportExport({ onRefetch }) {
 
         {/* Export Dropdown */}
         <SidebarMenuItem>
+          <SidebarMenuButton
+            tooltip="Sync Browser Bookmarks"
+            className="hover:bg-primary hover:text-primary-foreground"
+            onClick={handleSyncBrowserBookmarks}
+            disabled={isSyncingBrowser}
+          >
+            <RefreshCw className={`h-4 w-4 ${isSyncingBrowser ? "animate-spin" : ""}`} />
+            <span>{isSyncingBrowser ? "Syncing Browser..." : "Sync Browser"}</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+
+        <SidebarMenuItem>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton tooltip="Export Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
@@ -349,3 +439,7 @@ export default function ImportExport({ onRefetch }) {
     </SidebarGroup>
   );
 }
+
+ImportExport.propTypes = {
+  onRefetch: PropTypes.func,
+};

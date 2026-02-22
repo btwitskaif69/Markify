@@ -65,6 +65,47 @@ function ReviewCard({ name, avatar, rating, content }) {
     );
 }
 
+function ReviewsHeader() {
+    return (
+        <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+        >
+            <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
+                What Our <span className="instrument-serif-regular-italic">Users</span> Say
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                Real reviews from real users who love organizing with
+                Markify.
+            </p>
+        </motion.div>
+    );
+}
+
+function ReviewsLoadingState() {
+    return (
+        <div className="relative flex h-[600px] w-full flex-row items-center justify-center gap-4 overflow-hidden">
+            {[0, 1, 2].map((col) => (
+                <div key={col} className={cn("flex-1 space-y-4", col === 2 && "hidden lg:block")}>
+                    {[0, 1, 2].map((item) => (
+                        <div key={item} className="rounded-xl border border-border p-4 bg-muted/20 animate-pulse">
+                            <div className="mb-3 h-4 w-32 rounded bg-muted/60" />
+                            <div className="space-y-2">
+                                <div className="h-3 w-full rounded bg-muted/60" />
+                                <div className="h-3 w-5/6 rounded bg-muted/60" />
+                                <div className="h-3 w-4/6 rounded bg-muted/60" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export default function ReviewsMarquee() {
     const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -82,60 +123,52 @@ export default function ReviewsMarquee() {
         })();
     }, []);
 
-    if (isLoading || reviews.length === 0) return null;
-
-    // Split into 3 columns for vertical marquee
-    const columns = [[], [], []];
-    reviews.forEach((r, i) => columns[i % 3].push(r));
-
     return (
         <section className="py-16">
             <div className="container mx-auto px-4 md:px-6">
-                <motion.div
-                    className="text-center mb-12"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    viewport={{ once: false }}
-                >
-                    <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
-                        What Our <span className="instrument-serif-regular-italic">Users</span> Say
-                    </h2>
-                    <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Real reviews from real users who love organizing with
-                        Markify.
-                    </p>
-                </motion.div>
+                <ReviewsHeader />
 
-                {/* Vertical Marquee Columns */}
-                <div className="relative flex h-[600px] w-full flex-row items-center justify-center gap-4 overflow-hidden">
-                    {columns.map((col, colIdx) => (
-                        <Marquee
-                            key={colIdx}
-                            pauseOnHover
-                            vertical
-                            reverse={colIdx % 2 === 1}
-                            className={cn(
-                                "[--duration:25s] flex-1",
-                                colIdx === 2 && "hidden lg:flex"
-                            )}
-                        >
-                            {col.map((review) => (
-                                <ReviewCard
-                                    key={review.id}
-                                    name={review.user?.name || "Anonymous"}
-                                    avatar={review.user?.avatar}
-                                    rating={review.rating}
-                                    content={review.content}
-                                />
-                            ))}
-                        </Marquee>
-                    ))}
+                {isLoading ? (
+                    <ReviewsLoadingState />
+                ) : reviews.length === 0 ? (
+                    <div className="flex h-[240px] items-center justify-center rounded-xl border border-border bg-muted/10">
+                        <p className="text-sm md:text-base text-muted-foreground">
+                            Reviews will appear here soon.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="relative flex h-[600px] w-full flex-row items-center justify-center gap-4 overflow-hidden">
+                        {[0, 1, 2].map((colIdx) => {
+                            const col = reviews.filter((_, i) => i % 3 === colIdx);
+                            return (
+                                <Marquee
+                                    key={colIdx}
+                                    pauseOnHover
+                                    vertical
+                                    reverse={colIdx % 2 === 1}
+                                    className={cn(
+                                        "[--duration:25s] flex-1",
+                                        colIdx === 2 && "hidden lg:flex"
+                                    )}
+                                >
+                                    {col.map((review) => (
+                                        <ReviewCard
+                                            key={review.id}
+                                            name={review.user?.name || "Anonymous"}
+                                            avatar={review.user?.avatar}
+                                            rating={review.rating}
+                                            content={review.content}
+                                        />
+                                    ))}
+                                </Marquee>
+                            );
+                        })}
 
-                    {/* Gradient fade edges */}
-                    <div className="from-background pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b" />
-                    <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t" />
-                </div>
+                        {/* Gradient fade edges */}
+                        <div className="from-background pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b" />
+                        <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t" />
+                    </div>
+                )}
             </div>
         </section>
     );

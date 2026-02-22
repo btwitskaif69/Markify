@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react"
 import Link from "next/link";
+import PropTypes from "prop-types";
 import { NavMain } from "@/components/dashboard/nav-main"
 
 import { NavCollections } from "@/components/dashboard/nav-collections"
@@ -17,7 +17,7 @@ import {
 import ImportExport from "./ImportExport";
 const logo = "/assets/logo.svg";
 
-export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, onShareCollection, totalBookmarks, ...props }) {
+export function AppSidebar({ collections, onCreateCollection, onRenameCollection, onDeleteCollection, onShareCollection, totalBookmarks, onRefetchBookmarks, ...props }) {
   const { user, logout } = useAuth();
 
   return (
@@ -47,7 +47,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
           onDelete={onDeleteCollection}
           onShare={onShareCollection}
         />
-        <ImportExport />
+        <ImportExport onRefetch={onRefetchBookmarks} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} logout={logout} />
@@ -55,3 +55,13 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
     </Sidebar>
   );
 }
+
+AppSidebar.propTypes = {
+  collections: PropTypes.array,
+  onCreateCollection: PropTypes.func,
+  onRenameCollection: PropTypes.func,
+  onDeleteCollection: PropTypes.func,
+  onShareCollection: PropTypes.func,
+  totalBookmarks: PropTypes.number,
+  onRefetchBookmarks: PropTypes.func,
+};

@@ -130,26 +130,26 @@ const WhyChooseMarkify = () => {
 
                     {/* Other Tools Card */}
                     <motion.div
-                        className="relative overflow-hidden rounded-3xl border border-border p-6 md:p-8"
+                        className="relative overflow-hidden rounded-3xl border border-slate-500/30 p-6 md:p-8"
                         initial={{ opacity: 0, x: 40 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1 }}
                         viewport={{ once: false }}
                     >
-                        {/* Copper Forge Background with Top Left & Bottom Right Glows (Red Variant) */}
+                        {/* Neutral Slate Background that complements Markify's warm palette */}
                         <div
                             className="absolute inset-0 z-0"
                             style={{
                                 backgroundImage: `
-                                    radial-gradient(circle at top left, color-mix(in srgb, var(--destructive), transparent 75%), transparent 40%),
-                                    radial-gradient(circle at bottom right, color-mix(in srgb, var(--destructive), transparent 75%), transparent 40%)
+                                    radial-gradient(circle at top right, rgba(100, 116, 139, 0.26), transparent 45%),
+                                    radial-gradient(circle at bottom left, rgba(71, 85, 105, 0.3), transparent 55%)
                                 `,
                                 backgroundColor: "var(--background)",
                             }}
                         />
 
                         <div className="relative z-10 flex items-center gap-3 mb-6">
-                            <h3 className="text-xl md:text-2xl font-bold text-muted-foreground">
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-300">
                                 Other tools
                             </h3>
                         </div>
@@ -164,10 +164,10 @@ const WhyChooseMarkify = () => {
                                     transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
                                     viewport={{ once: false }}
                                 >
-                                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-rose-500/20 flex items-center justify-center">
-                                        <X className="w-3 h-3 text-rose-500" />
+                                    <div className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-400/20 flex items-center justify-center">
+                                        <X className="w-3 h-3 text-slate-300" />
                                     </div>
-                                    <span className="text-sm md:text-base text-muted-foreground">
+                                    <span className="text-sm md:text-base text-slate-300/90">
                                         {flaw}
                                     </span>
                                 </motion.li>
