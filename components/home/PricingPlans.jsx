@@ -44,13 +44,13 @@ const PricingPlans = () => {
     return (
         <section className="w-full py-16 md:py-24 bg-background relative overflow-hidden">
             {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-500/[0.02] to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent pointer-events-none" />
 
             <div className="max-w-5xl mx-auto px-4 md:px-6 relative z-10">
                 {/* Section Header */}
                 <div className="text-center mb-12 md:mb-16">
-                    <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium bg-clip-text text-transparent leading-normal whitespace-nowrap" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
-                        Choose the <span className="instrument-serif-regular-italic">Right Plan</span> for Your Team
+                    <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium leading-tight text-foreground">
+                        Choose the <span className="instrument-serif-regular-italic text-primary">Right Plan</span> for Your Team
                     </h2>
                     <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                         Expand your workflow as per your requirements
@@ -61,15 +61,15 @@ const PricingPlans = () => {
                     {PLANS.map((plan) => (
                         <article
                             key={plan.name}
-                            className="relative overflow-hidden rounded-[30px] border border-white/15 bg-black p-6 md:p-8"
+                            className="relative overflow-hidden rounded-[30px] border border-border bg-card p-6 md:p-8"
                         >
                             <div
                                 aria-hidden="true"
                                 className="pointer-events-none absolute inset-0"
                                 style={{
                                     backgroundImage: plan.popular
-                                        ? "radial-gradient(90% 90% at 0% 0%, color-mix(in oklch, var(--primary) 42%, transparent) 0%, transparent 58%), radial-gradient(90% 90% at 100% 100%, color-mix(in oklch, var(--primary) 34%, transparent) 0%, transparent 62%)"
-                                        : "radial-gradient(90% 90% at 0% 0%, color-mix(in oklch, var(--primary) 30%, transparent) 0%, transparent 56%), radial-gradient(90% 90% at 100% 100%, color-mix(in oklch, var(--primary) 24%, transparent) 0%, transparent 60%)",
+                                        ? "radial-gradient(95% 95% at 0% 0%, color-mix(in oklch, var(--primary) 40%, transparent) 0%, transparent 60%), radial-gradient(95% 95% at 100% 100%, color-mix(in oklch, var(--primary) 30%, transparent) 0%, transparent 64%)"
+                                        : "radial-gradient(95% 95% at 0% 0%, color-mix(in oklch, var(--primary) 28%, transparent) 0%, transparent 58%), radial-gradient(95% 95% at 100% 100%, color-mix(in oklch, var(--primary) 20%, transparent) 0%, transparent 62%)",
                                 }}
                             />
                             <div
@@ -79,11 +79,11 @@ const PricingPlans = () => {
                             <div className="relative z-10 h-full">
                                 <div className="mb-6 flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-3">
-                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-amber-500/35 bg-amber-500/10">
+                                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-primary/30 bg-primary/10">
                                             {plan.popular ? (
-                                                <Sparkles className="h-4 w-4 text-amber-400" />
+                                                <Sparkles className="h-4 w-4 text-primary" />
                                             ) : (
-                                                <BookOpen className="h-4 w-4 text-amber-400" />
+                                                <BookOpen className="h-4 w-4 text-primary" />
                                             )}
                                         </span>
                                         <h3 className="text-2xl font-semibold text-foreground">
@@ -92,7 +92,7 @@ const PricingPlans = () => {
                                     </div>
 
                                     {plan.popular ? (
-                                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-amber-300">
+                                        <span className="rounded-full border border-primary/30 bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
                                             Popular
                                         </span>
                                     ) : null}
@@ -111,8 +111,12 @@ const PricingPlans = () => {
                                 <p className="mb-8 text-base text-muted-foreground">{plan.description}</p>
 
                                 <Button
-                                    href={plan.href} size="lg" className="w-full rounded-full mb-2">
-                                    {plan.cta}
+                                    asChild
+                                    size="lg"
+                                    variant={plan.popular ? "default" : "outline"}
+                                    className={`mb-2 w-full rounded-full ${plan.popular ? "" : "bg-transparent hover:bg-secondary/20"}`}
+                                >
+                                    <Link className="text-lg font-semibold" href={plan.href}>{plan.cta}</Link>
                                 </Button>
 
                                 <p className="mb-8 text-center text-sm text-muted-foreground">{plan.badge}</p>
@@ -120,8 +124,8 @@ const PricingPlans = () => {
                                 <ul className="space-y-4 text-base text-foreground/95">
                                     {plan.features.map((feature) => (
                                         <li key={feature} className="flex items-start gap-3">
-                                            <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-emerald-500/35 bg-emerald-500/20">
-                                                <Check className="h-3 w-3 text-emerald-300" />
+                                            <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/15">
+                                                <Check className="h-3 w-3 text-primary" />
                                             </span>
                                             <span>{feature}</span>
                                         </li>
