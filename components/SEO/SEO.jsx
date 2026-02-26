@@ -14,6 +14,22 @@ import {
   toAbsoluteUrl,
 } from "@/lib/seo";
 
+const stripContext = (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const { "@context": _context, ...rest } = value;
+  return rest;
+};
+
+const toGraphItems = (payloads) =>
+  payloads.flatMap((payload) => {
+    if (!payload) return [];
+    if (Array.isArray(payload)) return payload.filter(Boolean).map(stripContext);
+    if (typeof payload === "object" && Array.isArray(payload["@graph"])) {
+      return payload["@graph"].filter(Boolean).map(stripContext);
+    }
+    return [stripContext(payload)];
+  });
+
 const SEO = ({
   title,
   description,
@@ -63,6 +79,14 @@ const SEO = ({
         : [structuredData]
       : []),
   ].filter(Boolean);
+  const jsonLdPayload =
+    resolvedStructuredData.length === 1
+      ? resolvedStructuredData[0]
+      : {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@graph": toGraphItems(resolvedStructuredData),
+        };
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -123,7 +147,7 @@ const SEO = ({
       {/* Structured Data */}
       {resolvedStructuredData.length ? (
         <script type="application/ld+json">
-          {JSON.stringify(resolvedStructuredData)}
+          {JSON.stringify(jsonLdPayload)}
         </script>
       ) : null}
     </Helmet>

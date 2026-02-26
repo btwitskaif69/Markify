@@ -1,13 +1,26 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Spotlight } from "../ui/spotlight-new";
 import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
-import DashboardPreview from "./DashboardPreview";
 import ShinyText from "../ShinyText";
 import gsap from "gsap";
+
+const Spotlight = dynamic(
+  () => import("../ui/spotlight-new").then((mod) => mod.Spotlight),
+  { ssr: false }
+);
+
+const DashboardPreview = dynamic(() => import("./DashboardPreview"), {
+  ssr: false,
+  loading: () => (
+    <div className="mx-auto w-[90vw] max-w-[1600px] min-w-[350px]">
+      <div className="aspect-[16/9] w-full rounded-2xl border border-border/40 bg-muted/30" />
+    </div>
+  ),
+});
 
 const Hero = () => {
   const rootRef = useRef(null);

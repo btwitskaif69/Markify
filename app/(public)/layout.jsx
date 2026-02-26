@@ -6,9 +6,9 @@ export default function PublicGroupLayout({ children }) {
   const siteSchemas = [buildOrganizationSchema(), buildWebsiteSchema()];
 
   return (
-    <PublicLayout>
+    <>
       <StructuredData data={siteSchemas} />
-      {children}
-    </PublicLayout>
+      <PublicLayout>{children}</PublicLayout>
+    </>
   );
 }

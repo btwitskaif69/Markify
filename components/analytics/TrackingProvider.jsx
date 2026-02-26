@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ANALYTICS_EVENTS, trackEvent } from "@/lib/analytics/events";
 
 const getAnchorFromTarget = (target) => {
@@ -22,11 +22,11 @@ const isExternalLink = (href) => {
 
 export default function TrackingProvider() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const lastTrackedSearch = useRef("");
 
   useEffect(() => {
-    const q = searchParams.get("q");
+    if (typeof window === "undefined") return;
+    const q = new URLSearchParams(window.location.search).get("q");
     if (pathname !== "/search" || !q) return;
     const key = `${pathname}:${q.trim().toLowerCase()}`;
     if (!q.trim() || lastTrackedSearch.current === key) return;
@@ -35,7 +35,7 @@ export default function TrackingProvider() {
       search_term: q.trim(),
       page_path: pathname,
     });
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   useEffect(() => {
     const onClick = (event) => {

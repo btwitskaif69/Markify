@@ -1,12 +1,11 @@
 import Home from "@/app/(public)/_components/Home";
 import StructuredData from "@/components/SEO/StructuredData";
-import PublicLayout from "@/components/layouts/PublicLayout";
 import { HOME_FAQS } from "@/data/homeFaqs";
 import {
+  buildBreadcrumbSchema,
   buildFaqSchema,
-  buildOrganizationSchema,
   buildWebApplicationSchema,
-  buildWebsiteSchema,
+  buildWebPageSchema,
   getCanonicalUrl,
 } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -35,14 +34,19 @@ export default function Page() {
     description: pageDescription,
     url: getCanonicalUrl("/"),
   });
-  const orgSchema = buildOrganizationSchema();
-  const websiteSchema = buildWebsiteSchema();
-  const structuredData = [orgSchema, websiteSchema, faqSchema, webAppSchema].filter(Boolean);
+  const webPageSchema = buildWebPageSchema({
+    title: "Bookmark Manager for Saved Links & Teams",
+    description: pageDescription,
+    path: "/",
+    type: "WebPage",
+  });
+  const breadcrumbs = buildBreadcrumbSchema([{ name: "Home", path: "/" }]);
+  const structuredData = [webPageSchema, breadcrumbs, faqSchema, webAppSchema].filter(Boolean);
 
   return (
-    <PublicLayout>
+    <>
       <StructuredData data={structuredData} />
       <Home />
-    </PublicLayout>
+    </>
   );
 }
