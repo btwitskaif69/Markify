@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Globe } from "@/components/ui/globe";
 import { AnimatedList } from "@/components/ui/animated-list";
@@ -116,10 +116,8 @@ const AnalyticsBeamCard = () => {
 
 const BentoGridSection = () => {
     const [isDark, setIsDark] = useState(true);
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
         setIsDark(document.documentElement.classList.contains("dark"));
 
         const observer = new MutationObserver(() => {
@@ -228,7 +226,15 @@ const BentoGridSection = () => {
                                 <Calendar className="w-8 h-8 text-green-500" />
                                 <Search className="w-8 h-8 text-purple-500" />
                             </OrbitingCircles>
-                            <img src="/assets/logo.svg" alt="Markify" className="w-12 h-12 [filter:brightness(0)_saturate(100%)_invert(42%)_sepia(93%)_saturate(1352%)_hue-rotate(360deg)_brightness(98%)_contrast(100%)]" />
+                            <img
+                                src="/assets/logo.svg"
+                                alt="Markify"
+                                width={48}
+                                height={48}
+                                loading="lazy"
+                                decoding="async"
+                                className="w-12 h-12 [filter:brightness(0)_saturate(100%)_invert(42%)_sepia(93%)_saturate(1352%)_hue-rotate(360deg)_brightness(98%)_contrast(100%)]"
+                            />
                         </div>
                         <p className="text-sm text-muted-foreground">
                             Works with Chrome, Firefox, Edge, and more.

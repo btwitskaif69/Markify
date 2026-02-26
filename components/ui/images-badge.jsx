@@ -1,5 +1,5 @@
-"use client";;
-import React, { useState } from "react";
+"use client";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +114,10 @@ export function ImagesBadge({
               <img
                 src={image}
                 alt={`Preview ${index + 1}`}
+                width={hoverImageSize.width}
+                height={hoverImageSize.height}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover" />
             </motion.div>
           );

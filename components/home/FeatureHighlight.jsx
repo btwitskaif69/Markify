@@ -1,16 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const FeatureHighlight = () => {
-    const [isVisible, setIsVisible] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => setIsVisible(true), 500);
-        return () => clearTimeout(timer);
-    }, []);
-
     const avatars = [
         {
             id: 1,
@@ -76,6 +68,10 @@ const FeatureHighlight = () => {
                                     <img
                                         src={avatar.src}
                                         alt="User avatar"
+                                        width={56}
+                                        height={56}
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-full h-full object-cover"
                                     />
                                 </div>

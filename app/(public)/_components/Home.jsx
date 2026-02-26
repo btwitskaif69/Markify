@@ -10,13 +10,13 @@ import BentoGridSection from '@/components/home/BentoGridSection';
 import WhyChooseMarkify from '@/components/home/WhyChooseMarkify';
 import ReviewsMarquee from '@/components/home/ReviewsMarquee';
 import PricingPlans from '@/components/home/PricingPlans';
+import FAQSection from '@/components/home/FAQSection';
+import Footer from '@/components/Footer';
 import LazySection from "@/components/LazySection";
 
 // Lazy load below-fold components
 const StressFreeCTA = lazy(() => import('@/components/home/StressFreeCTA'));
-const FAQSection = lazy(() => import('@/components/home/FAQSection'));
 const FinalCTA = lazy(() => import('@/components/home/FinalCTA'));
-const Footer = lazy(() => import('@/components/Footer'));
 
 // Minimal loading placeholder for below-fold content
 const BelowFoldPlaceholder = () => <div className="min-h-[200px]" />;
@@ -50,18 +50,10 @@ const Home = () => {
         <ReviewsMarquee />
 
         {/* Pricing */}
-        <LazySection fallback={<BelowFoldPlaceholder />}>
-          <Suspense fallback={<BelowFoldPlaceholder />}>
-            <PricingPlans />
-          </Suspense>
-        </LazySection>
+        <PricingPlans />
 
         {/* FAQ */}
-        <LazySection fallback={<BelowFoldPlaceholder />}>
-          <Suspense fallback={<BelowFoldPlaceholder />}>
-            <FAQSection />
-          </Suspense>
-        </LazySection>
+        <FAQSection />
 
         {/* Final CTA */}
         <LazySection fallback={<BelowFoldPlaceholder />}>
@@ -69,14 +61,9 @@ const Home = () => {
             <FinalCTA />
           </Suspense>
         </LazySection>
+      </main>
 
-      </main >
-
-      <LazySection>
-        <Suspense fallback={null}>
-          <Footer />
-        </Suspense>
-      </LazySection>
+      <Footer />
     </>
   );
 };

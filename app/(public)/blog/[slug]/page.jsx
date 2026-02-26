@@ -18,7 +18,13 @@ const BLOG_AUTHOR_NAME = "Mohd Kaif";
 
 const LEGACY_SLUG_REDIRECTS = {
   "bookmark-manager-search-tagging": "bookmark-manager-search-and-tagging",
+  "markify-vs-browser-bookmarks":
+    "markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
+  "unlock-collaboration-share-your-bookmarks-collections-with-markify":
+    "unlock-collaboration-share-your-bookmarks-and-collections-with-markify",
 };
+
+const resolveCanonicalSlug = (slug) => LEGACY_SLUG_REDIRECTS[slug] || slug;
 
 const getPostBySlug = async (slug) => {
   if (!slug) return { post: null, error: null };
@@ -76,20 +82,21 @@ const buildSeoDescription = (excerpt, title) => {
 export const generateMetadata = async ({ params }) => {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const { post, error } = await getPostBySlug(slug);
+  const canonicalSlug = resolveCanonicalSlug(slug);
+  const { post, error } = await getPostBySlug(canonicalSlug);
   if (!post || !post.published) {
     if (error) {
       return buildMetadata({
         title: "Markify Blog",
         description:
           "Read the latest Markify updates on saving, organizing, and searching bookmarks.",
-        path: `/blog/${slug || ""}`,
+        path: `/blog/${canonicalSlug || slug || ""}`,
       });
     }
     return buildMetadata({
       title: "Blog post not found",
       description: "The requested blog post could not be found.",
-      path: "/blog",
+      path: `/blog/${canonicalSlug || slug || ""}`,
       noindex: true,
       nofollow: true,
     });
@@ -118,12 +125,14 @@ export const generateMetadata = async ({ params }) => {
 export default async function Page({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
+
+  const redirectSlug = LEGACY_SLUG_REDIRECTS[slug];
+  if (redirectSlug) {
+    return permanentRedirect(`/blog/${redirectSlug}`);
+  }
+
   const { post } = await getPostBySlug(slug);
   if (!post || !post.published) {
-    const redirectSlug = LEGACY_SLUG_REDIRECTS[slug];
-    if (redirectSlug) {
-      return permanentRedirect(`/blog/${redirectSlug}`);
-    }
     return <BlogPost initialPost={null} initialLatestPosts={[]} />;
   }
 

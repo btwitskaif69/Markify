@@ -15,7 +15,7 @@ const pageDescription =
   "Keep every link organized in collections, instantly searchable, and always in sync with Markify's clean bookmark manager and one-click browser extension.";
 
 export const metadata = buildMetadata({
-  title: "Smart Bookmark Manager for Saved Links",
+  title: "Bookmark Manager for Saved Links & Teams",
   description: pageDescription,
   path: "/",
   keywords: [

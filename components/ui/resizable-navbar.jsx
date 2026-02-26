@@ -30,7 +30,7 @@ export const Navbar = ({
   });
 
   return (
-    <motion.div
+    <motion.header
       ref={ref}
       // IMPORTANT: Change this to class of `fixed` if you want the navbar to be fixed
       className={cn("fixed inset-x-0 top-5 z-40 w-full", className)}
@@ -41,7 +41,7 @@ export const Navbar = ({
         if (typeof child.type === "string") return child;
         return React.cloneElement(child, { visible });
       })}
-    </motion.div>
+    </motion.header>
   );
 };
 
@@ -51,7 +51,8 @@ export const NavBody = ({
   visible,
 }) => {
   return (
-    <motion.div
+    <motion.nav
+      aria-label="Primary"
       animate={{
         backdropFilter: visible ? "blur(10px)" : "none",
         boxShadow: visible
@@ -72,7 +73,7 @@ export const NavBody = ({
       )}
     >
       {children}
-    </motion.div>
+    </motion.nav>
   );
 };
 
@@ -80,7 +81,6 @@ export const NavItems = ({
   items,
   className,
   onItemClick,
-  visible,
 }) => {
   const [hovered, setHovered] = useState(null);
   const resolvedItems = (items || [])
@@ -125,7 +125,8 @@ export const MobileNav = ({
   visible,
 }) => {
   return (
-    <motion.div
+    <motion.nav
+      aria-label="Mobile"
       animate={{
         backdropFilter: visible ? "blur(10px)" : "none",
         boxShadow: visible
@@ -149,7 +150,7 @@ export const MobileNav = ({
       )}
     >
       {children}
-    </motion.div>
+    </motion.nav>
   );
 };
 
@@ -168,7 +169,6 @@ export const MobileNavMenu = ({
   children,
   className,
   isOpen,
-  onClose,
 }) => {
   return (
     <AnimatePresence>
@@ -223,7 +223,6 @@ export const NavbarButton = ({
   children,
   className,
   variant = "primary",
-  visible,
   ...props
 }) => {
   const baseStyles =

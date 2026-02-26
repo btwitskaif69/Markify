@@ -1,24 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Marquee as FastMarquee } from "@/components/ui/marquee";
 
 const logoData = [
-    { name: "Next.js", src: "/assets/nextjs.svg" },
-    { name: "Tailwind CSS", src: "/assets/tailwindcss.svg" },
-    { name: "shadcn/ui", src: "/assets/shadcn.svg" },
-    { name: "Prisma", src: "/assets/prisma.svg" },
-    { name: "PostgreSQL", src: "/assets/Postgresql.svg" },
-    { name: "Lucide", src: "/assets/lucide.svg" },
-    { name: "Vercel", src: "/assets/vercel.svg" },
+    { name: "Next.js", src: "/assets/nextjs.svg", href: "https://nextjs.org", width: 128, height: 32 },
+    { name: "Tailwind CSS", src: "/assets/tailwindcss.svg", href: "https://tailwindcss.com", width: 128, height: 32 },
+    { name: "shadcn/ui", src: "/assets/shadcn.svg", href: "https://ui.shadcn.com", width: 128, height: 32 },
+    { name: "Prisma", src: "/assets/prisma.svg", href: "https://www.prisma.io", width: 128, height: 32 },
+    { name: "PostgreSQL", src: "/assets/Postgresql.svg", href: "https://www.postgresql.org", width: 128, height: 32 },
+    { name: "Lucide", src: "/assets/lucide.svg", href: "https://lucide.dev", width: 128, height: 32 },
+    { name: "Vercel", src: "/assets/vercel.svg", href: "https://vercel.com", width: 128, height: 32 },
 ];
 
 const Marquee = () => {
     const [isDark, setIsDark] = useState(false);
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
         // Initial check
         setIsDark(document.documentElement.classList.contains("dark"));
 
@@ -34,10 +32,6 @@ const Marquee = () => {
 
         return () => observer.disconnect();
     }, []);
-
-    if (!mounted) {
-        return null;
-    }
 
     return (
         <section className="w-full pt-0 pb-6 md:pb-10 bg-background">
@@ -64,13 +58,22 @@ const Marquee = () => {
                                 key={index}
                                 className="flex items-center justify-center px-4"
                             >
-                                <img
-                                    src={logo.src}
-                                    alt={`${logo.name} logo`}
-                                    loading="lazy"
-                                    decoding="async"
-                                    className={`h-7 md:h-8 w-auto object-contain brightness-0 ${isDark ? 'invert' : ''}`}
-                                />
+                                <a
+                                    href={logo.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={`${logo.name} official website`}
+                                >
+                                    <img
+                                        src={logo.src}
+                                        alt={`${logo.name} logo`}
+                                        width={logo.width}
+                                        height={logo.height}
+                                        loading="lazy"
+                                        decoding="async"
+                                        className={`h-7 md:h-8 w-auto object-contain brightness-0 ${isDark ? 'invert' : ''}`}
+                                    />
+                                </a>
                             </div>
                         ))}
                     </FastMarquee>
