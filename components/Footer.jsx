@@ -176,9 +176,9 @@ function Footer() {
         className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none flex justify-center items-end"
         aria-hidden="true"
       >
-        <h1 className="text-[25vw] leading-[0.75] font-semibold text-foreground/5 tracking-tight whitespace-nowrap transform translate-y-[20%]">
+        <p className="text-[25vw] leading-[0.75] font-semibold text-foreground/5 tracking-tight whitespace-nowrap transform translate-y-[20%]">
           Markify
-        </h1>
+        </p>
       </div>
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none"></div>
     </footer>
