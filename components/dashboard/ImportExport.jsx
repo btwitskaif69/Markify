@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
-import { parseBookmarksHtml } from "@/lib/bookmarkParser";
+import { parseBookmarksHtml, parseChromiumBookmarksJson } from "@/lib/bookmarkParser";
 
 const API_URL = API_BASE_URL;
 const BACKGROUND_PREVIEW_CONCURRENCY = 4;
@@ -104,6 +104,84 @@ const parseCSV = (csvText) => {
   return bookmarks;
 };
 
+const parseBrowserBookmarksContent = (rawText) => {
+  const chromiumBookmarks = parseChromiumBookmarksJson(rawText);
+  if (chromiumBookmarks.length > 0) {
+    return { bookmarks: chromiumBookmarks, sourceLabel: "Chromium Bookmarks file" };
+  }
+
+  const htmlBookmarks = parseBookmarksHtml(rawText);
+  if (htmlBookmarks.length > 0) {
+    return { bookmarks: htmlBookmarks, sourceLabel: "bookmarks HTML export" };
+  }
+
+  throw new Error(
+    "Unsupported bookmarks file. Select a Chromium 'Bookmarks' file (Chrome/Edge/Brave) or an exported bookmarks HTML file."
+  );
+};
+
+const pickBrowserBookmarksFile = async () => {
+  if (typeof window !== "undefined" && typeof window.showOpenFilePicker === "function") {
+    const [fileHandle] = await window.showOpenFilePicker({
+      multiple: false,
+      excludeAcceptAllOption: false,
+      suggestedName: "Bookmarks",
+      types: [
+        {
+          description: "Browser bookmarks",
+          accept: {
+            "application/json": [".json"],
+            "text/html": [".html", ".htm"],
+            "text/plain": [".txt"],
+          },
+        },
+      ],
+    });
+    return fileHandle.getFile();
+  }
+
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    // Keep unrestricted so extensionless Chromium "Bookmarks" files are selectable.
+    input.accept = "";
+    input.style.display = "none";
+
+    let settled = false;
+    const cleanup = () => {
+      if (input.parentNode) {
+        input.parentNode.removeChild(input);
+      }
+    };
+    const finish = (file) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(file);
+    };
+
+    input.addEventListener(
+      "change",
+      () => {
+        finish(input.files?.[0] || null);
+      },
+      { once: true }
+    );
+
+    const onFocus = () => {
+      setTimeout(() => {
+        if (!settled && (!input.files || input.files.length === 0)) {
+          finish(null);
+        }
+      }, 200);
+    };
+    window.addEventListener("focus", onFocus, { once: true });
+
+    document.body.appendChild(input);
+    input.click();
+  });
+};
+
 export default function ImportExport({ onRefetch }) {
   const { authFetch, user } = useAuth();
   const fileInputRef = useRef(null);
@@ -175,6 +253,35 @@ export default function ImportExport({ onRefetch }) {
           id: 'enrichment-progress'
         });
       });
+  };
+
+  const importBookmarksIntoLibrary = async (bookmarks, successMessageBuilder) => {
+    const response = await authFetch(`${API_URL}/bookmarks/import`, {
+      method: "POST",
+      body: JSON.stringify(bookmarks),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.message || "Failed to import bookmarks.");
+    }
+
+    const message = typeof successMessageBuilder === "function"
+      ? successMessageBuilder(data)
+      : `${data.createdCount} new bookmarks imported.${data.skippedCount > 0 ? ` ${data.skippedCount} were skipped as duplicates.` : ""}`;
+
+    toast.success(message);
+
+    if (onRefetch) {
+      await onRefetch();
+    }
+
+    if (data.createdIds?.length > 0) {
+      toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
+      enrichPreviewsInBackground(data.createdIds);
+    }
+
+    return data;
   };
 
   // Export handlers
@@ -260,31 +367,7 @@ export default function ImportExport({ onRefetch }) {
         return;
       }
 
-      const response = await authFetch(`${API_URL}/bookmarks/import`, {
-        method: 'POST',
-        body: JSON.stringify(bookmarks),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-
-      let message = `${data.createdCount} new bookmarks imported.`;
-      if (data.skippedCount > 0) {
-        message += ` ${data.skippedCount} were skipped as duplicates.`;
-      }
-
-      toast.success(message);
-
-      // Refresh UI immediately to show imported bookmarks
-      if (onRefetch) {
-        onRefetch();
-      }
-
-      // Run metadata enrichment in background without blocking the UI.
-      if (data.createdIds?.length > 0) {
-        toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
-        enrichPreviewsInBackground(data.createdIds);
-      }
+      await importBookmarksIntoLibrary(bookmarks);
     } catch (error) {
       toast.error(error.message || `Invalid ${importFormat?.toUpperCase()} file.`);
       console.error("Import error:", error);
@@ -308,31 +391,33 @@ export default function ImportExport({ onRefetch }) {
 
     setIsSyncingBrowser(true);
     try {
-      const response = await authFetch(`${API_URL}/bookmarks/sync-local`, {
-        method: "POST",
+      toast.info("Select your browser bookmarks file.", {
+        description:
+          "Use Chrome/Edge/Brave profile file named 'Bookmarks', or an exported bookmarks HTML file.",
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to sync browser bookmarks.");
-
-      if (data.createdCount === 0) {
-        toast.success("All browser bookmarks are already synced.");
-      } else {
-        const source = data.source ? ` from ${data.source}` : "";
-        toast.success(
-          `${data.createdCount} bookmarks synced${source}. ${data.skippedCount} duplicates skipped.`
-        );
+      const file = await pickBrowserBookmarksFile();
+      if (!file) {
+        return;
       }
 
-      if (onRefetch) {
-        await onRefetch();
+      const text = await file.text();
+      const { bookmarks, sourceLabel } = parseBrowserBookmarksContent(text);
+
+      if (bookmarks.length === 0) {
+        toast.info("No valid bookmarks found in the selected file.");
+        return;
       }
 
-      if (data.createdIds?.length > 0) {
-        toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
-        enrichPreviewsInBackground(data.createdIds);
-      }
+      await importBookmarksIntoLibrary(bookmarks, (data) =>
+        data.createdCount === 0
+          ? "All selected browser bookmarks are already synced."
+          : `${data.createdCount} bookmarks synced from ${sourceLabel}. ${data.skippedCount} duplicates skipped.`
+      );
     } catch (error) {
+      if (error?.name === "AbortError") {
+        return;
+      }
       toast.error(error.message || "Failed to sync browser bookmarks.");
       console.error("Browser sync error:", error);
     } finally {
