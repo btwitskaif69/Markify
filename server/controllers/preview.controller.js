@@ -1,5 +1,6 @@
 import { extractMetadataFromHtml } from "@/server/utils/metadata";
 import keywordExtractor from "keyword-extractor";
+import { resolveBookmarkCategory } from "@/server/utils/category";
 
 export const fetchLinkPreview = async (req, res) => {
   const rawUrl = req.query?.url;
@@ -26,6 +27,13 @@ export const fetchLinkPreview = async (req, res) => {
     
     // Add the extracted keywords to our response object as 'tags'
     metadata.tags = extractedKeywords;
+    metadata.category = resolveBookmarkCategory({
+      category: "",
+      title: metadata.title || "",
+      description: metadata.description || "",
+      url,
+      tags: extractedKeywords,
+    });
 
     res.status(200).json(metadata);
   } catch (error) {

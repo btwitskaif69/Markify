@@ -5,6 +5,7 @@ import os from "os";
 import { randomUUID } from "crypto";
 import keywordExtractor from "keyword-extractor";
 import { extractMetadataFromHtml } from "@/server/utils/metadata";
+import { resolveBookmarkCategory } from "@/server/utils/category";
 
 /**
  * Creates a new bookmark for a specific user.
@@ -37,7 +38,7 @@ export const addBookmark = async (req, res) => {
         title,
         url,
         description,
-        category: category || 'Other',
+        category: resolveBookmarkCategory({ category, title, url, description, tags }),
         tags,
         isFavorite,
         userId: userId,
@@ -79,7 +80,32 @@ export const getBookmarksForUser = async (req, res) => {
 export const updateBookmark = async (req, res) => {
   try {
     const { bookmarkId } = req.params;
-    const updates = req.body;
+    const updates = { ...req.body };
+
+    if (Object.prototype.hasOwnProperty.call(updates, "category")) {
+      const existingBookmark = await prisma.bookmark.findUnique({
+        where: { id: bookmarkId },
+        select: {
+          title: true,
+          url: true,
+          description: true,
+          tags: true,
+          category: true,
+        },
+      });
+
+      if (!existingBookmark) {
+        return res.status(404).json({ message: "Bookmark not found." });
+      }
+
+      updates.category = resolveBookmarkCategory({
+        category: updates.category,
+        title: updates.title ?? existingBookmark.title,
+        url: updates.url ?? existingBookmark.url,
+        description: updates.description ?? existingBookmark.description,
+        tags: updates.tags ?? existingBookmark.tags,
+      });
+    }
 
     const updatedBookmark = await prisma.bookmark.update({
       where: { id: bookmarkId },
@@ -153,7 +179,7 @@ export const exportBookmarks = async (req, res) => {
       }
     });
     res.status(200).json(bookmarks);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Failed to export bookmarks." });
   }
 };
@@ -196,7 +222,13 @@ export const importBookmarks = async (req, res) => {
         title: bookmark.title,
         url: bookmark.url,
         description: bookmark.description || "",
-        category: bookmark.category || "Other",
+        category: resolveBookmarkCategory({
+          category: bookmark.category,
+          title: bookmark.title,
+          url: bookmark.url,
+          description: bookmark.description,
+          tags: bookmark.tags,
+        }),
         tags: bookmark.tags || "imported",
         isFavorite: bookmark.isFavorite || false,
         previewImage: bookmark.previewImage || null,
@@ -332,7 +364,13 @@ export const syncLocalBookmarks = async (req, res) => {
         title: bookmark.title,
         url: bookmark.url,
         description: "",
-        category: "Other",
+        category: resolveBookmarkCategory({
+          category: bookmark.category,
+          title: bookmark.title,
+          url: bookmark.url,
+          description: bookmark.description,
+          tags: bookmark.tags,
+        }),
         tags: "imported-browser",
         isFavorite: false,
         userId: req.user.id,
@@ -425,12 +463,21 @@ export const fetchBookmarkPreview = async (req, res) => {
         const tags = extractedKeywords.slice(0, 5).join(', ');
 
         // Update the bookmark with preview data and tags
+        const resolvedCategory = resolveBookmarkCategory({
+          category: bookmark.category,
+          title: metadata.title || bookmark.title,
+          url: bookmark.url,
+          description: metadata.description || bookmark.description || "",
+          tags: tags || bookmark.tags,
+        });
+
         const updatedBookmark = await prisma.bookmark.update({
           where: { id: bookmarkId },
           data: {
             previewImage: metadata.image || null,
             description: metadata.description || bookmark.description || "",
             tags: tags || "imported",
+            category: resolvedCategory,
           },
         });
 

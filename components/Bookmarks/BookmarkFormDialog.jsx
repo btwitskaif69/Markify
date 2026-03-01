@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,8 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus } from "lucide-react";
 
 const logo = "/assets/logo.svg";
-
-const categories = ["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"];
+const AUTO_CATEGORY_VALUE = "__auto__";
 
 export default function BookmarkFormDialog({
   open,
@@ -31,12 +31,35 @@ export default function BookmarkFormDialog({
   onUrlChange,
   onAddClick,
   collections,
+  categories = [],
   isSubmitting,
 }) {
+  const availableCategories = useMemo(() => {
+    const categoryMap = new Map();
+
+    const addCategory = (value) => {
+      if (typeof value !== "string") return;
+      const category = value.trim();
+      if (!category) return;
+
+      const key = category.toLowerCase();
+      if (!categoryMap.has(key)) {
+        categoryMap.set(key, category);
+      }
+    };
+
+    categories.forEach(addCategory);
+    addCategory(editingBookmark?.category);
+
+    return Array.from(categoryMap.values()).sort((a, b) => a.localeCompare(b));
+  }, [categories, editingBookmark?.category]);
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    const normalizedCategory = formData.category === AUTO_CATEGORY_VALUE ? "" : formData.category;
     const dataToSubmit = {
       ...formData,
+      category: normalizedCategory,
       // Ensure we send null if the collectionId is an empty string
       collectionId: formData.collectionId || null,
     };
@@ -140,10 +163,18 @@ export default function BookmarkFormDialog({
           {/* ------------------------------------------- */}
           <div>
             <Label htmlFor="category" className="mb-2">Category</Label>
-            <Select value={formData.category} onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}>
+            <Select
+              value={formData.category || AUTO_CATEGORY_VALUE}
+              onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+            >
               <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (<SelectItem key={category} value={category}>{category}</SelectItem>))}
+                <SelectItem value={AUTO_CATEGORY_VALUE}>Auto (Recommended)</SelectItem>
+                {availableCategories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

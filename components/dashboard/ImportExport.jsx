@@ -122,22 +122,28 @@ const parseBrowserBookmarksContent = (rawText) => {
 
 const pickBrowserBookmarksFile = async () => {
   if (typeof window !== "undefined" && typeof window.showOpenFilePicker === "function") {
-    const [fileHandle] = await window.showOpenFilePicker({
-      multiple: false,
-      excludeAcceptAllOption: false,
-      suggestedName: "Bookmarks",
-      types: [
-        {
-          description: "Browser bookmarks",
-          accept: {
-            "application/json": [".json"],
-            "text/html": [".html", ".htm"],
-            "text/plain": [".txt"],
+    try {
+      const [fileHandle] = await window.showOpenFilePicker({
+        multiple: false,
+        excludeAcceptAllOption: false,
+        suggestedName: "Bookmarks",
+        types: [
+          {
+            description: "Browser bookmarks",
+            accept: {
+              "application/json": [".json"],
+              "text/html": [".html", ".htm"],
+              "text/plain": [".txt"],
+            },
           },
-        },
-      ],
-    });
-    return fileHandle.getFile();
+        ],
+      });
+      return fileHandle?.getFile ? fileHandle.getFile() : null;
+    } catch (error) {
+      // User canceled picker.
+      if (error?.name === "AbortError") return null;
+      // Fall through to classic input-based picker for stricter browsers.
+    }
   }
 
   return new Promise((resolve) => {
@@ -187,6 +193,27 @@ export default function ImportExport({ onRefetch }) {
   const fileInputRef = useRef(null);
   const [importFormat, setImportFormat] = useState(null);
   const [isSyncingBrowser, setIsSyncingBrowser] = useState(false);
+
+  const syncBrowserFromServerFilesystem = async () => {
+    const response = await authFetch(`${API_URL}/bookmarks/sync-local`, {
+      method: "POST",
+    });
+
+    let data = null;
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+
+    if (!response.ok) {
+      const error = new Error(data?.message || "Server-side browser sync failed.");
+      error.status = response.status;
+      throw error;
+    }
+
+    return data;
+  };
 
   const enrichPreviewsInBackground = (bookmarkIds) => {
     if (!bookmarkIds || bookmarkIds.length === 0) return;
@@ -391,29 +418,62 @@ export default function ImportExport({ onRefetch }) {
 
     setIsSyncingBrowser(true);
     try {
-      toast.info("Select your browser bookmarks file.", {
-        description:
-          "Use Chrome/Edge/Brave profile file named 'Bookmarks', or an exported bookmarks HTML file.",
-      });
+      let usedFallbackFileFlow = false;
 
-      const file = await pickBrowserBookmarksFile();
-      if (!file) {
+      // 1) Try legacy one-click sync (works when server runs on the same machine as the browser).
+      try {
+        const data = await syncBrowserFromServerFilesystem();
+
+        if (data.createdCount === 0) {
+          toast.success("All browser bookmarks are already synced.");
+        } else {
+          const sourceLabel = data.source ? ` from ${data.source}` : "";
+          toast.success(
+            `${data.createdCount} bookmarks synced${sourceLabel}. ${data.skippedCount} duplicates skipped.`
+          );
+        }
+
+        if (onRefetch) {
+          await onRefetch();
+        }
+
+        if (data.createdIds?.length > 0) {
+          toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
+          enrichPreviewsInBackground(data.createdIds);
+        }
+
         return;
+      } catch (serverSyncError) {
+        // 2) Fallback for production/cloud deployments where server cannot read the user's local browser profile.
+        usedFallbackFileFlow = true;
+        console.info("Server-side browser sync unavailable, falling back to client file sync.", serverSyncError);
       }
 
-      const text = await file.text();
-      const { bookmarks, sourceLabel } = parseBrowserBookmarksContent(text);
+      if (usedFallbackFileFlow) {
+        toast.info("Server auto-sync unavailable here. Select your browser bookmarks file to continue.", {
+          description:
+            "Use Chrome/Edge/Brave profile file named 'Bookmarks', or an exported bookmarks HTML file.",
+        });
 
-      if (bookmarks.length === 0) {
-        toast.info("No valid bookmarks found in the selected file.");
-        return;
+        const file = await pickBrowserBookmarksFile();
+        if (!file) {
+          return;
+        }
+
+        const text = await file.text();
+        const { bookmarks, sourceLabel } = parseBrowserBookmarksContent(text);
+
+        if (bookmarks.length === 0) {
+          toast.info("No valid bookmarks found in the selected file.");
+          return;
+        }
+
+        await importBookmarksIntoLibrary(bookmarks, (data) =>
+          data.createdCount === 0
+            ? "All selected browser bookmarks are already synced."
+            : `${data.createdCount} bookmarks synced from ${sourceLabel}. ${data.skippedCount} duplicates skipped.`
+        );
       }
-
-      await importBookmarksIntoLibrary(bookmarks, (data) =>
-        data.createdCount === 0
-          ? "All selected browser bookmarks are already synced."
-          : `${data.createdCount} bookmarks synced from ${sourceLabel}. ${data.skippedCount} duplicates skipped.`
-      );
     } catch (error) {
       if (error?.name === "AbortError") {
         return;

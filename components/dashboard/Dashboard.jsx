@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
@@ -26,7 +26,14 @@ import CmdK from "./CmdK";
 import WelcomeDialog from "./WelcomeDialog";
 import SEO from "@/components/SEO/SEO";
 
-const INITIAL_FORM_STATE = { title: "", url: "", description: "", tags: "", category: "Other" };
+const INITIAL_FORM_STATE = {
+  title: "",
+  url: "",
+  description: "",
+  tags: "",
+  category: "__auto__",
+  collectionId: "",
+};
 
 export default function Dashboard() {
   const { user, authFetch, isLoading: isAuthLoading } = useAuth();
@@ -66,6 +73,23 @@ export default function Dashboard() {
     activeCollection,
     refetchBookmarks,
   } = useDashboardData(user, authFetch, isAuthLoading);
+
+  const bookmarkCategories = useMemo(() => {
+    const source = Array.isArray(allBookmarks) ? allBookmarks : [];
+    const categoryMap = new Map();
+
+    for (const bookmark of source) {
+      const category = typeof bookmark?.category === "string" ? bookmark.category.trim() : "";
+      if (!category) continue;
+
+      const key = category.toLowerCase();
+      if (!categoryMap.has(key)) {
+        categoryMap.set(key, category);
+      }
+    }
+
+    return Array.from(categoryMap.values()).sort((a, b) => a.localeCompare(b));
+  }, [allBookmarks]);
 
   const {
     handleSubmit,
@@ -120,7 +144,7 @@ export default function Dashboard() {
       url: bookmark.url,
       description: bookmark.description,
       tags: bookmark.tags || "",
-      category: bookmark.category,
+      category: bookmark.category || "__auto__",
       collectionId: bookmark.collectionId || "",
     });
     setPreviewData(
@@ -246,6 +270,7 @@ export default function Dashboard() {
                 onUrlChange={handleUrlChange}
                 onAddClick={handleAddClick}
                 collections={collections}
+                categories={bookmarkCategories}
                 isSubmitting={isSubmitting}
               />
             </div>

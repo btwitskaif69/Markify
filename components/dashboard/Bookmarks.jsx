@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import BookmarkFilters from "../Bookmarks/BookmarkFilters";
 import BookmarkStats from "../Bookmarks/BookmarkStats";
@@ -34,7 +33,35 @@ export default function Bookmarks({
   // Confirmation dialog state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const safeBookmarks = Array.isArray(bookmarks) ? bookmarks : [];
+  const safeBookmarks = useMemo(
+    () => (Array.isArray(bookmarks) ? bookmarks : []),
+    [bookmarks]
+  );
+
+  const availableCategories = useMemo(() => {
+    const categoryMap = new Map();
+
+    for (const bookmark of safeBookmarks) {
+      const category = typeof bookmark?.category === "string" ? bookmark.category.trim() : "";
+      if (!category) continue;
+
+      const key = category.toLowerCase();
+      if (!categoryMap.has(key)) {
+        categoryMap.set(key, category);
+      }
+    }
+
+    return Array.from(categoryMap.values()).sort((a, b) => a.localeCompare(b));
+  }, [safeBookmarks]);
+
+  useEffect(() => {
+    if (selectedCategory === "all") return;
+    const exists = availableCategories.some((category) => category === selectedCategory);
+    if (!exists) {
+      setSelectedCategory("all");
+    }
+  }, [availableCategories, selectedCategory]);
+
   const filteredBookmarks = safeBookmarks.filter((bookmark) => {
     const searchString = String(bookmark.tags || '');
     const matchesSearch =
@@ -135,7 +162,7 @@ export default function Bookmarks({
         setShowFavoritesOnly={setShowFavoritesOnly}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        categories={["Work", "Personal", "Learning", "Entertainment", "Tools", "News", "Other"]}
+        categories={availableCategories}
         fetchMoreBookmarks={fetchMoreBookmarks}
         onOpenCmdK={() => setCmdKOpen(true)}
         // Selection mode props

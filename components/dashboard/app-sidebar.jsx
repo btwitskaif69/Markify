@@ -12,6 +12,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarRail,
   SidebarMenuButton
 } from "@/components/ui/sidebar"
 import ImportExport from "./ImportExport";
@@ -52,6 +53,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
       <SidebarFooter>
         <NavUser user={user} logout={logout} />
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
