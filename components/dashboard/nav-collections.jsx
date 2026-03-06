@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import PropTypes from "prop-types";
-import { useParams, usePathname } from "next/navigation";
-import { ChevronRight, Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders, Share2, Globe } from "lucide-react";
+import { useParams } from "next/navigation";
+import { ChevronRight, Folder, MoreHorizontal, Trash2, Edit, Plus, FolderOpen, Folders, Share2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuLabel
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import {
   Collapsible,
@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -31,33 +31,17 @@ import { Button } from "@/components/ui/button";
 
 export function NavCollections({ collections = [], onCreate, onRename, onDelete, onShare }) {
   const params = useParams();
-  const pathname = usePathname();
   const userId = Array.isArray(params.userId) ? params.userId[0] : params.userId;
   const activeCollectionId = Array.isArray(params.collectionId)
     ? params.collectionId[0]
     : params.collectionId;
   const safeCollections = Array.isArray(collections) ? collections : [];
-  const sharedPath = `/dashboard/${userId}/shared`;
-  const isSharedActive = pathname === sharedPath;
   const hasActiveCollection = safeCollections.some((collection) => collection.id === activeCollectionId);
 
   return (
-    <SidebarGroup>
-      <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel className="text-sm text-foreground">
-          <div className="flex items-center gap-2">
-            <Folders className="h-4 w-4" />
-            <span className="font-semibold">Collections</span>
-          </div>
-        </SidebarGroupLabel>
-        <Button onClick={onCreate} variant="ghost" size="icon" className="h-8 w-8">
-          <Plus className="h-4 w-4" />
-          <span className="sr-only">Create Collection</span>
-        </Button>
-      </div>
-
+    <SidebarGroup className="px-2 py-1">
       <SidebarMenu>
-        <Collapsible asChild defaultOpen={hasActiveCollection || isSharedActive} className="group/collapsible">
+        <Collapsible asChild defaultOpen={safeCollections.length > 0 || hasActiveCollection} className="group/collapsible">
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
               <SidebarMenuButton tooltip="Collections">
@@ -66,18 +50,20 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete,
                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </SidebarMenuButton>
             </CollapsibleTrigger>
+            <SidebarMenuAction
+              aria-label="Create Collection"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onCreate?.();
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="sr-only">Create Collection</span>
+            </SidebarMenuAction>
 
             <CollapsibleContent>
               <SidebarMenuSub>
-                <SidebarMenuSubItem>
-                  <SidebarMenuSubButton asChild isActive={isSharedActive}>
-                    <Link href={sharedPath} className="flex w-full items-center gap-2">
-                      <Globe className="h-4 w-4" />
-                      <span>Shared</span>
-                    </Link>
-                  </SidebarMenuSubButton>
-                </SidebarMenuSubItem>
-
                 {safeCollections.map((collection) => (
                   <SidebarMenuSubItem key={collection.id}>
                     <div className="group flex items-center gap-1">

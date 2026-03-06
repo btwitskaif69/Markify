@@ -22,9 +22,8 @@ import { NextResponse } from "next/server";
 const ATTACK_PATTERNS = {
     // SQL Injection patterns (enhanced)
     sqlInjection: [
-        /(\%27)|(\')|(\-\-)|(\%23)|(#)/gi,
-        /((\%3D)|(=))[^\n]*((\%27)|(\')|(\-\-)|(\/\*))/gi,
-        /\w*((\%27)|(\'))union/gi,
+        /((%3D)|(=))[^\n]*((%27)|(')|(--)|(\/\*))/gi,
+        /(?:%27|')\s*union/gi,
         /exec(\s|\+)+(s|x)p\w+/gi,
         /UNION(\s+)ALL(\s+)SELECT/gi,
         /UNION(\s+)SELECT/gi,
@@ -189,7 +188,7 @@ const ATTACK_PATTERNS = {
     // LDAP Injection patterns
     ldapInjection: [
         /\(\|/g,
-        /\(\&/g,
+        /\(&/g,
         /\)\(/g,
         /\*\)/g,
     ],
@@ -245,9 +244,23 @@ const WHITELISTED_ROUTES = [
     '/api/contact',
 ];
 
+// Routes that accept user-authored bookmark content. Keep URL/query/header checks,
+// but skip deep body pattern scanning to avoid false positives on normal titles/URLs.
+const BODY_SCAN_EXEMPT_ROUTES = [
+    { method: 'POST', pattern: /^\/api\/bookmarks\/import(?:\/|$)/ },
+    { method: 'POST', pattern: /^\/api\/users\/[^/]+\/bookmarks(?:\/|$)/ },
+    { method: 'PATCH', pattern: /^\/api\/bookmarks\/[^/]+(?:\/|$)/ },
+];
+
 // Check if route is whitelisted
 const isWhitelistedRoute = (path) => {
     return WHITELISTED_ROUTES.some(route => path.startsWith(route));
+};
+
+const shouldSkipBodyScan = (method, path) => {
+    return BODY_SCAN_EXEMPT_ROUTES.some((route) => {
+        return route.method === method && route.pattern.test(path);
+    });
 };
 
 // Check a string against attack patterns
@@ -374,7 +387,11 @@ export const applyWaf = (req) => {
         }
 
         // Check request body
-        if (req.body && Object.keys(req.body).length > 0) {
+        if (
+            req.body &&
+            Object.keys(req.body).length > 0 &&
+            !shouldSkipBodyScan(req.method, req.path)
+        ) {
             const bodyAttack = scanObject(req.body);
             if (bodyAttack) {
                 console.warn(`[WAF] Blocked ${bodyAttack.category} attack in request body:`, {

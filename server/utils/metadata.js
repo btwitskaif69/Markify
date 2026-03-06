@@ -88,6 +88,9 @@ export const extractMetadataFromHtml = (html = "", baseUrl = "") => {
       description: "",
       image: null,
       url: baseUrl || "",
+      siteName: "",
+      author: "",
+      publishedTime: "",
     };
   }
 
@@ -100,6 +103,20 @@ export const extractMetadataFromHtml = (html = "", baseUrl = "") => {
     normalizeText(titleTag);
   const description = normalizeText(
     pickMeta(metaMap, ["og:description", "twitter:description", "description"])
+  );
+  const siteName = normalizeText(
+    pickMeta(metaMap, ["og:site_name", "application-name", "twitter:app:name:iphone"])
+  );
+  const author = normalizeText(
+    pickMeta(metaMap, ["article:author", "author", "parsely-author"])
+  );
+  const publishedTime = normalizeText(
+    pickMeta(metaMap, [
+      "article:published_time",
+      "og:article:published_time",
+      "parsely-pub-date",
+      "pubdate",
+    ])
   );
   const image = pickMeta(metaMap, [
     "og:image:secure_url",
@@ -116,5 +133,8 @@ export const extractMetadataFromHtml = (html = "", baseUrl = "") => {
     description: description || "",
     image: resolvedImage || null,
     url: resolvedUrl || baseUrl || "",
+    siteName: siteName || "",
+    author: author || "",
+    publishedTime: publishedTime || "",
   };
 };

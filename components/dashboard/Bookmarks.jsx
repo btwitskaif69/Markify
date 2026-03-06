@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import PropTypes from "prop-types";
 import { Card } from "@/components/ui/card";
 import BookmarkFilters from "../Bookmarks/BookmarkFilters";
 import BookmarkStats from "../Bookmarks/BookmarkStats";
@@ -12,13 +13,14 @@ export default function Bookmarks({
   bookmarks = [],
   collections = [],
   isLoading = false,
-  error = null,
   onEdit,
   onDelete,
   onToggleFavorite,
   onMove,
   onBulkDelete,
-  onShare
+  onShare,
+  onViewArchive,
+  onRefreshArchive,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -63,7 +65,9 @@ export default function Bookmarks({
   }, [availableCategories, selectedCategory]);
 
   const filteredBookmarks = safeBookmarks.filter((bookmark) => {
-    const searchString = String(bookmark.tags || '');
+    const searchString = String(
+      `${bookmark.tags || ""} ${bookmark.archive?.excerpt || ""} ${bookmark.archive?.siteName || ""}`
+    );
     const matchesSearch =
       bookmark.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       bookmark.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -214,6 +218,8 @@ export default function Bookmarks({
                 collections={collections}
                 onMove={onMove}
                 onShare={onShare}
+                onViewArchive={onViewArchive}
+                onRefreshArchive={onRefreshArchive}
                 // Selection mode props
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.has(bookmark.id)}
@@ -227,6 +233,8 @@ export default function Bookmarks({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 onToggleFavorite={onToggleFavorite}
+                onViewArchive={onViewArchive}
+                onRefreshArchive={onRefreshArchive}
                 // Selection mode props
                 isSelectionMode={isSelectionMode}
                 isSelected={selectedIds.has(bookmark.id)}
@@ -247,3 +255,17 @@ export default function Bookmarks({
     </main>
   );
 }
+
+Bookmarks.propTypes = {
+  bookmarks: PropTypes.array,
+  collections: PropTypes.array,
+  isLoading: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  onToggleFavorite: PropTypes.func,
+  onMove: PropTypes.func,
+  onBulkDelete: PropTypes.func,
+  onShare: PropTypes.func,
+  onViewArchive: PropTypes.func,
+  onRefreshArchive: PropTypes.func,
+};

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import PropTypes from "prop-types";
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +32,7 @@ useEffect(() => {
   }, [open, setOpen]);
   
   const filteredBookmarks = bookmarks.filter(bookmark => 
-    `${bookmark.title} ${bookmark.description} ${bookmark.tags}`
+    `${bookmark.title} ${bookmark.description} ${bookmark.tags} ${bookmark.archive?.excerpt || ""} ${bookmark.archive?.siteName || ""}`
       .toLowerCase()
       .includes(search.toLowerCase())
   );
@@ -109,3 +110,9 @@ useEffect(() => {
     </Dialog>
   );
 }
+
+CmdK.propTypes = {
+  bookmarks: PropTypes.array,
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+};

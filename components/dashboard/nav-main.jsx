@@ -30,7 +30,7 @@ export function NavMain({ totalBookmarks }) {
     {
       title: "Workspace",
       icon: Bookmark,
-      defaultOpen: isAllBookmarksActive || isSharedActive,
+      alwaysOpen: true,
       items: [
         {
           title: "All Bookmarks",
@@ -66,26 +66,24 @@ export function NavMain({ totalBookmarks }) {
   ];
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="px-2 pt-2 pb-1">
       <SidebarGroupLabel>Navigation</SidebarGroupLabel>
       <SidebarMenu>
-        {navSections.map((section) => (
-          <Collapsible
-            key={section.title}
-            asChild
-            defaultOpen={section.defaultOpen}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={section.title}>
-                  <section.icon className="h-4 w-4" />
-                  <span>{section.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+        {navSections.map((section) => {
+          if (section.alwaysOpen) {
+            return (
+              <SidebarMenuItem key={section.title}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={section.title}
+                  className="hover:bg-transparent hover:text-inherit active:bg-transparent active:text-inherit"
+                >
+                  <div>
+                    <section.icon className="h-4 w-4" />
+                    <span>{section.title}</span>
+                  </div>
                 </SidebarMenuButton>
-              </CollapsibleTrigger>
 
-              <CollapsibleContent>
                 <SidebarMenuSub>
                   {section.items.map((item) => (
                     <SidebarMenuSubItem key={item.title}>
@@ -100,10 +98,46 @@ export function NavMain({ totalBookmarks }) {
                     </SidebarMenuSubItem>
                   ))}
                 </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
+              </SidebarMenuItem>
+            );
+          }
+
+          return (
+            <Collapsible
+              key={section.title}
+              asChild
+              defaultOpen={section.defaultOpen}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={section.title}>
+                    <section.icon className="h-4 w-4" />
+                    <span>{section.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {section.items.map((item) => (
+                      <SidebarMenuSubItem key={item.title}>
+                        <SidebarMenuSubButton asChild isActive={item.isActive}>
+                          <Link href={item.href} className="flex w-full items-center gap-2">
+                            <span>{item.title}</span>
+                            {item.badge ? (
+                              <span className="ml-auto text-xs font-medium">{item.badge}</span>
+                            ) : null}
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Share2, Globe } from "lucide-react";
 import CollectionCard from "../Collections/CollectionCard";
 import BookmarkCard from "../Bookmarks/BookmarkCard";
@@ -9,13 +9,13 @@ export default function SharedItems({
     bookmarks = [],
     collections = [],
     isLoading = false,
-    error = null,
     onEdit,
     onDelete,
     onToggleFavorite,
     onMove,
-    onBulkDelete,
     onShare,
+    onViewArchive,
+    onRefreshArchive,
     onRenameCollection,
     onDeleteCollection,
     onShareCollection
@@ -108,6 +108,8 @@ export default function SharedItems({
                                         onToggleFavorite={onToggleFavorite}
                                         onMove={onMove}
                                         onShare={onShare}
+                                        onViewArchive={onViewArchive}
+                                        onRefreshArchive={onRefreshArchive}
                                     />
                                 ))}
                             </div>
@@ -149,6 +151,8 @@ export default function SharedItems({
                                     onToggleFavorite={onToggleFavorite}
                                     onMove={onMove}
                                     onShare={onShare}
+                                    onViewArchive={onViewArchive}
+                                    onRefreshArchive={onRefreshArchive}
                                 />
                             ))}
                         </div>
@@ -158,3 +162,19 @@ export default function SharedItems({
         </div>
     );
 }
+
+SharedItems.propTypes = {
+    bookmarks: PropTypes.array,
+    collections: PropTypes.array,
+    isLoading: PropTypes.bool,
+    onEdit: PropTypes.func,
+    onDelete: PropTypes.func,
+    onToggleFavorite: PropTypes.func,
+    onMove: PropTypes.func,
+    onShare: PropTypes.func,
+    onViewArchive: PropTypes.func,
+    onRefreshArchive: PropTypes.func,
+    onRenameCollection: PropTypes.func,
+    onDeleteCollection: PropTypes.func,
+    onShareCollection: PropTypes.func,
+};

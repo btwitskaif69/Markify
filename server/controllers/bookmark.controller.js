@@ -6,6 +6,23 @@ import { randomUUID } from "crypto";
 import keywordExtractor from "keyword-extractor";
 import { extractMetadataFromHtml } from "@/server/utils/metadata";
 import { resolveBookmarkCategory } from "@/server/utils/category";
+import {
+  bookmarkArchiveSummarySelect,
+  getBookmarkArchivePayload,
+  refreshBookmarkArchiveForBookmark,
+} from "@/server/services/bookmark-archive.service";
+
+const bookmarkArchiveInclude = {
+  archive: {
+    select: bookmarkArchiveSummarySelect,
+  },
+};
+
+const getBookmarkWithArchive = (bookmarkId) =>
+  prisma.bookmark.findUnique({
+    where: { id: bookmarkId },
+    include: bookmarkArchiveInclude,
+  });
 
 /**
  * Creates a new bookmark for a specific user.
@@ -47,7 +64,11 @@ export const addBookmark = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: 'Bookmark added successfully', bookmark: newBookmark });
+    await refreshBookmarkArchiveForBookmark(newBookmark);
+
+    const bookmark = await getBookmarkWithArchive(newBookmark.id);
+
+    res.status(201).json({ message: 'Bookmark added successfully', bookmark });
   } catch (error) {
     if (error.code === 'P2002') {
       return res.status(409).json({ message: 'A bookmark with this title already exists.' });
@@ -66,6 +87,7 @@ export const getBookmarksForUser = async (req, res) => {
     const bookmarks = await prisma.bookmark.findMany({
       where: { userId: userId },
       orderBy: { createdAt: 'desc' },
+      include: bookmarkArchiveInclude,
     });
     res.status(200).json(bookmarks);
   } catch (error) {
@@ -81,23 +103,25 @@ export const updateBookmark = async (req, res) => {
   try {
     const { bookmarkId } = req.params;
     const updates = { ...req.body };
+    const shouldRefreshArchive = Boolean(updates.refreshArchive) || Object.prototype.hasOwnProperty.call(updates, "url");
+    delete updates.refreshArchive;
+
+    const existingBookmark = await prisma.bookmark.findUnique({
+      where: { id: bookmarkId },
+      select: {
+        title: true,
+        url: true,
+        description: true,
+        tags: true,
+        category: true,
+      },
+    });
+
+    if (!existingBookmark) {
+      return res.status(404).json({ message: "Bookmark not found." });
+    }
 
     if (Object.prototype.hasOwnProperty.call(updates, "category")) {
-      const existingBookmark = await prisma.bookmark.findUnique({
-        where: { id: bookmarkId },
-        select: {
-          title: true,
-          url: true,
-          description: true,
-          tags: true,
-          category: true,
-        },
-      });
-
-      if (!existingBookmark) {
-        return res.status(404).json({ message: "Bookmark not found." });
-      }
-
       updates.category = resolveBookmarkCategory({
         category: updates.category,
         title: updates.title ?? existingBookmark.title,
@@ -112,7 +136,13 @@ export const updateBookmark = async (req, res) => {
       data: updates,
     });
 
-    res.status(200).json({ message: 'Bookmark updated', bookmark: updatedBookmark });
+    if (shouldRefreshArchive) {
+      await refreshBookmarkArchiveForBookmark(updatedBookmark);
+    }
+
+    const bookmark = await getBookmarkWithArchive(bookmarkId);
+
+    res.status(200).json({ message: 'Bookmark updated', bookmark });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -481,9 +511,11 @@ export const fetchBookmarkPreview = async (req, res) => {
           },
         });
 
+        const bookmarkWithArchive = await getBookmarkWithArchive(updatedBookmark.id);
+
         return res.status(200).json({
           success: true,
-          bookmark: updatedBookmark
+          bookmark: bookmarkWithArchive
         });
       } else {
         return res.status(200).json({
@@ -576,6 +608,60 @@ export const extractUrlMetadata = async (req, res) => {
   } catch (error) {
     console.error("Metadata extraction error:", error);
     res.status(500).json({ message: "Failed to extract metadata." });
+  }
+};
+
+export const getBookmarkArchive = async (req, res) => {
+  try {
+    const { bookmarkId } = req.params;
+    const bookmark = await getBookmarkArchivePayload(bookmarkId, req.user.id);
+
+    if (!bookmark) {
+      return res.status(404).json({ message: "Bookmark not found." });
+    }
+
+    return res.status(200).json({
+      bookmark: {
+        id: bookmark.id,
+        title: bookmark.title,
+        url: bookmark.url,
+        description: bookmark.description,
+        previewImage: bookmark.previewImage,
+      },
+      archive: bookmark.archive,
+    });
+  } catch (error) {
+    console.error("Get archive error:", error);
+    return res.status(500).json({ message: "Failed to load bookmark archive." });
+  }
+};
+
+export const refreshBookmarkArchive = async (req, res) => {
+  try {
+    const { bookmarkId } = req.params;
+    const bookmark = await prisma.bookmark.findUnique({
+      where: { id: bookmarkId },
+    });
+
+    if (!bookmark) {
+      return res.status(404).json({ message: "Bookmark not found." });
+    }
+
+    if (bookmark.userId !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized." });
+    }
+
+    const { archive, error } = await refreshBookmarkArchiveForBookmark(bookmark);
+    const bookmarkWithArchive = await getBookmarkWithArchive(bookmarkId);
+
+    return res.status(200).json({
+      message: error ? "Archive refresh completed with issues." : "Archive refreshed successfully.",
+      bookmark: bookmarkWithArchive,
+      archive,
+    });
+  } catch (error) {
+    console.error("Refresh archive error:", error);
+    return res.status(500).json({ message: "Failed to refresh bookmark archive." });
   }
 };
 

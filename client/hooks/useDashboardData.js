@@ -1,13 +1,29 @@
 "use client";
 
-// src/components/Dashboard/useDashboardData.js
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
-const PAGE_SIZE = 8;
+const BOOKMARKS_CACHE_VERSION = "v2";
+
+const getCacheKey = (userId) =>
+  userId ? `bookmarks_cache_${BOOKMARKS_CACHE_VERSION}_${userId}` : null;
+
+const readCachedBookmarks = (userId) => {
+  if (typeof window === "undefined" || !userId) {
+    return [];
+  }
+
+  try {
+    const cached = localStorage.getItem(getCacheKey(userId));
+    return cached ? JSON.parse(cached) : [];
+  } catch (error) {
+    console.error("Failed to parse bookmark cache", error);
+    return [];
+  }
+};
 
 export function useDashboardData(user, authFetch, isAuthLoading) {
   const params = useParams();
@@ -16,72 +32,44 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
   const userId = getParamValue(params?.userId);
   const activeCollectionId = getParamValue(params?.collectionId);
 
-  const [allBookmarks, setAllBookmarks] = useState(() => {
-    // Try to load from cache
-    if (typeof window !== "undefined" && user?.id) {
-      const cached = localStorage.getItem(`bookmarks_cache_${user.id}`);
-      if (cached) {
-        try {
-          return JSON.parse(cached);
-        } catch (e) {
-          console.error("Failed to parse bookmark cache", e);
-        }
-      }
-    }
-    return [];
-  });
+  const [allBookmarks, setAllBookmarks] = useState(() => readCachedBookmarks(user?.id));
   const [collections, setCollections] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const bookmarksRef = useRef(allBookmarks);
 
-  // Pagination state
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  useEffect(() => {
+    bookmarksRef.current = allBookmarks;
+  }, [allBookmarks]);
 
-  // Fetch bookmarks (paginated)
-  const fetchBookmarks = useCallback(
-    async (pageNumber = 0) => {
-      try {
-        const res = await authFetch(
-          `${API_URL}/users/${userId}/bookmarks?limit=${PAGE_SIZE}&offset=${pageNumber * PAGE_SIZE
-          }`
-        );
-        if (!res.ok) throw new Error("Failed to fetch bookmarks.");
-        const data = await res.json();
+  const fetchBookmarks = useCallback(async () => {
+    try {
+      setError(null);
+      const res = await authFetch(`${API_URL}/users/${userId}/bookmarks`);
+      if (!res.ok) throw new Error("Failed to fetch bookmarks.");
 
-        if (pageNumber === 0) {
-          // First load
-          if (Array.isArray(data)) {
-            setAllBookmarks(data);
-            // Update cache
-            if (user?.id) {
-              localStorage.setItem(`bookmarks_cache_${user.id}`, JSON.stringify(data));
-            }
-          } else {
-            console.error("Expected bookmarks to be an array, received:", data);
-            setAllBookmarks([]);
-          }
-        } else {
-          // Append more
-          if (Array.isArray(data)) {
-            setAllBookmarks((prev) => [...prev, ...data]);
-          }
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        console.error("Expected bookmarks to be an array, received:", data);
+        setAllBookmarks([]);
+        if (user?.id && typeof window !== "undefined") {
+          localStorage.removeItem(getCacheKey(user.id));
         }
-
-        // If fewer than PAGE_SIZE items returned → no more pages
-        setHasMore(data.length === PAGE_SIZE);
-      } catch (err) {
-        if (err.message !== "Session expired") {
-          setError(err.message);
-          toast.error(err.message);
-        }
+        return;
       }
-    },
-    [authFetch, userId, user?.id]
-  );
 
-  // Load collections once
+      setAllBookmarks(data);
+      if (user?.id && typeof window !== "undefined") {
+        localStorage.setItem(getCacheKey(user.id), JSON.stringify(data));
+      }
+    } catch (err) {
+      if (err.message !== "Session expired") {
+        setError(err.message);
+        toast.error(err.message);
+      }
+    }
+  }, [authFetch, userId, user?.id]);
+
   useEffect(() => {
     if (isAuthLoading) return;
 
@@ -89,19 +77,25 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       router.replace("/login");
       return;
     }
+
     if (user.id !== userId) {
       return;
     }
-    setIsLoading(true);
 
-    // Initial bookmarks fetch
-    fetchBookmarks(0).finally(() => setIsLoading(false));
+    const shouldShowLoader = bookmarksRef.current.length === 0;
+    if (shouldShowLoader) {
+      setIsLoading(true);
+    }
 
-    // Fetch collections in parallel
+    fetchBookmarks().finally(() => {
+      if (shouldShowLoader) {
+        setIsLoading(false);
+      }
+    });
+
     authFetch(`${API_URL}/collections`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
-        // Support both array responses and wrapped object responses
         let collectionsArray = [];
         if (Array.isArray(data)) {
           collectionsArray = data;
@@ -125,35 +119,27 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       });
   }, [userId, user, authFetch, isAuthLoading, router, fetchBookmarks]);
 
-  // Load more bookmarks
-  const fetchMoreBookmarks = async () => {
-    if (!hasMore || isFetchingMore) return;
-    setIsFetchingMore(true);
-    const nextPage = page + 1;
-    await fetchBookmarks(nextPage);
-    setPage(nextPage);
-    setIsFetchingMore(false);
-  };
-
-  // Refetch first page (used after import/sync actions)
   const refetchBookmarks = useCallback(async () => {
-    setIsLoading(true);
-    setPage(0);
-    setHasMore(true);
-    await fetchBookmarks(0);
-    setIsLoading(false);
+    const shouldShowLoader = bookmarksRef.current.length === 0;
+    if (shouldShowLoader) {
+      setIsLoading(true);
+    }
+
+    await fetchBookmarks();
+
+    if (shouldShowLoader) {
+      setIsLoading(false);
+    }
   }, [fetchBookmarks]);
 
-  // Filter bookmarks by active collection
   const bookmarks = useMemo(() => {
     if (!activeCollectionId) return allBookmarks;
-    return allBookmarks.filter((bm) => bm.collectionId === activeCollectionId);
+    return allBookmarks.filter((bookmark) => bookmark.collectionId === activeCollectionId);
   }, [activeCollectionId, allBookmarks]);
 
-  // Get active collection object
   const activeCollection = useMemo(() => {
     if (!activeCollectionId) return null;
-    return collections.find((c) => c.id === activeCollectionId) || null;
+    return collections.find((collection) => collection.id === activeCollectionId) || null;
   }, [activeCollectionId, collections]);
 
   return {
@@ -164,10 +150,10 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     setCollections,
     isLoading,
     error,
-    hasMore,
-    fetchMoreBookmarks,
+    hasMore: false,
+    fetchMoreBookmarks: async () => {},
     refetchBookmarks,
-    isFetchingMore,
+    isFetchingMore: false,
     activeCollectionId,
     activeCollection,
   };

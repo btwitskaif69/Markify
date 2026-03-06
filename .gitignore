@@ -29,3 +29,6 @@ out
 *.sw?
 
 .vercel
+
+# Local planning docs
+/todo/

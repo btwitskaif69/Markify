@@ -38,7 +38,7 @@ export function AppSidebar({ collections, onCreateCollection, onRenameCollection
           </SidebarMenuButton>
         </Link>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="gap-0">
         <NavMain totalBookmarks={totalBookmarks} />
 
         <NavCollections

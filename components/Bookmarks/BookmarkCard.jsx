@@ -1,11 +1,24 @@
-import React, { useState, memo } from "react"
+import PropTypes from "prop-types"
+import { memo } from "react"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { formatDateUTC } from "@/lib/date"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ExternalLink, Edit, Trash2, Star, MoreHorizontal, BookKey, Ellipsis, MoreVertical, FolderSymlink, CheckSquare, Share2 } from "lucide-react"
+import {
+  ExternalLink,
+  Edit,
+  Trash2,
+  Star,
+  MoreVertical,
+  FolderSymlink,
+  CheckSquare,
+  Share2,
+  Files,
+  RefreshCw,
+} from "lucide-react"
+import BookmarkArchiveBadge from "./BookmarkArchiveBadge"
 const placeholder = "/assets/placeholder.svg";
 
 import {
@@ -29,14 +42,14 @@ function BookmarkCard({
   onDelete,
   onToggleFavorite,
   onShare,
+  onViewArchive,
+  onRefreshArchive,
   // Selection mode props
   isSelectionMode = false,
   isSelected = false,
   onToggleSelect,
   onEnterSelectionMode
 }) {
-
-  const [showActions, setShowActions] = useState(false)
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
 
   const handleCardClick = (e) => {
@@ -139,6 +152,10 @@ function BookmarkCard({
 
           {/* This footer is pushed to the bottom of the card */}
           <div className="mb-2">
+            <div className="mb-3 flex flex-wrap gap-2">
+              <BookmarkArchiveBadge archive={bookmark.archive} />
+            </div>
+
             {(() => {
               const tagsArray = typeof bookmark.tags === 'string'
                 ? bookmark.tags.split(',').map(tag => tag.trim()).filter(Boolean)
@@ -234,6 +251,28 @@ function BookmarkCard({
                   Share
                 </DropdownMenuItem>
 
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewArchive?.(bookmark);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <Files className="w-4 h-4 mr-2" />
+                  {bookmark.archive ? "Saved copy" : "Create saved copy"}
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRefreshArchive?.(bookmark.id);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh copy
+                </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem
@@ -256,4 +295,20 @@ function BookmarkCard({
 }
 
 // React.memo prevents re-renders when props haven't changed (rerender-memo)
+BookmarkCard.propTypes = {
+  bookmark: PropTypes.object.isRequired,
+  collections: PropTypes.array,
+  onMove: PropTypes.func,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  onToggleFavorite: PropTypes.func,
+  onShare: PropTypes.func,
+  onViewArchive: PropTypes.func,
+  onRefreshArchive: PropTypes.func,
+  isSelectionMode: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  onToggleSelect: PropTypes.func,
+  onEnterSelectionMode: PropTypes.func,
+}
+
 export default memo(BookmarkCard)

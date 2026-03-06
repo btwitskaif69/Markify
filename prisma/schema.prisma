@@ -85,9 +85,38 @@ model Bookmark {
   // Add these two lines to connect a bookmark to a collection
   collection    Collection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
   collectionId  String?
+  archive       BookmarkArchive?
 
   // A user cannot have two bookmarks with the same title
   @@unique([userId, title])
+}
+
+enum BookmarkArchiveStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model BookmarkArchive {
+  id             String                @id @default(cuid())
+  bookmark       Bookmark              @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
+  bookmarkId     String                @unique
+  status         BookmarkArchiveStatus @default(PENDING)
+  archivedAt     DateTime?
+  sourceStatusCode Int?
+  contentType    String?
+  canonicalUrl   String?
+  siteName       String?
+  author         String?
+  publishedAt    DateTime?
+  excerpt        String?
+  textContent    String?
+  contentHtml    String?
+  wordCount      Int?
+  readTimeMinutes Int?
+  failureReason  String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 }
 
 model BlogPost {

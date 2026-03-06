@@ -1,16 +1,20 @@
 import { memo } from "react"
+import PropTypes from "prop-types"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { formatDateUTC } from "@/lib/date"
-import { ExternalLink, Edit, Trash2, Star } from "lucide-react"
+import { Edit, Trash2, Star, Files, RefreshCw } from "lucide-react"
+import BookmarkArchiveBadge from "./BookmarkArchiveBadge"
 
 function BookmarkListItem({
   bookmark,
   onEdit,
   onDelete,
   onToggleFavorite,
+  onViewArchive,
+  onRefreshArchive,
   // Selection mode props
   isSelectionMode = false,
   isSelected = false,
@@ -79,6 +83,9 @@ function BookmarkListItem({
               ))}
             </div>
           )}
+          <div className="mt-3">
+            <BookmarkArchiveBadge archive={bookmark.archive} />
+          </div>
         </div>
       </div>
 
@@ -96,6 +103,12 @@ function BookmarkListItem({
             <Button size="icon" variant="ghost" onClick={() => onToggleFavorite(bookmark.id, bookmark.isFavorite)}>
               <Star className={`w-4 h-4 ${bookmark.isFavorite ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"}`} />
             </Button>
+            <Button size="icon" variant="ghost" onClick={() => onViewArchive?.(bookmark)}>
+              <Files className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="ghost" onClick={() => onRefreshArchive?.(bookmark.id)}>
+              <RefreshCw className="w-4 h-4" />
+            </Button>
             <Button size="icon" variant="ghost" onClick={() => onEdit(bookmark)}>
               <Edit className="w-4 h-4" />
             </Button>
@@ -110,4 +123,16 @@ function BookmarkListItem({
 }
 
 // React.memo prevents re-renders when props haven't changed (rerender-memo)
+BookmarkListItem.propTypes = {
+  bookmark: PropTypes.object.isRequired,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  onToggleFavorite: PropTypes.func,
+  onViewArchive: PropTypes.func,
+  onRefreshArchive: PropTypes.func,
+  isSelectionMode: PropTypes.bool,
+  isSelected: PropTypes.bool,
+  onToggleSelect: PropTypes.func,
+}
+
 export default memo(BookmarkListItem)

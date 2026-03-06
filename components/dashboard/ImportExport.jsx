@@ -2,13 +2,20 @@ import { useRef, useState } from 'react';
 import PropTypes from "prop-types";
 import { useAuth } from "@/client/context/AuthContext";
 import { toast } from "sonner";
-import { Upload, Download, Settings, FileJson, FileSpreadsheet, FileCode, RefreshCw } from "lucide-react";
+import { Upload, Download, Database, FileJson, FileSpreadsheet, FileCode, ChevronRight } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -19,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
-import { parseBookmarksHtml, parseChromiumBookmarksJson } from "@/lib/bookmarkParser";
+import { parseBookmarksHtml } from "@/lib/bookmarkParser";
 
 const API_URL = API_BASE_URL;
 const BACKGROUND_PREVIEW_CONCURRENCY = 4;
@@ -104,116 +111,10 @@ const parseCSV = (csvText) => {
   return bookmarks;
 };
 
-const parseBrowserBookmarksContent = (rawText) => {
-  const chromiumBookmarks = parseChromiumBookmarksJson(rawText);
-  if (chromiumBookmarks.length > 0) {
-    return { bookmarks: chromiumBookmarks, sourceLabel: "Chromium Bookmarks file" };
-  }
-
-  const htmlBookmarks = parseBookmarksHtml(rawText);
-  if (htmlBookmarks.length > 0) {
-    return { bookmarks: htmlBookmarks, sourceLabel: "bookmarks HTML export" };
-  }
-
-  throw new Error(
-    "Unsupported bookmarks file. Select a Chromium 'Bookmarks' file (Chrome/Edge/Brave) or an exported bookmarks HTML file."
-  );
-};
-
-const pickBrowserBookmarksFile = async () => {
-  if (typeof window !== "undefined" && typeof window.showOpenFilePicker === "function") {
-    try {
-      const [fileHandle] = await window.showOpenFilePicker({
-        multiple: false,
-        excludeAcceptAllOption: false,
-        suggestedName: "Bookmarks",
-        types: [
-          {
-            description: "Browser bookmarks",
-            accept: {
-              "application/json": [".json"],
-              "text/html": [".html", ".htm"],
-              "text/plain": [".txt"],
-            },
-          },
-        ],
-      });
-      return fileHandle?.getFile ? fileHandle.getFile() : null;
-    } catch (error) {
-      // User canceled picker.
-      if (error?.name === "AbortError") return null;
-      // Fall through to classic input-based picker for stricter browsers.
-    }
-  }
-
-  return new Promise((resolve) => {
-    const input = document.createElement("input");
-    input.type = "file";
-    // Keep unrestricted so extensionless Chromium "Bookmarks" files are selectable.
-    input.accept = "";
-    input.style.display = "none";
-
-    let settled = false;
-    const cleanup = () => {
-      if (input.parentNode) {
-        input.parentNode.removeChild(input);
-      }
-    };
-    const finish = (file) => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      resolve(file);
-    };
-
-    input.addEventListener(
-      "change",
-      () => {
-        finish(input.files?.[0] || null);
-      },
-      { once: true }
-    );
-
-    const onFocus = () => {
-      setTimeout(() => {
-        if (!settled && (!input.files || input.files.length === 0)) {
-          finish(null);
-        }
-      }, 200);
-    };
-    window.addEventListener("focus", onFocus, { once: true });
-
-    document.body.appendChild(input);
-    input.click();
-  });
-};
-
 export default function ImportExport({ onRefetch }) {
   const { authFetch, user } = useAuth();
   const fileInputRef = useRef(null);
   const [importFormat, setImportFormat] = useState(null);
-  const [isSyncingBrowser, setIsSyncingBrowser] = useState(false);
-
-  const syncBrowserFromServerFilesystem = async () => {
-    const response = await authFetch(`${API_URL}/bookmarks/sync-local`, {
-      method: "POST",
-    });
-
-    let data = null;
-    try {
-      data = await response.json();
-    } catch {
-      data = null;
-    }
-
-    if (!response.ok) {
-      const error = new Error(data?.message || "Server-side browser sync failed.");
-      error.status = response.status;
-      throw error;
-    }
-
-    return data;
-  };
 
   const enrichPreviewsInBackground = (bookmarkIds) => {
     if (!bookmarkIds || bookmarkIds.length === 0) return;
@@ -413,166 +314,92 @@ export default function ImportExport({ onRefetch }) {
     }
   };
 
-  const handleSyncBrowserBookmarks = async () => {
-    if (isSyncingBrowser) return;
-
-    setIsSyncingBrowser(true);
-    try {
-      let usedFallbackFileFlow = false;
-
-      // 1) Try legacy one-click sync (works when server runs on the same machine as the browser).
-      try {
-        const data = await syncBrowserFromServerFilesystem();
-
-        if (data.createdCount === 0) {
-          toast.success("All browser bookmarks are already synced.");
-        } else {
-          const sourceLabel = data.source ? ` from ${data.source}` : "";
-          toast.success(
-            `${data.createdCount} bookmarks synced${sourceLabel}. ${data.skippedCount} duplicates skipped.`
-          );
-        }
-
-        if (onRefetch) {
-          await onRefetch();
-        }
-
-        if (data.createdIds?.length > 0) {
-          toast.info("Metadata fetching is running in background. You can continue using the dashboard.");
-          enrichPreviewsInBackground(data.createdIds);
-        }
-
-        return;
-      } catch (serverSyncError) {
-        // 2) Fallback for production/cloud deployments where server cannot read the user's local browser profile.
-        usedFallbackFileFlow = true;
-        console.info("Server-side browser sync unavailable, falling back to client file sync.", serverSyncError);
-      }
-
-      if (usedFallbackFileFlow) {
-        toast.info("Server auto-sync unavailable here. Select your browser bookmarks file to continue.", {
-          description:
-            "Use Chrome/Edge/Brave profile file named 'Bookmarks', or an exported bookmarks HTML file.",
-        });
-
-        const file = await pickBrowserBookmarksFile();
-        if (!file) {
-          return;
-        }
-
-        const text = await file.text();
-        const { bookmarks, sourceLabel } = parseBrowserBookmarksContent(text);
-
-        if (bookmarks.length === 0) {
-          toast.info("No valid bookmarks found in the selected file.");
-          return;
-        }
-
-        await importBookmarksIntoLibrary(bookmarks, (data) =>
-          data.createdCount === 0
-            ? "All selected browser bookmarks are already synced."
-            : `${data.createdCount} bookmarks synced from ${sourceLabel}. ${data.skippedCount} duplicates skipped.`
-        );
-      }
-    } catch (error) {
-      if (error?.name === "AbortError") {
-        return;
-      }
-      toast.error(error.message || "Failed to sync browser bookmarks.");
-      console.error("Browser sync error:", error);
-    } finally {
-      setIsSyncingBrowser(false);
-    }
-  };
-
   return (
-    <SidebarGroup>
-      <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel className="text-sm text-foreground">
-          <div className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            <span className="font-semibold">Settings</span>
-          </div>
-        </SidebarGroupLabel>
-      </div>
+    <SidebarGroup className="px-2 py-1">
       <SidebarMenu>
-        {/* Import Dropdown */}
-        <SidebarMenuItem>
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton tooltip="Import Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
-                <Upload className="h-4 w-4" />
-                <span>Import Data</span>
+        <Collapsible asChild className="group/collapsible">
+          <SidebarMenuItem>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton tooltip="Data Management">
+                <Database className="h-4 w-4" />
+                <span>Data Management</span>
+                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              side="right"
-              sideOffset={4}
-              className="w-48"
-            >
-              <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleImportClick('json')} className="cursor-pointer">
-                <FileJson className="mr-2 h-4 w-4" />
-                JSON (.json)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleImportClick('csv')} className="cursor-pointer">
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                CSV (.csv)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleImportClick('html')} className="cursor-pointer">
-                <FileCode className="mr-2 h-4 w-4" />
-                HTML (Browser)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
+            </CollapsibleTrigger>
 
-        {/* Export Dropdown */}
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            tooltip="Sync Browser Bookmarks"
-            className="hover:bg-primary hover:text-primary-foreground"
-            onClick={handleSyncBrowserBookmarks}
-            disabled={isSyncingBrowser}
-          >
-            <RefreshCw className={`h-4 w-4 ${isSyncingBrowser ? "animate-spin" : ""}`} />
-            <span>{isSyncingBrowser ? "Syncing Browser..." : "Sync Browser"}</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                <SidebarMenuSubItem>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuSubButton asChild>
+                        <button type="button" className="flex w-full items-center gap-2">
+                          <Upload className="h-4 w-4" />
+                          <span>Import Data</span>
+                        </button>
+                      </SidebarMenuSubButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      side="right"
+                      sideOffset={4}
+                      className="w-48"
+                    >
+                      <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleImportClick('json')} className="cursor-pointer">
+                        <FileJson className="mr-2 h-4 w-4" />
+                        JSON (.json)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleImportClick('csv')} className="cursor-pointer">
+                        <FileSpreadsheet className="mr-2 h-4 w-4" />
+                        CSV (.csv)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleImportClick('html')} className="cursor-pointer">
+                        <FileCode className="mr-2 h-4 w-4" />
+                        HTML (Browser)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuSubItem>
 
-        <SidebarMenuItem>
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton tooltip="Export Bookmarks" className="hover:bg-primary hover:text-primary-foreground">
-                <Download className="h-4 w-4" />
-                <span>Export Data</span>
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="start"
-              side="right"
-              sideOffset={4}
-              className="w-48"
-            >
-              <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleExport('json')} className="cursor-pointer">
-                <FileJson className="mr-2 h-4 w-4" />
-                JSON (.json)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport('csv')} className="cursor-pointer">
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                CSV (.csv)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport('html')} className="cursor-pointer">
-                <FileCode className="mr-2 h-4 w-4" />
-                HTML (Browser)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
+                <SidebarMenuSubItem>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuSubButton asChild>
+                        <button type="button" className="flex w-full items-center gap-2">
+                          <Download className="h-4 w-4" />
+                          <span>Export Data</span>
+                        </button>
+                      </SidebarMenuSubButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="start"
+                      side="right"
+                      sideOffset={4}
+                      className="w-48"
+                    >
+                      <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleExport('json')} className="cursor-pointer">
+                        <FileJson className="mr-2 h-4 w-4" />
+                        JSON (.json)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExport('csv')} className="cursor-pointer">
+                        <FileSpreadsheet className="mr-2 h-4 w-4" />
+                        CSV (.csv)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExport('html')} className="cursor-pointer">
+                        <FileCode className="mr-2 h-4 w-4" />
+                        HTML (Browser)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </Collapsible>
       </SidebarMenu>
       <input
         type="file"

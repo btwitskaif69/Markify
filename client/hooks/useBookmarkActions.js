@@ -118,6 +118,42 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     }
   }, [authFetch, setAllBookmarks, collections]);
 
+  const handleRefreshArchive = useCallback(async (bookmarkId, { silent = false } = {}) => {
+    try {
+      const response = await authFetch(`${API_URL}/bookmarks/${bookmarkId}/archive`, {
+        method: "POST",
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.message || "Failed to refresh saved copy.");
+      }
+
+      if (result.bookmark) {
+        setAllBookmarks((prev) =>
+          prev.map((bookmark) =>
+            bookmark.id === result.bookmark.id ? result.bookmark : bookmark
+          )
+        );
+      }
+
+      if (!silent) {
+        if (result.archive?.status === "READY") {
+          toast.success("Saved copy updated.");
+        } else {
+          toast.error(result.archive?.failureReason || result.message || "Saved copy could not be created.");
+        }
+      }
+
+      return result;
+    } catch (err) {
+      if (err.message !== "Session expired" && !silent) {
+        toast.error(err.message || "Failed to refresh saved copy.");
+      }
+      throw err;
+    }
+  }, [authFetch, setAllBookmarks]);
+
   const handleImportBookmarks = useCallback(async (bookmarks) => {
     try {
       const response = await authFetch(`${API_URL}/bookmarks/import`, {
@@ -138,31 +174,6 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
       return false;
     }
   }, [authFetch]);
-
-  /**
-   * Fetches preview for a single bookmark and updates the state
-   */
-  const fetchSinglePreview = useCallback(async (bookmarkId) => {
-    try {
-      const response = await authFetch(`${API_URL}/bookmarks/${bookmarkId}/fetch-preview`, {
-        method: "POST",
-      });
-
-      if (!response.ok) return false;
-
-      const result = await response.json();
-      if (result.success && result.bookmark) {
-        // Update the bookmark in state with the new preview
-        setAllBookmarks((prev) =>
-          prev.map((b) => (b.id === result.bookmark.id ? result.bookmark : b))
-        );
-        return true;
-      }
-      return false;
-    } catch {
-      return false;
-    }
-  }, [authFetch, setAllBookmarks]);
 
   /**
    * Syncs bookmarks by importing Chrome's exported bookmarks HTML file
@@ -289,30 +300,15 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     }
   }, [authFetch, setAllBookmarks]);
 
-  /**
-   * Fetches previews for a list of bookmark IDs one at a time
-   * This runs in the background and updates bookmarks as previews are fetched
-   */
-  const fetchPreviewsInBackground = useCallback(async (bookmarkIds) => {
-    let successCount = 0;
-    const total = bookmarkIds.length;
-
-    for (let i = 0; i < bookmarkIds.length; i++) {
-      const bookmarkId = bookmarkIds[i];
-      const success = await fetchSinglePreview(bookmarkId);
-      if (success) successCount++;
-
-      // Show progress every 5 bookmarks or at the end
-      if ((i + 1) % 5 === 0 || i === bookmarkIds.length - 1) {
-        console.log(`Preview progress: ${i + 1}/${total} processed, ${successCount} successful`);
-      }
-    }
-
-    // Show final result
-    if (successCount > 0) {
-      toast.success(`Loaded ${successCount} preview images`);
-    }
-  }, [fetchSinglePreview]);
-
-  return { handleSubmit, handleDelete, handleBulkDelete, handleToggleFavorite, handleMoveBookmark, handleImportBookmarks, handleSyncLocalBookmarks, isSubmitting };
+  return {
+    handleSubmit,
+    handleDelete,
+    handleBulkDelete,
+    handleToggleFavorite,
+    handleMoveBookmark,
+    handleRefreshArchive,
+    handleImportBookmarks,
+    handleSyncLocalBookmarks,
+    isSubmitting,
+  };
 }

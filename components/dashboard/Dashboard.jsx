@@ -17,6 +17,7 @@ import { useCollectionActions } from "@/client/hooks/useCollectionActions";
 import { useThemeToggle } from "@/client/hooks/useThemeToggle";
 import { usePreview } from "@/client/hooks/usePreview";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
+import BookmarkArchiveDialog from "@/components/Bookmarks/BookmarkArchiveDialog";
 import CollectionFormDialog from "@/components/Collections/CollectionFormDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import ShareDialog from "./ShareDialog";
@@ -97,6 +98,7 @@ export default function Dashboard() {
     handleBulkDelete,
     handleToggleFavorite,
     handleMoveBookmark,
+    handleRefreshArchive,
     isSubmitting
   } = useBookmarkActions(authFetch, user, setAllBookmarks, collections);
 
@@ -128,6 +130,13 @@ export default function Dashboard() {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [shareItem, setShareItem] = useState(null);
   const [shareType, setShareType] = useState("bookmark"); // "bookmark" or "collection"
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [archiveBookmarkId, setArchiveBookmarkId] = useState(null);
+
+  const selectedArchiveBookmark = useMemo(() => {
+    if (!archiveBookmarkId) return null;
+    return allBookmarks.find((bookmark) => bookmark.id === archiveBookmarkId) || null;
+  }, [allBookmarks, archiveBookmarkId]);
 
   const handleAddClick = () => {
     setEditingBookmark(null);
@@ -173,6 +182,11 @@ export default function Dashboard() {
     setShareItem(collection);
     setShareType("collection");
     setIsShareDialogOpen(true);
+  };
+
+  const handleViewArchive = (bookmark) => {
+    setArchiveBookmarkId(bookmark.id);
+    setIsArchiveDialogOpen(true);
   };
 
   const handleShareToggle = (updatedItem) => {
@@ -305,6 +319,8 @@ export default function Dashboard() {
               onToggleFavorite={handleToggleFavorite}
               onMove={handleMoveBookmark}
               onShare={handleShareBookmark}
+              onViewArchive={handleViewArchive}
+              onRefreshArchive={handleRefreshArchive}
               onRenameCollection={handleRenameCollectionClick}
               onDeleteCollection={openDeleteConfirm}
               onShareCollection={handleShareCollection}
@@ -321,6 +337,8 @@ export default function Dashboard() {
               onToggleFavorite={handleToggleFavorite}
               onMove={handleMoveBookmark}
               onShare={handleShareBookmark}
+              onViewArchive={handleViewArchive}
+              onRefreshArchive={handleRefreshArchive}
             />
           )}
 
@@ -334,6 +352,14 @@ export default function Dashboard() {
           type={shareType}
           authFetch={authFetch}
           onShareToggle={handleShareToggle}
+        />
+
+        <BookmarkArchiveDialog
+          open={isArchiveDialogOpen}
+          onOpenChange={setIsArchiveDialogOpen}
+          bookmark={selectedArchiveBookmark}
+          authFetch={authFetch}
+          onRefreshArchive={handleRefreshArchive}
         />
 
         <WelcomeDialog
