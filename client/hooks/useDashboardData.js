@@ -32,9 +32,10 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
   const userId = getParamValue(params?.userId);
   const activeCollectionId = getParamValue(params?.collectionId);
 
-  const [allBookmarks, setAllBookmarks] = useState(() => readCachedBookmarks(user?.id));
+  const cachedBookmarks = readCachedBookmarks(user?.id);
+  const [allBookmarks, setAllBookmarks] = useState(cachedBookmarks);
   const [collections, setCollections] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(cachedBookmarks.length === 0);
   const [error, setError] = useState(null);
   const bookmarksRef = useRef(allBookmarks);
 
@@ -88,9 +89,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     }
 
     fetchBookmarks().finally(() => {
-      if (shouldShowLoader) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     });
 
     authFetch(`${API_URL}/collections`)
@@ -126,10 +125,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     }
 
     await fetchBookmarks();
-
-    if (shouldShowLoader) {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   }, [fetchBookmarks]);
 
   const bookmarks = useMemo(() => {
