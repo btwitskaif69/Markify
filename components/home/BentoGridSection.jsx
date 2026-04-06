@@ -270,9 +270,9 @@ const BentoGridSection = () => {
                             <ImagesBadge
                                 text="Browse All"
                                 images={[
-                                    "/images/dashboard-preview-dark-1160.webp",
-                                    "/images/dashboard-preview-light-1160.webp",
-                                    "/images/dashboard-preview-dark-1160.webp"
+                                    "https://assets.markify.tech/assets/dashboard-dark.png",
+                                    "https://assets.markify.tech/assets/dashboard-light.png",
+                                    "https://assets.markify.tech/assets/dashboard-dark.png"
                                 ]}
                                 folderSize={{ width: 140, height: 105 }}
                                 teaserImageSize={{ width: 80, height: 55 }}
