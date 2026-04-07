@@ -8,6 +8,7 @@ import { useTheme } from "../theme-provider";
 const PREVIEW_DARK = "https://assets.markify.tech/assets/dashboard-dark.png";
 const PREVIEW_LIGHT = "https://assets.markify.tech/assets/dashboard-light.png";
 const ANIMATION_LOAD_ID = Date.now();
+const PREVIEW_ANIMATION_DELAY = 1.75;
 
 const DashboardPreview = () => {
   const { theme } = useTheme();
@@ -24,29 +25,17 @@ const DashboardPreview = () => {
       gsap.set(".dashboard-preview-outline", { y: 42, autoAlpha: 0 });
       gsap.set(".dashboard-preview-media", { y: 42, autoAlpha: 0 });
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: PREVIEW_ANIMATION_DELAY });
 
       tl.to(".dashboard-preview-frame", {
         y: 0,
         autoAlpha: 1,
         duration: 0.6,
-      }).to(
-        ".dashboard-preview-outline",
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.9,
-        },
-        "-=0.25"
-      ).to(
-        ".dashboard-preview-media",
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.65,
-        },
-        "-=0.45"
-      );
+      }).to(".dashboard-preview-outline, .dashboard-preview-media", {
+        y: 0,
+        autoAlpha: 1,
+        duration: 0.75,
+      }, "-=0.25");
     }, rootRef);
 
     return () => ctx.revert();
