@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }) => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            viewport={{ once: false }}
+            viewport={{ once: true, amount: 0.2 }}
         >
             <button
                 onClick={onClick}
@@ -74,6 +75,14 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }) => {
     );
 };
 
+FAQItem.propTypes = {
+    question: PropTypes.string.isRequired,
+    answer: PropTypes.string.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
+    index: PropTypes.number.isRequired,
+};
+
 const FAQSection = () => {
     const [openIndex, setOpenIndex] = useState(null);
 
@@ -93,7 +102,7 @@ const FAQSection = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    viewport={{ once: false }}
+                    viewport={{ once: true, amount: 0.2 }}
                 >
                     <h2 className="text-2xl md:text-6xl font-medium bg-clip-text text-transparent leading-normal" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>
                         How <span className="instrument-serif-regular-italic">Markify</span> helps you?

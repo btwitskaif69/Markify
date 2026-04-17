@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import DashboardPreview from "./DashboardPreview";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -12,15 +13,6 @@ const Spotlight = dynamic(
   () => import("../ui/spotlight-new").then((mod) => mod.Spotlight),
   { ssr: false }
 );
-
-const DashboardPreview = dynamic(() => import("./DashboardPreview"), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto w-[90vw] max-w-[1600px] min-w-[350px]">
-      <div className="aspect-[16/9] w-full rounded-2xl border border-border/40 bg-muted/30" />
-    </div>
-  ),
-});
 
 const Hero = () => {
   const rootRef = useRef(null);
@@ -34,6 +26,9 @@ const Hero = () => {
       gsap.set(".hero-heading-line", { y: 42, autoAlpha: 0 });
       gsap.set(".hero-subheading", { y: 20, autoAlpha: 0 });
       gsap.set(".hero-cta", { y: 16, scale: 0.96, autoAlpha: 0 });
+      gsap.set(".dashboard-preview-frame", { y: 42, autoAlpha: 0 });
+      gsap.set(".dashboard-preview-outline", { y: 42, autoAlpha: 0 });
+      gsap.set(".dashboard-preview-media", { y: 42, autoAlpha: 0 });
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
@@ -70,6 +65,24 @@ const Hero = () => {
             duration: 0.55,
           },
           "-=0.35"
+        )
+        .to(
+          ".dashboard-preview-frame",
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.6,
+          },
+          "-=0.25"
+        )
+        .to(
+          ".dashboard-preview-outline, .dashboard-preview-media",
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.75,
+          },
+          "-=0.35"
         );
     }, rootRef);
 
@@ -78,8 +91,7 @@ const Hero = () => {
 
   return (
     <div ref={rootRef} className="w-full overflow-x-clip">
-      {/* Hero Content */}
-      <section className="relative h-[100svh] md:h-screen">
+      <section className="relative">
         {/* Grid background */}
         <div
           aria-hidden="true"
@@ -99,8 +111,8 @@ const Hero = () => {
           <Spotlight />
         </div>
 
-        <div className="relative z-20 grid h-full place-items-center">
-          <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center px-6 text-center md:px-12">
+        <div className="relative z-20 flex min-h-[100svh] flex-col items-center justify-center px-6 pb-0 pt-24 text-center md:px-12 md:pt-28">
+          <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center">
             {/* Tagline */}
             <div className="hero-tagline flex w-full justify-center">
               <Link href="/signup" className="inline-block">
@@ -140,11 +152,11 @@ const Hero = () => {
               </Link>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="relative z-20 -translate-y-[17.5%]">
-        <DashboardPreview />
+          <div className="relative z-20 mt-[clamp(2.5rem,5vw,4.5rem)] w-full">
+            <DashboardPreview />
+          </div>
+        </div>
       </section>
     </div>
   );

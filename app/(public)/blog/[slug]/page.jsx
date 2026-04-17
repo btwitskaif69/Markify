@@ -17,7 +17,9 @@ export const runtime = "nodejs";
 const BLOG_AUTHOR_NAME = "Mohd Kaif";
 
 const LEGACY_SLUG_REDIRECTS = {
+  "bookmark-managers-cloud-sync": "bookmark-managers-with-cloud-sync",
   "bookmark-manager-search-tagging": "bookmark-manager-search-and-tagging",
+  "best-bookmark-manager-mac-2026": "best-bookmark-manager-for-mac-2026",
   "markify-vs-browser-bookmarks":
     "markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
   "unlock-collaboration-share-your-bookmarks-collections-with-markify":
@@ -125,10 +127,10 @@ export const generateMetadata = async ({ params }) => {
 export default async function Page({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
+  const canonicalSlug = resolveCanonicalSlug(slug);
 
-  const redirectSlug = LEGACY_SLUG_REDIRECTS[slug];
-  if (redirectSlug) {
-    return permanentRedirect(`/blog/${redirectSlug}`);
+  if (canonicalSlug !== slug) {
+    return permanentRedirect(`/blog/${canonicalSlug}`);
   }
 
   const { post } = await getPostBySlug(slug);

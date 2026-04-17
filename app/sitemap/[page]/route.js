@@ -1,75 +1,24 @@
-import { getCanonicalUrl } from "@/lib/seo";
 import {
   buildSitemapXml,
-  getStaticSitemapEntries,
-  SITEMAP_CHUNK_SIZE,
+  getSitemapEntriesForPage,
 } from "@/lib/seo/sitemap";
-import prisma from "@/server/db/prismaClient";
+import { getAllSitemapEntries } from "@/lib/seo/sitemap-data";
 
 export const runtime = "nodejs";
 
-const toEntry = (path, { lastModified, changefreq, priority } = {}) => ({
-  url: getCanonicalUrl(path),
-  lastModified,
-  changefreq,
-  priority,
-});
-
-const getBlogEntries = async () => {
-  try {
-    const pageSize = 12;
-    const [posts, totalPosts] = await Promise.all([
-      prisma.blogPost.findMany({
-        where: { published: true },
-        select: { slug: true, updatedAt: true },
-        orderBy: { updatedAt: "desc" },
-      }),
-      prisma.blogPost.count({ where: { published: true } }),
-    ]);
-    const totalPages = Math.max(1, Math.ceil(totalPosts / pageSize));
-
-    const postEntries = posts.map((post) =>
-      toEntry(`/blog/${post.slug}`, {
-        lastModified: post.updatedAt?.toISOString?.() || undefined,
-        changefreq: "monthly",
-        priority: 0.6,
-      })
-    );
-
-    const archiveEntries = Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) =>
-      toEntry(`/blog/page/${index + 2}`, {
-        changefreq: "weekly",
-        priority: 0.4,
-      })
-    );
-
-    return postEntries.concat(archiveEntries);
-  } catch (error) {
-    console.warn("Sitemap blog fetch failed:", error?.message || error);
-    return [];
-  }
-};
-
-export async function GET(request, { params }) {
+export async function GET(_request, { params }) {
   const resolvedParams = await params;
   const pageIndex = Number(resolvedParams?.page);
   if (!Number.isFinite(pageIndex) || pageIndex < 0) {
     return new Response("Not found", { status: 404 });
   }
 
-  const staticEntries = getStaticSitemapEntries();
-  const blogEntries = await getBlogEntries();
-  const staticList = [...staticEntries, ...blogEntries];
-  const staticCount = staticList.length;
+  const allEntries = await getAllSitemapEntries();
+  const entries = getSitemapEntriesForPage(allEntries, pageIndex);
 
-  const start = pageIndex * SITEMAP_CHUNK_SIZE;
-  const end = start + SITEMAP_CHUNK_SIZE;
-
-  if (start >= staticCount) {
+  if (!entries.length) {
     return new Response("Not found", { status: 404 });
   }
-
-  const entries = staticList.slice(start, Math.min(end, staticCount));
 
   return new Response(buildSitemapXml(entries), {
     headers: {

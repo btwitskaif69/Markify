@@ -1,48 +1,16 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
-import gsap from "gsap";
 import { useTheme } from "../theme-provider";
 
 const PREVIEW_DARK = "https://assets.markify.tech/assets/dashboard-dark.png";
 const PREVIEW_LIGHT = "https://assets.markify.tech/assets/dashboard-light.png";
-const ANIMATION_LOAD_ID = Date.now();
-const PREVIEW_ANIMATION_DELAY = 1.75;
 
 const DashboardPreview = () => {
   const { theme } = useTheme();
-  const rootRef = useRef(null);
-
-  useLayoutEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      gsap.set(".dashboard-preview-frame", { y: 42, autoAlpha: 0 });
-      gsap.set(".dashboard-preview-outline", { y: 42, autoAlpha: 0 });
-      gsap.set(".dashboard-preview-media", { y: 42, autoAlpha: 0 });
-
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: PREVIEW_ANIMATION_DELAY });
-
-      tl.to(".dashboard-preview-frame", {
-        y: 0,
-        autoAlpha: 1,
-        duration: 0.6,
-      }).to(".dashboard-preview-outline, .dashboard-preview-media", {
-        y: 0,
-        autoAlpha: 1,
-        duration: 0.75,
-      }, "-=0.25");
-    }, rootRef);
-
-    return () => ctx.revert();
-  }, [ANIMATION_LOAD_ID]);
 
   return (
-    <div ref={rootRef} className="flex w-full items-center justify-center px-4">
+    <div className="flex w-full items-center justify-center px-4">
       <div className="dashboard-preview-frame relative w-[90vw] max-w-[1600px] min-w-[350px]">
         <div className="relative z-10 rounded-md sm:rounded-3xl p-1 sm:p-3">
           <div
