@@ -5,7 +5,6 @@ import { lazy, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/home/Hero';
 import PricingPlans from '@/components/home/PricingPlans';
-import FAQSection from '@/components/home/FAQSection';
 import Footer from '@/components/Footer';
 import LazySection from "@/components/LazySection";
 
@@ -18,14 +17,7 @@ const WhyChooseMarkify = lazy(() => import('@/components/home/WhyChooseMarkify')
 const ReviewsMarquee = lazy(() => import('@/components/home/ReviewsMarquee'));
 const FinalCTA = lazy(() => import('@/components/home/FinalCTA'));
 
-const SectionFallback = ({ title, description }) => (
-  <section className="w-full bg-background py-12 md:py-14">
-    <div className="mx-auto max-w-4xl px-4 md:px-6 space-y-3">
-      <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">{title}</h2>
-      <p className="text-base text-muted-foreground leading-relaxed">{description}</p>
-    </div>
-  </section>
-);
+const SectionFallback = () => null;
 
 const Home = () => {
   return (
@@ -161,9 +153,6 @@ const Home = () => {
 
         {/* Pricing */}
         <PricingPlans />
-
-        {/* FAQ */}
-        <FAQSection />
 
         {/* Final CTA */}
         <LazySection

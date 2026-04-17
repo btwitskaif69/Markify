@@ -1,9 +1,7 @@
 import Home from "@/app/(public)/_components/Home";
 import StructuredData from "@/components/SEO/StructuredData";
-import { HOME_FAQS } from "@/data/homeFaqs";
 import {
   buildBreadcrumbSchema,
-  buildFaqSchema,
   buildWebApplicationSchema,
   buildWebPageSchema,
   getCanonicalUrl,
@@ -29,7 +27,6 @@ export const metadata = buildMetadata({
 });
 
 export default function Page() {
-  const faqSchema = buildFaqSchema(HOME_FAQS);
   const webAppSchema = buildWebApplicationSchema({
     description: pageDescription,
     url: getCanonicalUrl("/"),
@@ -41,7 +38,7 @@ export default function Page() {
     type: "WebPage",
   });
   const breadcrumbs = buildBreadcrumbSchema([{ name: "Home", path: "/" }]);
-  const structuredData = [webPageSchema, breadcrumbs, faqSchema, webAppSchema].filter(Boolean);
+  const structuredData = [webPageSchema, breadcrumbs, webAppSchema].filter(Boolean);
 
   return (
     <>

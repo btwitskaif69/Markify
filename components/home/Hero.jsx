@@ -111,8 +111,8 @@ const Hero = () => {
           <Spotlight />
         </div>
 
-        <div className="relative z-20 flex min-h-[100svh] flex-col items-center justify-center px-6 pb-0 pt-24 text-center md:px-12 md:pt-28">
-          <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center">
+        <div className="relative z-20 px-6 pb-0 pt-24 text-center md:px-12 md:pt-28">
+          <div className="mx-auto flex min-h-[calc(100svh-6rem)] w-full max-w-[1200px] flex-col items-center justify-center md:min-h-[calc(100svh-7rem)]">
             {/* Tagline */}
             <div className="hero-tagline flex w-full justify-center">
               <Link href="/signup" className="inline-block">
@@ -153,7 +153,7 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="relative z-20 mt-[clamp(2.5rem,5vw,4.5rem)] w-full">
+          <div className="relative z-20 -mt-[clamp(2rem,6vw,4.5rem)] w-full">
             <DashboardPreview />
           </div>
         </div>
