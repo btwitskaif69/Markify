@@ -41,7 +41,7 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete,
   return (
     <SidebarGroup className="px-2 py-1">
       <SidebarMenu>
-        <Collapsible asChild defaultOpen={safeCollections.length > 0 || hasActiveCollection} className="group/collapsible">
+        <Collapsible asChild defaultOpen={true} className="group/collapsible">
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
               <SidebarMenuButton tooltip="Collections">

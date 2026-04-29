@@ -317,7 +317,7 @@ export default function ImportExport({ onRefetch }) {
   return (
     <SidebarGroup className="px-2 py-1">
       <SidebarMenu>
-        <Collapsible asChild className="group/collapsible">
+        <Collapsible asChild defaultOpen={true} className="group/collapsible">
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
               <SidebarMenuButton tooltip="Data Management">
@@ -335,7 +335,7 @@ export default function ImportExport({ onRefetch }) {
                       <SidebarMenuSubButton asChild>
                         <button type="button" className="flex w-full items-center gap-2">
                           <Upload className="h-4 w-4" />
-                          <span>Import Data</span>
+                          <span>Import Bookmark</span>
                         </button>
                       </SidebarMenuSubButton>
                     </DropdownMenuTrigger>
@@ -369,7 +369,7 @@ export default function ImportExport({ onRefetch }) {
                       <SidebarMenuSubButton asChild>
                         <button type="button" className="flex w-full items-center gap-2">
                           <Download className="h-4 w-4" />
-                          <span>Export Data</span>
+                          <span>Export Bookmark</span>
                         </button>
                       </SidebarMenuSubButton>
                     </DropdownMenuTrigger>

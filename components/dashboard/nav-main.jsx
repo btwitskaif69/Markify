@@ -51,7 +51,7 @@ export function NavMain({ totalBookmarks }) {
           {
             title: "Admin",
             icon: Shield,
-            defaultOpen: isAdminActive,
+            defaultOpen: true,
             items: [
               {
                 title: "Admin Panel",
