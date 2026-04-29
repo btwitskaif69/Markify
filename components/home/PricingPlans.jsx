@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BookOpen, Check, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
+import { useAuth } from "@/client/context/AuthContext";
 
 const PLANS = [
     {
@@ -10,7 +11,7 @@ const PLANS = [
         price: "$0",
         description: "Great for individuals building a clean personal bookmark workflow.",
         cta: "Start Free",
-        href: "/signup",
+        guestHref: "/signup",
         badge: "Best for personal use",
         popular: false,
         features: [
@@ -26,7 +27,7 @@ const PLANS = [
         price: "$12",
         description: "Built for professionals and teams that need speed and scale.",
         cta: "Get Pro",
-        href: "/pricing",
+        guestHref: "/login",
         badge: "For teams and power users",
         popular: true,
         features: [
@@ -41,6 +42,8 @@ const PLANS = [
 ];
 
 const PricingPlans = () => {
+    const { isAuthenticated, user } = useAuth();
+    const dashboardHref = user ? `/dashboard/${user.id}` : null;
     return (
         <section className="w-full py-16 md:py-24 bg-background relative overflow-hidden">
             {/* Subtle gradient overlay */}
@@ -116,7 +119,7 @@ const PricingPlans = () => {
                                     variant={plan.popular ? "default" : "outline"}
                                     className={`mb-2 w-full rounded-full ${plan.popular ? "" : "bg-transparent hover:bg-secondary/20"}`}
                                 >
-                                    <Link className="text-lg font-semibold" href={plan.href}>{plan.cta}</Link>
+                                    <Link className="text-lg font-semibold" href={isAuthenticated && dashboardHref ? dashboardHref : plan.guestHref}>{plan.cta}</Link>
                                 </Button>
 
                                 <p className="mb-8 text-center text-sm text-muted-foreground">{plan.badge}</p>

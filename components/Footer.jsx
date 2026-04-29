@@ -146,6 +146,12 @@ function Footer() {
                   </a>
                 </li>
               </ul>
+              
+              <div className="pt-4">
+                <a href="https://www.producthunt.com/products/markify?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-markify" target="_blank" rel="noopener noreferrer">
+                  <img alt="Markify - The Only Bookmark Manager You'll Ever Need | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1132905&amp;theme=light&amp;t=1777441480389" className="h-[40px] w-auto" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

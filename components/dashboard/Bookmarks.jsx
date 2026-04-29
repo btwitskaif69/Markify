@@ -156,7 +156,7 @@ export default function Bookmarks({
 
 
   return (
-    <main className="w-full px-6 py-6">
+    <main className="max-w-full min-w-0 overflow-x-hidden px-6 py-6">
       <BookmarkFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -203,7 +203,7 @@ export default function Bookmarks({
           className={
             viewMode === "grid"
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-              : "space-y-3"
+              : "space-y-3 min-w-0 overflow-hidden"
           }
           style={{ contentVisibility: 'auto', containIntrinsicSize: '0 500px' }}
         >

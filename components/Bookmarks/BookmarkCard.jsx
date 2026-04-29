@@ -15,10 +15,7 @@ import {
   FolderSymlink,
   CheckSquare,
   Share2,
-  Files,
-  RefreshCw,
 } from "lucide-react"
-import BookmarkArchiveBadge from "./BookmarkArchiveBadge"
 const placeholder = "/assets/placeholder.svg";
 
 import {
@@ -34,6 +31,14 @@ import {
   DropdownMenuSubContent
 } from "@/components/ui/dropdown-menu"
 
+const getHostname = (url) => {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return "";
+  }
+};
+
 function BookmarkCard({
   bookmark,
   collections,
@@ -42,15 +47,17 @@ function BookmarkCard({
   onDelete,
   onToggleFavorite,
   onShare,
-  onViewArchive,
-  onRefreshArchive,
   // Selection mode props
   isSelectionMode = false,
   isSelected = false,
   onToggleSelect,
   onEnterSelectionMode
 }) {
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
+  const bookmarkUrl = bookmark.url || "";
+  const hostname = getHostname(bookmarkUrl);
+  const faviconUrl = hostname
+    ? `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`
+    : placeholder;
 
   const handleCardClick = (e) => {
     if (isSelectionMode) {
@@ -86,7 +93,7 @@ function BookmarkCard({
         )}
 
         <a
-          href={isSelectionMode ? undefined : bookmark.url}
+          href={isSelectionMode ? undefined : bookmarkUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="block"
@@ -139,22 +146,19 @@ function BookmarkCard({
           <div className="flex-grow">
             <p className="text-sm text-muted-foreground line-clamp-3 text-ellipsis mb-2 min-h-[3.75rem]">{bookmark.description || "\u00A0"}</p>
             <a
-              href={bookmark.url}
+              href={bookmarkUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[0.8rem] text-primary hover:underline truncate flex items-center mb-2"
               onClick={(e) => isSelectionMode && e.stopPropagation()}
             >
               <ExternalLink className="h-[0.8rem] w-[0.8rem] mr-1 flex-shrink-0" />
-              <span className="truncate">{bookmark.url}</span>
+              <span className="truncate">{bookmarkUrl}</span>
             </a>
           </div>
 
           {/* This footer is pushed to the bottom of the card */}
           <div className="mb-2">
-            <div className="mb-3 flex flex-wrap gap-2">
-              <BookmarkArchiveBadge archive={bookmark.archive} />
-            </div>
 
             {(() => {
               const tagsArray = typeof bookmark.tags === 'string'
@@ -239,7 +243,7 @@ function BookmarkCard({
                   Delete
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); window.open(bookmark.url, "_blank"); }}
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); window.open(bookmarkUrl, "_blank"); }}
                   className="cursor-pointer">
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Visit
@@ -249,28 +253,6 @@ function BookmarkCard({
                   className="cursor-pointer">
                   <Share2 className="w-4 h-4 mr-2" />
                   Share
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onViewArchive?.(bookmark);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <Files className="w-4 h-4 mr-2" />
-                  {bookmark.archive ? "Saved copy" : "Create saved copy"}
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRefreshArchive?.(bookmark.id);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Refresh copy
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
@@ -303,8 +285,7 @@ BookmarkCard.propTypes = {
   onDelete: PropTypes.func,
   onToggleFavorite: PropTypes.func,
   onShare: PropTypes.func,
-  onViewArchive: PropTypes.func,
-  onRefreshArchive: PropTypes.func,
+
   isSelectionMode: PropTypes.bool,
   isSelected: PropTypes.bool,
   onToggleSelect: PropTypes.func,

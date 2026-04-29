@@ -16,8 +16,8 @@ export default function BookmarkStats({ bookmarks }) {
   }, [bookmarks]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      <Card>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      <Card className="col-span-2 md:col-span-1">
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">

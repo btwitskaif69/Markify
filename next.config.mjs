@@ -14,6 +14,15 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const noIndexAssetHeaders = [{ key: "X-Robots-Tag", value: "noindex" }];
+const isProduction = process.env.NODE_ENV === "production";
+const nextStaticCacheHeaders = [
+  {
+    key: "Cache-Control",
+    value: isProduction
+      ? "public, max-age=31536000, immutable"
+      : "no-store, must-revalidate",
+  },
+];
 const firebaseClientEnv = {
   NEXT_PUBLIC_FIREBASE_API_KEY:
     process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_FIREBASE_API_KEY,
@@ -46,25 +55,10 @@ const nextConfig = {
     ],
   },
   experimental: {
-    optimizePackageImports: ["lucide-react", "date-fns"],
+    optimizePackageImports: ["date-fns", "lucide-react"],
   },
   async redirects() {
     return [
-      {
-        source: "/blog/bookmark-manager-search-tagging",
-        destination: "/blog/bookmark-manager-search-and-tagging",
-        permanent: true,
-      },
-      {
-        source: "/blog/markify-vs-browser-bookmarks",
-        destination: "/blog/markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
-        permanent: true,
-      },
-      {
-        source: "/blog/unlock-collaboration-share-your-bookmarks-collections-with-markify",
-        destination: "/blog/unlock-collaboration-share-your-bookmarks-and-collections-with-markify",
-        permanent: true,
-      },
       { source: "/home", destination: "/", permanent: true },
       { source: "/home/", destination: "/", permanent: true },
       { source: "/Home", destination: "/", permanent: true },
@@ -83,7 +77,7 @@ const nextConfig = {
       },
       {
         source: "/_next/static/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+        headers: nextStaticCacheHeaders,
       },
       {
         source: "/images/:path*",
