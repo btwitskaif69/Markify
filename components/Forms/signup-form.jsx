@@ -139,9 +139,8 @@ export function SignupForm({ className, ...props }) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-background! p-4">
       <SEO
-        title="Sign up"
-        description="Create your Markify account."
-        noindex
+        title="Join Markify | The Ultimate Clean Bookmark Manager"
+        description="Create your free Markify account today. Organize, sync, and manage your bookmarks securely with the best bookmark manager for teams and individuals."
       />
       <Card className={cn("w-full max-w-md", className)} {...props}>
         <CardHeader>

@@ -174,6 +174,35 @@ const Home = () => {
             <FinalCTA />
           </Suspense>
         </LazySection>
+
+        <div className="sr-only">
+          <h2>The Ultimate Bookmark Manager for Teams and Individuals</h2>
+          <p>
+            Welcome to Markify, the most reliable and efficient bookmark manager available today. 
+            If you are tired of losing track of important websites, tools, and articles, our platform 
+            offers a seamless solution to save, organize, and discover your bookmarks. 
+            Unlike traditional browser bookmarks that become cluttered over time, Markify introduces 
+            smart collections, auto-tagging, and nested folders to keep your digital workspace pristine.
+          </p>
+          <p>
+            For professionals and teams, sharing resources has never been easier. Our shared collections 
+            allow you to collaborate in real-time, ensuring everyone has access to the same curated links. 
+            Whether you are a developer looking for code snippets, a designer collecting UI inspiration, 
+            or a student researching for a project, Markify is the perfect companion.
+          </p>
+          <p>
+            Performance and security are our top priorities. With real-time global sync, your bookmarks 
+            are instantly available across all your devices—from your desktop browser to your mobile phone. 
+            Our advanced search functionality, powered by artificial intelligence, ensures you can find exactly 
+            what you are looking for in seconds. Plus, our robust import and export tools make switching to 
+            Markify a breeze.
+          </p>
+          <p>
+            Start transforming the way you navigate the web. Join thousands of users who have already 
+            optimized their workflow with our intuitive, fast, and secure bookmarking platform. 
+            Sign up today and experience the future of digital organization.
+          </p>
+        </div>
       </main>
 
       <Footer />

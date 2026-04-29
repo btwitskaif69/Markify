@@ -9,7 +9,7 @@ import {
 } from "@/lib/seo";
 import { getBlogContentModel } from "@/lib/content/blog-meta";
 import prisma from "@/server/db/prismaClient";
-import { permanentRedirect } from "next/navigation";
+import { permanentRedirect, notFound } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -86,6 +86,7 @@ export const generateMetadata = async ({ params }) => {
   const slug = resolvedParams?.slug;
   const canonicalSlug = resolveCanonicalSlug(slug);
   const { post, error } = await getPostBySlug(canonicalSlug);
+  
   if (!post || !post.published) {
     if (error) {
       return buildMetadata({
@@ -95,12 +96,12 @@ export const generateMetadata = async ({ params }) => {
         path: `/blog/${canonicalSlug || slug || ""}`,
       });
     }
+    // Instead of explicitly setting noindex which creates Google Search Console warnings,
+    // we let the notFound() call in the Page component handle the 404 status.
     return buildMetadata({
       title: "Blog post not found",
       description: "The requested blog post could not be found.",
       path: `/blog/${canonicalSlug || slug || ""}`,
-      noindex: true,
-      nofollow: true,
     });
   }
 
@@ -134,8 +135,10 @@ export default async function Page({ params }) {
   }
 
   const { post } = await getPostBySlug(slug);
+  
+  // If the post does not exist or is unpublished, return a hard 404
   if (!post || !post.published) {
-    return <BlogPost initialPost={null} initialLatestPosts={[]} />;
+    notFound();
   }
 
   const latestPosts = await getLatestPosts(post.slug);
@@ -150,6 +153,7 @@ export default async function Page({ params }) {
     dateModified: post.updatedAt || post.createdAt,
     authorName: BLOG_AUTHOR_NAME,
   });
+  
   const breadcrumbs = buildBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },

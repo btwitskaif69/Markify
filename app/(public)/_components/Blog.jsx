@@ -160,6 +160,7 @@ const Blog = ({ initialPosts = [], pagination = null }) => {
           </div>
 
           <div className="max-w-7xl mx-auto">
+            <h2 className="sr-only">Latest Blog Posts</h2>
             {isLoading && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {[...Array(6)].map((_, i) => (
