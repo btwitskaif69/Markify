@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { BookOpen, Check, Sparkles } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/client/context/AuthContext";
@@ -43,6 +44,12 @@ const PLANS = [
 
 const PricingPlans = () => {
     const { isAuthenticated, user } = useAuth();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const dashboardHref = user ? `/dashboard/${user.id}` : null;
     return (
         <section className="w-full py-16 md:py-24 bg-background relative overflow-hidden">
@@ -119,7 +126,7 @@ const PricingPlans = () => {
                                     variant={plan.popular ? "default" : "outline"}
                                     className={`mb-2 w-full rounded-full ${plan.popular ? "" : "bg-transparent hover:bg-secondary/20"}`}
                                 >
-                                    <Link className="text-lg font-semibold" href={isAuthenticated && dashboardHref ? dashboardHref : plan.guestHref}>{plan.cta}</Link>
+                                    <Link className="text-lg font-semibold" href={mounted && isAuthenticated && dashboardHref ? dashboardHref : plan.guestHref}>{plan.cta}</Link>
                                 </Button>
 
                                 <p className="mb-8 text-center text-sm text-muted-foreground">{plan.badge}</p>
