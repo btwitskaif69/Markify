@@ -1,8 +1,36 @@
-import { dodo } from "@/lib/dodopayments";
+import { withDodoFallback } from "@/lib/dodopayments";
 import prisma from "@/server/db/prismaClient";
 import { hasActiveProAccess } from "@/lib/subscription";
 
 const ENV = globalThis?.process?.env || {};
+
+const getAppUrl = (req) => {
+  const origin = req?.headers?.origin;
+  if (typeof origin === "string" && origin.trim()) {
+    return origin.trim().replace(/\/+$/, "");
+  }
+
+  const host = req?.headers?.["x-forwarded-host"] || req?.headers?.host;
+  if (host) {
+    const protocol = req?.headers?.["x-forwarded-proto"] || "https";
+    return `${protocol}://${host}`.replace(/\/+$/, "");
+  }
+
+  const configuredAppUrl =
+    ENV.NEXT_PUBLIC_APP_URL ||
+    ENV.APP_URL ||
+    ENV.SITE_URL ||
+    ENV.VERCEL_URL;
+
+  if (configuredAppUrl) {
+    const normalized = String(configuredAppUrl).trim().replace(/\/+$/, "");
+    return normalized.startsWith("http://") || normalized.startsWith("https://")
+      ? normalized
+      : `https://${normalized}`;
+  }
+
+  return "http://localhost:3000";
+};
 
 const normalizeEmail = (value) =>
   typeof value === "string" ? value.trim().toLowerCase() : "";
@@ -30,21 +58,23 @@ const findMatchingActiveSubscriptionForUser = async (user) => {
 
   const targetEmail = normalizeEmail(user?.email);
 
-  for await (const subscription of dodo.subscriptions.list(query)) {
-    const subscriptionUserId = getSubscriptionUserId(subscription);
-    const subscriptionEmail = normalizeEmail(subscription.customer?.email);
-    const subscriptionCustomerId = subscription.customer?.customer_id || null;
+  return withDodoFallback(async (client) => {
+    for await (const subscription of client.subscriptions.list(query)) {
+      const subscriptionUserId = getSubscriptionUserId(subscription);
+      const subscriptionEmail = normalizeEmail(subscription.customer?.email);
+      const subscriptionCustomerId = subscription.customer?.customer_id || null;
 
-    if (
-      (subscriptionUserId && subscriptionUserId === user.id) ||
-      (targetEmail && subscriptionEmail === targetEmail) ||
-      (user?.dodoCustomerId && subscriptionCustomerId === user.dodoCustomerId)
-    ) {
-      return subscription;
+      if (
+        (subscriptionUserId && subscriptionUserId === user.id) ||
+        (targetEmail && subscriptionEmail === targetEmail) ||
+        (user?.dodoCustomerId && subscriptionCustomerId === user.dodoCustomerId)
+      ) {
+        return subscription;
+      }
     }
-  }
 
-  return null;
+    return null;
+  });
 };
 
 const resolveBillingCustomerId = async (user) => {
@@ -54,7 +84,9 @@ const resolveBillingCustomerId = async (user) => {
 
   if (user?.dodoSubscriptionId) {
     try {
-      const subscription = await dodo.subscriptions.retrieve(user.dodoSubscriptionId);
+      const subscription = await withDodoFallback((client) =>
+        client.subscriptions.retrieve(user.dodoSubscriptionId)
+      );
       const customerId = subscription?.customer?.customer_id || subscription?.customer?.id || null;
       if (customerId) {
         return customerId;
@@ -71,7 +103,7 @@ const resolveBillingCustomerId = async (user) => {
 export const createCheckoutSession = async (req, res) => {
   try {
     const { user } = req;
-    const appUrl = ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppUrl(req);
     const body = req.body || {};
     const requestedReturnUrl =
       typeof body.returnUrl === "string"
@@ -107,30 +139,34 @@ export const createCheckoutSession = async (req, res) => {
       return res.status(500).json({ message: "Product ID is not configured" });
     }
 
-    const session = await dodo.checkoutSessions.create({
-      product_cart: [
-        {
-          product_id: ENV.DODO_PRO_PRODUCT_ID,
-          quantity: 1,
-        }
-      ],
-      customer: {
-        email: user.email,
-        name: user.name,
-      },
-      metadata: {
-        user_id: user.id,
-        user_email: user.email,
-        plan_key: "pro",
-      },
-      cancel_url: `${appUrl}/dashboard/${user.id}`,
-      return_url: resolvedReturnUrl,
-    });
+    const session = await withDodoFallback((client) =>
+      client.checkoutSessions.create({
+        product_cart: [
+          {
+            product_id: ENV.DODO_PRO_PRODUCT_ID,
+            quantity: 1,
+          },
+        ],
+        customer: {
+          email: user.email,
+          name: user.name,
+        },
+        metadata: {
+          user_id: user.id,
+          user_email: user.email,
+          plan_key: "pro",
+        },
+        cancel_url: `${appUrl}/dashboard/${user.id}`,
+        return_url: resolvedReturnUrl,
+      })
+    );
 
     return res.status(200).json({ url: session.checkout_url });
   } catch (error) {
     console.error("Checkout session creation error:", error);
-    return res.status(500).json({ message: "Failed to create checkout session" });
+    return res.status(500).json({
+      message: error?.message || "Failed to create checkout session",
+    });
   }
 };
 
@@ -147,7 +183,9 @@ export const confirmSubscriptionPurchase = async (req, res) => {
     let subscription = null;
     if (subscriptionId) {
       try {
-        subscription = await dodo.subscriptions.retrieve(subscriptionId);
+        subscription = await withDodoFallback((client) =>
+          client.subscriptions.retrieve(subscriptionId)
+        );
       } catch (error) {
         console.warn("Failed to retrieve subscription by id, falling back to account lookup:", error);
       }
@@ -223,7 +261,7 @@ export const confirmSubscriptionPurchase = async (req, res) => {
 export const createBillingPortalSession = async (req, res) => {
   try {
     const { user } = req;
-    const appUrl = ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = getAppUrl(req);
     const customerId = await resolveBillingCustomerId(user);
 
     if (!customerId) {
@@ -232,9 +270,11 @@ export const createBillingPortalSession = async (req, res) => {
       });
     }
 
-    const session = await dodo.customers.customerPortal.create(customerId, {
-      return_url: `${appUrl}/dashboard/${user.id}/billing`,
-    });
+    const session = await withDodoFallback((client) =>
+      client.customers.customerPortal.create(customerId, {
+        return_url: `${appUrl}/dashboard/${user.id}/billing`,
+      })
+    );
 
     return res.status(200).json({
       url: session.link,

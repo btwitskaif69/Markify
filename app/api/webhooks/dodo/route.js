@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/server/db/prismaClient";
-import { dodo } from "@/lib/dodopayments";
+import { getDodoUnsafeClient, withDodoFallback } from "@/lib/dodopayments";
 
 const ENV = globalThis?.process?.env || {};
 
@@ -13,14 +13,14 @@ const getWebhookEvent = async (req) => {
   const webhookSecret = ENV.DODO_PAYMENTS_WEBHOOK_SECRET?.trim();
 
   if (webhookSecret && webhookSecret !== "whsec_...") {
-    return dodo.webhooks.unwrap(body, {
+    return getDodoUnsafeClient().webhooks.unwrap(body, {
       headers,
       key: webhookSecret,
     });
   }
 
   // Fall back to unsafe parsing in local development when no webhook secret is configured yet.
-  return dodo.webhooks.unsafeUnwrap(body);
+  return getDodoUnsafeClient().webhooks.unsafeUnwrap(body);
 };
 
 const getEventContext = (data = {}) => {
@@ -132,7 +132,9 @@ export async function POST(req) {
         let subscription = null;
         if (context.subscriptionId) {
           try {
-            subscription = await dodo.subscriptions.retrieve(context.subscriptionId);
+            subscription = await withDodoFallback((client) =>
+              client.subscriptions.retrieve(context.subscriptionId)
+            );
           } catch (error) {
             console.warn("Failed to retrieve subscription for payment.succeeded:", error);
           }

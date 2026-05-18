@@ -204,11 +204,11 @@ const BillingDashboard = () => {
         }),
       });
 
+      const data = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error("Failed to create checkout session.");
+        throw new Error(data?.message || data?.error || "Failed to create checkout session.");
       }
 
-      const data = await response.json();
       if (!data?.url) {
         throw new Error("Checkout session URL was not returned.");
       }
