@@ -131,21 +131,6 @@
       "permanent": true
     },
     {
-      "source": "/blog/bookmark-manager-search-tagging",
-      "destination": "/blog/bookmark-manager-search-and-tagging",
-      "permanent": true
-    },
-    {
-      "source": "/blog/markify-vs-browser-bookmarks",
-      "destination": "/blog/markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
-      "permanent": true
-    },
-    {
-      "source": "/blog/unlock-collaboration-share-your-bookmarks-collections-with-markify",
-      "destination": "/blog/unlock-collaboration-share-your-bookmarks-and-collections-with-markify",
-      "permanent": true
-    },
-    {
       "source": "/home",
       "destination": "/",
       "permanent": true

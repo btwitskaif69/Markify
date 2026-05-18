@@ -1,4 +1,5 @@
 import prisma from "../db/prismaClient";
+import { sendReviewNotificationEmail } from "../services/email.service";
 
 // Create or update a review for the logged-in user
 const createReview = async (req, res) => {
@@ -52,6 +53,16 @@ const createReview = async (req, res) => {
                 }
             });
         }
+
+        sendReviewNotificationEmail({
+            name: req.user.name,
+            email: req.user.email,
+            rating,
+            content: content.trim(),
+            isUpdate: Boolean(existingReview),
+        }).catch((error) => {
+            console.error("Failed to send review notification email:", error);
+        });
 
         res.status(200).json(review);
     } catch (error) {

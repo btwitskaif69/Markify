@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import {
   sendPasswordResetEmail,
+  sendSignupNotificationEmail,
   sendVerificationEmail,
   sendWelcomeEmail,
 } from "../services/email.service";
@@ -11,8 +12,10 @@ import { uploadImage, deleteImage } from "../services/r2.service";
 import admin from "../config/firebase";
 import { isAdminEmail } from "../utils/admin";
 
+const ENV = globalThis?.process?.env || {};
+
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: userId }, ENV.JWT_SECRET, {
     // You can change this value to '7d', '24h', '365d', etc.
     expiresIn: '30d',
   });
@@ -125,6 +128,15 @@ export const verifyEmail = async (req, res) => {
       console.error('Failed to send welcome email:', err)
     );
 
+    // Notify admins about the new verified signup (non-blocking)
+    sendSignupNotificationEmail({
+      name: user.name,
+      email: user.email,
+      source: "email signup",
+    }).catch(err =>
+      console.error('Failed to send signup notification email:', err)
+    );
+
     const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
     delete userResponse.password;
     res.status(201).json({ message: 'Account verified successfully!', user: userResponse, token });
@@ -214,7 +226,7 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     console.error("loginUser error:", error);
     const message =
-      process.env.NODE_ENV === "development" && error?.message
+      ENV.NODE_ENV === "development" && error?.message
         ? error.message
         : "Internal Server Error";
     res.status(500).json({ message });
@@ -278,7 +290,8 @@ export const forgotPassword = async (req, res) => {
         },
       });
 
-      const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      const appUrl = ENV.FRONTEND_URL || ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const resetUrl = `${appUrl}/reset-password/${resetToken}`;
 
       // This will now work correctly
       await sendPasswordResetEmail(user.email, resetUrl);
@@ -326,7 +339,7 @@ export const resetPassword = async (req, res) => {
     await prisma.passwordResetToken.delete({ where: { id: passwordResetToken.id } });
 
     res.status(200).json({ message: "Password has been reset successfully." });
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -380,6 +393,9 @@ export const updateUserProfile = async (req, res) => {
         email: true,
         avatar: true,
         isSubscribed: true,
+        subscriptionEnds: true,
+        dodoCustomerId: true,
+        dodoSubscriptionId: true,
       },
     });
 
@@ -411,7 +427,7 @@ export const googleAuth = async (req, res) => {
       return res.status(401).json({ message: "Invalid or expired token." });
     }
 
-    const { email, name, picture, uid } = decodedToken;
+    const { email, name, picture } = decodedToken;
 
     // Check if user exists
     let user = await prisma.user.findUnique({
@@ -441,6 +457,15 @@ export const googleAuth = async (req, res) => {
 
       // Optionally send welcome email
       sendWelcomeEmail(user.email, user.name).catch(err => console.error('Failed to send welcome email:', err));
+
+      // Notify admins about the new Google signup (non-blocking)
+      sendSignupNotificationEmail({
+        name: user.name,
+        email: user.email,
+        source: "Google Sign-In",
+      }).catch(err =>
+        console.error('Failed to send signup notification email:', err)
+      );
     } else {
       // User exists - check if they have an avatar, if not and Google provides one, update it
       const shouldUpdateAvatar = !user.avatar && picture;

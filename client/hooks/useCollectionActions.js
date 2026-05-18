@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { FREE_COLLECTION_LIMIT, hasActiveProAccess } from "@/lib/subscription";
 
 const API_URL = API_BASE_URL;
 
-export function useCollectionActions(authFetch, setCollections) {
+export function useCollectionActions(authFetch, setCollections, { collectionCount = 0, user = null } = {}) {
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
   const [collectionName, setCollectionName] = useState("");
@@ -14,6 +15,10 @@ export function useCollectionActions(authFetch, setCollections) {
 
   const handleCollectionSubmit = async (collectionData) => {
     const isEditing = !!editingCollection;
+    if (!isEditing && !hasActiveProAccess(user) && collectionCount >= FREE_COLLECTION_LIMIT) {
+      toast.error("Free plan includes up to 2 collections. Upgrade to Pro for unlimited collections.");
+      return;
+    }
     const url = isEditing
       ? `${API_URL}/collections/${collectionData.id}`
       : `${API_URL}/collections`;

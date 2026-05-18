@@ -4,8 +4,6 @@ import { Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion"
-import SEO from "@/components/SEO/SEO"
-
 export function Error404() {
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -18,11 +16,6 @@ export function Error404() {
 
   return (
     <>
-      <SEO
-        title="Page not found"
-        description="The page you are looking for does not exist."
-        noindex
-      />
       <div
         className="min-h-screen w-full bg-[#050505] flex items-center justify-center relative overflow-hidden font-sans selection:bg-orange-500/30"
         onMouseMove={handleMouseMove}

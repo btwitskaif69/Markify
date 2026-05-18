@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import PropTypes from "prop-types";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import {
+  BOOKMARK_CATEGORY_OPTIONS,
+  normalizeBookmarkCategoryValue,
+} from "@/lib/bookmarkCategories";
 
 const logo = "/assets/logo.svg";
 const AUTO_CATEGORY_VALUE = "__auto__";
@@ -31,15 +36,14 @@ export default function BookmarkFormDialog({
   onUrlChange,
   onAddClick,
   collections,
-  categories = [],
+  categories = BOOKMARK_CATEGORY_OPTIONS,
   isSubmitting,
 }) {
   const availableCategories = useMemo(() => {
     const categoryMap = new Map();
 
     const addCategory = (value) => {
-      if (typeof value !== "string") return;
-      const category = value.trim();
+      const category = normalizeBookmarkCategoryValue(value);
       if (!category) return;
 
       const key = category.toLowerCase();
@@ -51,7 +55,7 @@ export default function BookmarkFormDialog({
     categories.forEach(addCategory);
     addCategory(editingBookmark?.category);
 
-    return Array.from(categoryMap.values()).sort((a, b) => a.localeCompare(b));
+    return Array.from(categoryMap.values());
   }, [categories, editingBookmark?.category]);
 
   const handleFormSubmit = (e) => {
@@ -208,3 +212,33 @@ export default function BookmarkFormDialog({
     </Dialog>
   );
 }
+
+BookmarkFormDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  formData: PropTypes.shape({
+    title: PropTypes.string,
+    url: PropTypes.string,
+    description: PropTypes.string,
+    tags: PropTypes.string,
+    category: PropTypes.string,
+    collectionId: PropTypes.string,
+  }).isRequired,
+  setFormData: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  editingBookmark: PropTypes.shape({
+    category: PropTypes.string,
+  }),
+  previewData: PropTypes.shape({
+    image: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+  }),
+  isFetchingPreview: PropTypes.bool,
+  previewError: PropTypes.string,
+  onUrlChange: PropTypes.func.isRequired,
+  onAddClick: PropTypes.func.isRequired,
+  collections: PropTypes.array,
+  categories: PropTypes.array,
+  isSubmitting: PropTypes.bool,
+};

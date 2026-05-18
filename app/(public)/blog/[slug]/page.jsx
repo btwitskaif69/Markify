@@ -16,17 +16,7 @@ export const dynamicParams = true;
 export const runtime = "nodejs";
 const BLOG_AUTHOR_NAME = "Mohd Kaif";
 
-const LEGACY_SLUG_REDIRECTS = {
-  "bookmark-managers-cloud-sync": "bookmark-managers-with-cloud-sync",
-  "bookmark-manager-search-tagging": "bookmark-manager-search-and-tagging",
-  "best-bookmark-manager-mac-2026": "best-bookmark-manager-for-mac-2026",
-  "markify-vs-browser-bookmarks":
-    "markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
-  "unlock-collaboration-share-your-bookmarks-collections-with-markify":
-    "unlock-collaboration-share-your-bookmarks-and-collections-with-markify",
-};
 
-const resolveCanonicalSlug = (slug) => LEGACY_SLUG_REDIRECTS[slug] || slug;
 
 const getPostBySlug = async (slug) => {
   if (!slug) return { post: null, error: null };
@@ -84,8 +74,7 @@ const buildSeoDescription = (excerpt, title) => {
 export const generateMetadata = async ({ params }) => {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const canonicalSlug = resolveCanonicalSlug(slug);
-  const { post, error } = await getPostBySlug(canonicalSlug);
+  const { post, error } = await getPostBySlug(slug);
   
   if (!post || !post.published) {
     if (error) {
@@ -93,7 +82,7 @@ export const generateMetadata = async ({ params }) => {
         title: "Markify Blog",
         description:
           "Read the latest Markify updates on saving, organizing, and searching bookmarks.",
-        path: `/blog/${canonicalSlug || slug || ""}`,
+        path: `/blog/${slug || ""}`,
       });
     }
     // Instead of explicitly setting noindex which creates Google Search Console warnings,
@@ -101,7 +90,7 @@ export const generateMetadata = async ({ params }) => {
     return buildMetadata({
       title: "Blog post not found",
       description: "The requested blog post could not be found.",
-      path: `/blog/${canonicalSlug || slug || ""}`,
+      path: `/blog/${slug || ""}`,
     });
   }
 
@@ -128,11 +117,6 @@ export const generateMetadata = async ({ params }) => {
 export default async function Page({ params }) {
   const resolvedParams = await params;
   const slug = resolvedParams?.slug;
-  const canonicalSlug = resolveCanonicalSlug(slug);
-
-  if (canonicalSlug !== slug) {
-    return permanentRedirect(`/blog/${canonicalSlug}`);
-  }
 
   const { post } = await getPostBySlug(slug);
   

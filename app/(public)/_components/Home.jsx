@@ -16,15 +16,25 @@ const StressFreeCTA = lazy(() => import('@/components/home/StressFreeCTA'));
 const WhyChooseMarkify = lazy(() => import('@/components/home/WhyChooseMarkify'));
 const ReviewsMarquee = lazy(() => import('@/components/home/ReviewsMarquee'));
 const FinalCTA = lazy(() => import('@/components/home/FinalCTA'));
+const HomeFAQ = lazy(() => import('@/components/home/HomeFAQ'));
 
-const SectionFallback = () => null;
+const SectionFallback = ({ title, description }) => (
+  <section className="relative w-full min-h-[420px] px-4 py-20">
+    <div className="mx-auto max-w-6xl">
+      <div className="sr-only">
+        {title && <h2>{title}</h2>}
+        {description && <p>{description}</p>}
+      </div>
+    </div>
+  </section>
+);
 
 const Home = () => {
   return (
     <>
       <Navbar />
 
-      <main>
+      <main className="relative min-h-dvh overflow-x-clip">
         {/* Hero stays here - critical for FCP */}
         <Hero />
 
@@ -153,6 +163,27 @@ const Home = () => {
 
         {/* Pricing */}
         <PricingPlans />
+
+        {/* FAQ */}
+        <LazySection
+          fallback={
+            <SectionFallback
+              title="How Markify helps you?"
+              description="Frequently asked questions about Markify's features, pricing, security, and more."
+            />
+          }
+        >
+          <Suspense
+            fallback={
+              <SectionFallback
+                title="How Markify helps you?"
+                description="Frequently asked questions about Markify's features, pricing, security, and more."
+              />
+            }
+          >
+            <HomeFAQ />
+          </Suspense>
+        </LazySection>
 
         {/* Final CTA */}
         <LazySection

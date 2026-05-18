@@ -18,7 +18,8 @@ export default function SharedItems({
     onRefreshArchive,
     onRenameCollection,
     onDeleteCollection,
-    onShareCollection
+    onShareCollection,
+    canShare = false,
 }) {
     // Filter for shared items
     const sharedBookmarks = bookmarks.filter(b => b.shareId);
@@ -83,6 +84,7 @@ export default function SharedItems({
                                         onRename={onRenameCollection}
                                         onDelete={onDeleteCollection}
                                         onShare={onShareCollection}
+                                        canShare={canShare}
                                     />
                                 ))}
                             </div>
@@ -108,6 +110,7 @@ export default function SharedItems({
                                         onToggleFavorite={onToggleFavorite}
                                         onMove={onMove}
                                         onShare={onShare}
+                                        canShare={canShare}
                                         onViewArchive={onViewArchive}
                                         onRefreshArchive={onRefreshArchive}
                                     />
@@ -130,6 +133,7 @@ export default function SharedItems({
                                     onRename={onRenameCollection}
                                     onDelete={onDeleteCollection}
                                     onShare={onShareCollection}
+                                    canShare={canShare}
                                 />
                             ))}
                         </div>
@@ -151,6 +155,7 @@ export default function SharedItems({
                                     onToggleFavorite={onToggleFavorite}
                                     onMove={onMove}
                                     onShare={onShare}
+                                    canShare={canShare}
                                     onViewArchive={onViewArchive}
                                     onRefreshArchive={onRefreshArchive}
                                 />
@@ -177,4 +182,5 @@ SharedItems.propTypes = {
     onRenameCollection: PropTypes.func,
     onDeleteCollection: PropTypes.func,
     onShareCollection: PropTypes.func,
+    canShare: PropTypes.bool,
 };

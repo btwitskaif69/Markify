@@ -12,7 +12,7 @@ const pageDescription =
   "Keep every link organized in collections, instantly searchable, and always in sync with Markify's clean bookmark manager and one-click browser extension.";
 
 export const metadata = buildMetadata({
-  title: "Bookmark Manager for Saved Links & Teams",
+    title: "The Only Bookmark Manager You'll Ever Need",
   description: pageDescription,
   path: "/",
   keywords: [
@@ -32,7 +32,7 @@ export default function Page() {
     url: getCanonicalUrl("/"),
   });
   const webPageSchema = buildWebPageSchema({
-    title: "Bookmark Manager for Saved Links & Teams",
+      title: "The Only Bookmark Manager You'll Ever Need",
     description: pageDescription,
     path: "/",
     type: "WebPage",

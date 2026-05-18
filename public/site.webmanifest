@@ -1,7 +1,7 @@
 {
     "name": "Markify",
     "short_name": "Markify",
-    "description": "Smart Collections, Lightning-Fast Global Search, and Privacy-First Bookmarking Manager",
+    "description": "Keep every link organized in collections, instantly searchable, and always in sync with Markify's clean bookmark manager and one-click browser extension.",
     "icons": [
         {
             "src": "/favicon-48x48.png",

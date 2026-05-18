@@ -47,6 +47,7 @@ function BookmarkCard({
   onDelete,
   onToggleFavorite,
   onShare,
+  canShare = false,
   // Selection mode props
   isSelectionMode = false,
   isSelected = false,
@@ -249,11 +250,13 @@ function BookmarkCard({
                   Visit
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onShare?.(bookmark); }}
-                  className="cursor-pointer">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
-                </DropdownMenuItem>
+                {canShare && onShare ? (
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onShare?.(bookmark); }}
+                    className="cursor-pointer">
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </DropdownMenuItem>
+                ) : null}
 
                 <DropdownMenuSeparator />
 
@@ -285,6 +288,7 @@ BookmarkCard.propTypes = {
   onDelete: PropTypes.func,
   onToggleFavorite: PropTypes.func,
   onShare: PropTypes.func,
+  canShare: PropTypes.bool,
 
   isSelectionMode: PropTypes.bool,
   isSelected: PropTypes.bool,

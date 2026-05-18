@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Twitter } from "lucide-react";
+import { AwardBadge } from "@/components/ui/award-badge";
 import {
   GET_STARTED_LINKS,
   PRODUCT_LINKS,
@@ -75,17 +76,7 @@ function Footer() {
               <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
                 Get Started
               </h3>
-              <div className="bg-muted p-2 rounded-xl w-fit mb-4 border border-border">
-                <img
-                  src="/images/markify-qr.svg"
-                  alt="Markify quick start QR"
-                  width={80}
-                  height={80}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-20 w-20 mix-blend-multiply dark:mix-blend-screen dark:invert"
-                />
-              </div>
+
               <ul className="space-y-4 text-sm text-muted-foreground">
                 {GET_STARTED_LINKS.map((link) => (
                   <li key={link.to}>
@@ -107,27 +98,7 @@ function Footer() {
               <ul className="space-y-4 text-sm text-muted-foreground">
                 <li>
                   <a
-                    href="https://linkedin.com/company/markifytech"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
-                  >
-                    <Linkedin className="h-4 w-4" /> LinkedIn
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://youtube.com/@markifytech"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
-                  >
-                    <Youtube className="h-4 w-4" /> YouTube
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://twitter.com/markifytech"
+                    href="https://x.com/btwitskaif69"
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
@@ -135,22 +106,13 @@ function Footer() {
                     <Twitter className="h-4 w-4" /> X (Twitter)
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="https://instagram.com/markifytech"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 hover:text-primary transition-colors duration-200"
-                  >
-                    <Instagram className="h-4 w-4" /> Instagram
-                  </a>
-                </li>
               </ul>
               
               <div className="pt-4">
-                <a href="https://www.producthunt.com/products/markify?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-markify" target="_blank" rel="noopener noreferrer">
-                  <img alt="Markify - The Only Bookmark Manager You'll Ever Need | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1132905&amp;theme=light&amp;t=1777441480389" className="h-[40px] w-auto" loading="lazy" />
-                </a>
+                <AwardBadge
+                  type="product-review"
+                  link="https://www.producthunt.com/products/markify/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-markify"
+                />
               </div>
             </div>
           </div>

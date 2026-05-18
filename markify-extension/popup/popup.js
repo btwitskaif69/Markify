@@ -9,6 +9,7 @@ const elements = {
     saveView: document.getElementById('save-view'),
     successView: document.getElementById('success-view'),
     duplicateView: document.getElementById('duplicate-view'),
+    upgradeView: document.getElementById('upgrade-view'),
 
     // Login form
     loginForm: document.getElementById('login-form'),
@@ -31,6 +32,7 @@ const elements = {
     saveError: document.getElementById('save-error'),
 
     // Other buttons
+    upgradeBtn: document.getElementById('upgrade-btn'),
     saveAnotherBtn: document.getElementById('save-another-btn'),
     closeDuplicateBtn: document.getElementById('close-duplicate-btn'),
     duplicateMessage: document.getElementById('duplicate-message')
@@ -47,13 +49,13 @@ let currentPageData = {
 
 // View management
 function showView(viewName) {
-    const views = ['loadingView', 'loginView', 'saveView', 'successView', 'duplicateView'];
+    const views = ['loadingView', 'loginView', 'upgradeView', 'saveView', 'successView', 'duplicateView'];
     views.forEach(view => {
         elements[view].style.display = view === viewName ? 'block' : 'none';
     });
 
     // Show/hide logout button based on auth state
-    elements.logoutBtn.style.display = viewName === 'saveView' ? 'block' : 'none';
+    elements.logoutBtn.style.display = (viewName === 'saveView' || viewName === 'upgradeView') ? 'block' : 'none';
 }
 
 function showError(element, message) {
@@ -85,13 +87,32 @@ async function init() {
     showView('loadingView');
 
     try {
-        const isLoggedIn = await MarkifyAPI.isAuthenticated();
-
-        if (isLoggedIn) {
-            await loadSaveView();
-        } else {
+        const storedUser = await MarkifyAPI.getUser();
+        if (!storedUser) {
             showView('loginView');
+            return;
         }
+
+        let currentUser = storedUser;
+        try {
+            const refreshedUser = await MarkifyAPI.refreshUser();
+            if (refreshedUser) {
+                currentUser = refreshedUser;
+            }
+        } catch (refreshError) {
+            if (String(refreshError?.message || '').includes('401')) {
+                showView('loginView');
+                return;
+            }
+            console.warn('Extension profile refresh failed, using cached user:', refreshError);
+        }
+
+        if (!MarkifyAPI.hasActiveProAccess(currentUser)) {
+            showView('upgradeView');
+            return;
+        }
+
+        await loadSaveView();
     } catch (error) {
         console.error('Init error:', error);
         showView('loginView');
@@ -231,13 +252,31 @@ async function handleLogin(e) {
     setButtonLoading(elements.loginBtn, true);
 
     try {
-        await MarkifyAPI.login(email, password);
-        await loadSaveView();
+        const data = await MarkifyAPI.login(email, password);
+        let currentUser = data.user;
+        try {
+            const refreshedUser = await MarkifyAPI.refreshUser();
+            if (refreshedUser) {
+                currentUser = refreshedUser;
+            }
+        } catch (refreshError) {
+            console.warn('Extension profile refresh failed after login, using login response:', refreshError);
+        }
+
+        if (MarkifyAPI.hasActiveProAccess(currentUser)) {
+            await loadSaveView();
+        } else {
+            showView('upgradeView');
+        }
     } catch (error) {
         showError(elements.loginError, error.message || 'Login failed');
     } finally {
         setButtonLoading(elements.loginBtn, false);
     }
+}
+
+async function handleUpgradeClick() {
+    window.open('https://www.markify.tech/pricing', '_blank', 'noopener');
 }
 
 // Save bookmark handler
@@ -322,6 +361,7 @@ function handleCloseDuplicate() {
 elements.loginForm.addEventListener('submit', handleLogin);
 elements.saveForm.addEventListener('submit', handleSave);
 elements.logoutBtn.addEventListener('click', handleLogout);
+elements.upgradeBtn.addEventListener('click', handleUpgradeClick);
 elements.saveAnotherBtn.addEventListener('click', handleSaveAnother);
 elements.closeDuplicateBtn.addEventListener('click', handleCloseDuplicate);
 

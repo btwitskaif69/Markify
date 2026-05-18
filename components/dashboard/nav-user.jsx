@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import Link from "next/link";
+import { useState } from "react";
 import PropTypes from 'prop-types';
 import {
   ChevronsUpDown,
@@ -6,7 +7,7 @@ import {
   Sparkles,
   BadgeCheck,
   CreditCard,
-  Bell,
+  MessageSquarePlus,
   Star,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,12 +22,50 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/client/context/AuthContext";
 import AccountDialog from "./AccountDialog";
+import { FeatureRequestDialog } from "./FeatureRequestDialog";
 import { ReviewDialog } from "./ReviewDialog";
 
 export function NavUser({ user }) {
-  const { logout, authFetch, updateProfile } = useAuth();
+  const { logout, authFetch, updateProfile, hasProAccess, token } = useAuth();
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [featureRequestDialogOpen, setFeatureRequestDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    if (!token) {
+      window.location.href = "/login?redirect=/dashboard";
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to create checkout session");
+      const data = await response.json();
+      if (data.url) {
+        localStorage.setItem(
+          "markify_pending_subscription",
+          JSON.stringify({
+            startedAt: Date.now(),
+            source: "dashboard-user-menu",
+          })
+        );
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong with the checkout process.");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -81,26 +120,41 @@ export function NavUser({ user }) {
               </div>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem className="cursor-pointer">
-              <Sparkles className="mr-2 h-4 w-4" />
-              <span>Upgrade to Pro</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
+          {!hasProAccess && (
+            <>
+              <DropdownMenuGroup>
+                <DropdownMenuItem 
+                  className="cursor-pointer" 
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  <span>{isCheckingOut ? "Redirecting..." : "Upgrade to Pro"}</span>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+            </>
+          )}
           <DropdownMenuGroup>
             <DropdownMenuItem className="cursor-pointer" onClick={() => setAccountDialogOpen(true)}>
               <BadgeCheck className="mr-2 h-4 w-4" />
               <span>Account</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
+            <DropdownMenuItem asChild>
+              <Link
+                href={user ? `/dashboard/${user.id}/billing` : "/login"}
+                className="cursor-pointer"
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Billing</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">
-              <Bell className="mr-2 h-4 w-4" />
-              <span>Notifications</span>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => setFeatureRequestDialogOpen(true)}
+            >
+              <MessageSquarePlus className="mr-2 h-4 w-4" />
+              <span>Request a Feature</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={() => setReviewDialogOpen(true)}>
               <Star className="mr-2 h-4 w-4" />
@@ -124,12 +178,17 @@ export function NavUser({ user }) {
       />
 
       <ReviewDialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen} />
+      <FeatureRequestDialog
+        open={featureRequestDialogOpen}
+        onOpenChange={setFeatureRequestDialogOpen}
+      />
     </div>
   );
 }
 
 NavUser.propTypes = {
   user: PropTypes.shape({
+    id: PropTypes.string,
     name: PropTypes.string,
     email: PropTypes.string,
     avatar: PropTypes.string,

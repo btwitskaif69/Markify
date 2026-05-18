@@ -29,7 +29,9 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-export function NavCollections({ collections = [], onCreate, onRename, onDelete, onShare }) {
+import { useState, useEffect } from "react";
+
+export function NavCollections({ collections = [], onCreate, onRename, onDelete, onShare, canShare = false }) {
   const params = useParams();
   const userId = Array.isArray(params.userId) ? params.userId[0] : params.userId;
   const activeCollectionId = Array.isArray(params.collectionId)
@@ -38,10 +40,18 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete,
   const safeCollections = Array.isArray(collections) ? collections : [];
   const hasActiveCollection = safeCollections.some((collection) => collection.id === activeCollectionId);
 
+  const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    if (hasActiveCollection) {
+      setIsOpen(true);
+    }
+  }, [hasActiveCollection]);
+
   return (
     <SidebarGroup className="px-2 py-1">
       <SidebarMenu>
-        <Collapsible asChild defaultOpen={true} className="group/collapsible">
+        <Collapsible asChild open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
               <SidebarMenuButton tooltip="Collections">
@@ -110,10 +120,12 @@ export function NavCollections({ collections = [], onCreate, onRename, onDelete,
                               <Edit className="mr-2 h-4 w-4" />
                               <span>Rename</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={() => onShare?.(collection)} className="cursor-pointer">
-                              <Share2 className="mr-2 h-4 w-4" />
-                              <span>Share</span>
-                            </DropdownMenuItem>
+                            {canShare && onShare ? (
+                              <DropdownMenuItem onSelect={() => onShare?.(collection)} className="cursor-pointer">
+                                <Share2 className="mr-2 h-4 w-4" />
+                                <span>Share</span>
+                              </DropdownMenuItem>
+                            ) : null}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onSelect={() => onDelete?.(collection.id)}
@@ -143,4 +155,5 @@ NavCollections.propTypes = {
   onRename: PropTypes.func,
   onDelete: PropTypes.func,
   onShare: PropTypes.func,
+  canShare: PropTypes.bool,
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {
+import {
   createContext,
   useState,
   useContext,
@@ -8,13 +8,17 @@ import React, {
   useCallback,
   useMemo
 } from "react";
+import PropTypes from "prop-types";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { secureFetch as secureApiFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL, AUTH_TIMEOUT_MS } from "@/client/lib/apiConfig";
+import { getPlanKey, hasActiveProAccess } from "@/lib/subscription";
 
 const AuthContext = createContext(null);
 const PROTECTED_PATH_PREFIXES = ["/dashboard", "/admin"];
+const PENDING_SUBSCRIPTION_KEY = "markify_pending_subscription";
+const PENDING_SUBSCRIPTION_TTL_MS = 1000 * 60 * 60 * 24;
 
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
@@ -50,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  const saveToken = (authToken) => {
+  const saveToken = useCallback((authToken) => {
     if (typeof window === "undefined") return;
     if (authToken) {
       localStorage.setItem("token", authToken);
@@ -58,9 +62,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
     }
     setToken(authToken);
-  };
+  }, []);
 
-  const saveUser = (userData) => {
+  const saveUser = useCallback((userData) => {
     if (typeof window === "undefined") return;
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
@@ -68,14 +72,14 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("user");
     }
     setUser(userData);
-  };
+  }, []);
 
   const logout = useCallback(() => {
     saveToken(null);
     saveUser(null);
     toast.success("You have been logged out.");
     router.replace("/login");
-  }, [router]);
+  }, [router, saveToken, saveUser]);
 
   // Helper for fetch with encryption support and timeout
   const timedSecureFetch = useCallback(async (url, options = {}) => {
@@ -131,7 +135,62 @@ export const AuthProvider = ({ children }) => {
         throw err;
       }
     },
-    [token, logout]
+    [token, logout, timedSecureFetch]
+  );
+
+  const reconcilePendingSubscription = useCallback(
+    async (currentUser) => {
+      if (typeof window === "undefined" || !token || !currentUser) {
+        return false;
+      }
+
+      const pendingSubscriptionRaw = localStorage.getItem(PENDING_SUBSCRIPTION_KEY);
+      if (!pendingSubscriptionRaw) {
+        return false;
+      }
+
+      try {
+        const pendingSubscription = JSON.parse(pendingSubscriptionRaw);
+        const startedAt = Number(pendingSubscription?.startedAt || 0);
+        if (startedAt && Date.now() - startedAt > PENDING_SUBSCRIPTION_TTL_MS) {
+          localStorage.removeItem(PENDING_SUBSCRIPTION_KEY);
+          return false;
+        }
+      } catch {
+        localStorage.removeItem(PENDING_SUBSCRIPTION_KEY);
+        return false;
+      }
+
+      if (hasActiveProAccess(currentUser)) {
+        localStorage.removeItem(PENDING_SUBSCRIPTION_KEY);
+        return true;
+      }
+
+      try {
+        const response = await fetch("/api/billing/confirm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({}),
+        });
+
+        const result = await response.json();
+        if (response.ok && result?.user) {
+          saveUser({ ...currentUser, ...result.user });
+          localStorage.removeItem(PENDING_SUBSCRIPTION_KEY);
+          return true;
+        }
+
+        console.warn("Pending subscription reconciliation returned:", response.status, result?.message);
+      } catch (error) {
+        console.warn("Pending subscription reconciliation failed:", error);
+      }
+
+      return false;
+    },
+    [token, saveUser]
   );
 
   const verifyUser = useCallback(async () => {
@@ -148,44 +207,58 @@ export const AuthProvider = ({ children }) => {
         logout();
         return;
       }
-      if (!response.ok) throw new Error("Token verification failed");
+      if (!response.ok) {
+        // Don't clear the session for transient server failures.
+        console.warn("Skipping token verification because the profile endpoint returned:", response.status);
+        return;
+      }
       const userData = await response.json();
       saveUser(userData);
+
+      if (typeof window !== "undefined") {
+        if (hasActiveProAccess(userData)) {
+          localStorage.removeItem(PENDING_SUBSCRIPTION_KEY);
+        } else {
+          void reconcilePendingSubscription(userData);
+        }
+      }
     } catch (error) {
       if (error.name === "AbortError") {
         toast.error("Login verification took too long. Please try again.");
-      } else if (error.message !== "Unauthorized") {
-        // Token is invalid/malformed - clear it silently
-        console.error("User verification failed, clearing invalid token:", error);
+      } else if (error.message === "No token found. Please log in again.") {
         saveToken(null);
         saveUser(null);
+      } else if (error.message !== "Unauthorized") {
+        // Keep the existing session state if verification is unavailable.
+        console.warn("User verification skipped:", error);
       }
       // "Unauthorized" errors are already handled by authFetch which calls logout()
     } finally {
       setIsLoading(false);
     }
-  }, [token, authFetch, logout]);
+  }, [token, authFetch, logout, saveToken, saveUser, reconcilePendingSubscription]);
 
   useEffect(() => {
     verifyUser();
   }, [verifyUser]);
 
-  const login = (userData, authToken) => {
+  const login = useCallback((userData, authToken) => {
     saveToken(authToken);
     saveUser(userData);
-  };
+  }, [saveToken, saveUser]);
 
   // Update profile in state (after profile edit)
-  const updateProfile = (updatedUserData) => {
+  const updateProfile = useCallback((updatedUserData) => {
     if (updatedUserData) {
       // Merge with existing user data to preserve fields not returned by the API
       const mergedUser = { ...user, ...updatedUserData };
       saveUser(mergedUser);
     }
-  };
+  }, [user, saveUser]);
 
   const authValue = useMemo(() => {
     const isAdmin = Boolean(user?.isAdmin);
+    const hasProAccess = hasActiveProAccess(user);
 
     return {
       user,
@@ -197,8 +270,10 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated: !!user,
       isLoading,
       isAdmin,
+      hasProAccess,
+      planKey: getPlanKey(user),
     };
-  }, [user, token, logout, authFetch, isLoading]);
+  }, [user, token, login, logout, authFetch, isLoading, updateProfile]);
 
   const shouldShowGlobalLoader =
     isLoading &&
@@ -218,3 +293,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

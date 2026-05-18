@@ -24,7 +24,11 @@ const LazySection = ({ children, fallback = null, rootMargin = "200px" }) => {
     return () => observer.disconnect();
   }, [isVisible, rootMargin]);
 
-  return <div ref={sectionRef}>{isVisible ? children : fallback}</div>;
+  return (
+    <div ref={sectionRef} className="relative w-full">
+      {isVisible ? children : fallback}
+    </div>
+  );
 };
 
 export default LazySection;

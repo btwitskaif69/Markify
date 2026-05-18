@@ -17,6 +17,8 @@ export const getAdminOverview = async (req, res) => {
       logins7d,
       pendingReviews,
       totalPosts,
+      pendingFeatureRequestsRows,
+      totalFeatureRequestsRows,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { createdAt: { gte: since24h } } }),
@@ -25,7 +27,19 @@ export const getAdminOverview = async (req, res) => {
       prisma.user.count({ where: { lastLoginAt: { gte: since7d } } }),
       prisma.review.count({ where: { status: "PENDING" } }),
       prisma.blogPost.count(),
+      prisma.$queryRaw`
+        SELECT COUNT(*)::int AS "count"
+        FROM "FeatureRequest"
+        WHERE "status" = 'PENDING'
+      `,
+      prisma.$queryRaw`
+        SELECT COUNT(*)::int AS "count"
+        FROM "FeatureRequest"
+      `,
     ]);
+
+    const pendingFeatureRequests = Number(pendingFeatureRequestsRows?.[0]?.count || 0);
+    const totalFeatureRequests = Number(totalFeatureRequestsRows?.[0]?.count || 0);
 
     res.status(200).json({
       totals: {
@@ -40,6 +54,8 @@ export const getAdminOverview = async (req, res) => {
       },
       moderation: {
         pendingReviews,
+        pendingFeatureRequests,
+        totalFeatureRequests,
       },
       timeframe: {
         since24h: since24h.toISOString(),

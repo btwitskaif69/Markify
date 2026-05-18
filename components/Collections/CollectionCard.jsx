@@ -17,7 +17,8 @@ export default function CollectionCard({
     userId,
     onRename,
     onDelete,
-    onShare
+    onShare,
+    canShare = false,
 }) {
     return (
         <Card className="group relative overflow-hidden transition-all hover:shadow-md">
@@ -60,10 +61,12 @@ export default function CollectionCard({
                         <DropdownMenuItem onClick={() => onRename(collection)}>
                             Rename
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onShare(collection)}>
-                            <Share2 className="mr-2 h-4 w-4" />
-                            Share
-                        </DropdownMenuItem>
+                        {canShare && onShare ? (
+                            <DropdownMenuItem onClick={() => onShare(collection)}>
+                                <Share2 className="mr-2 h-4 w-4" />
+                                Share
+                            </DropdownMenuItem>
+                        ) : null}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={() => onDelete(collection.id)}

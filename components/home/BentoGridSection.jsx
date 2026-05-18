@@ -8,6 +8,7 @@ import { OrbitingCircles } from "@/components/ui/orbiting-circles";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { ImagesBadge } from "@/components/ui/images-badge";
 import BotDetection from "@/components/bot-detection";
+import PropTypes from "prop-types";
 import { BarChart3, Zap, Calendar, Search, Bookmark, FolderPlus, Tag, Share2, Chrome, Globe2 } from "lucide-react";
 
 const features = [
@@ -61,6 +62,12 @@ const FeatureItem = ({ name, description, icon }) => (
         </div>
     </div>
 );
+
+FeatureItem.propTypes = {
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    icon: PropTypes.node.isRequired,
+};
 
 const AnalyticsBeamCard = () => {
     const containerRef = useRef(null);
@@ -268,7 +275,7 @@ const BentoGridSection = () => {
                         </h3>
                         <div className="flex items-center justify-center min-h-[120px]">
                             <ImagesBadge
-                                text="Browse All"
+                                text="Collection Preview"
                                 images={[
                                     "https://assets.markify.tech/assets/dashboard-dark.png",
                                     "https://assets.markify.tech/assets/dashboard-light.png",
@@ -280,7 +287,6 @@ const BentoGridSection = () => {
                                 hoverTranslateY={-80}
                                 hoverSpread={50}
                                 hoverRotation={15}
-                                href="/features"
                                 className="flex-col gap-3"
                             />
                         </div>

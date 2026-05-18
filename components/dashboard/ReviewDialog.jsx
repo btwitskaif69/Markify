@@ -98,10 +98,7 @@ export function ReviewDialog({ open, onOpenChange }) {
             });
 
             if (response.ok) {
-                const message = existingReview
-                    ? "Review updated! It will be visible after admin approval."
-                    : "Review submitted! It will be visible after admin approval.";
-                toast.success(message);
+                toast.success(existingReview ? "Review updated!" : "Review submitted! Thank you for your feedback.");
                 onOpenChange(false);
             } else {
                 const data = await response.json();
@@ -126,13 +123,6 @@ export function ReviewDialog({ open, onOpenChange }) {
                 </DialogHeader>
 
                 <div className="py-4 space-y-4">
-                    {/* Status Badge */}
-                    {existingReview && existingReview.status && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-muted-foreground">Current status:</span>
-                            <StatusBadge status={existingReview.status} />
-                        </div>
-                    )}
 
                     {/* Star Rating */}
                     <div>
@@ -170,18 +160,28 @@ export function ReviewDialog({ open, onOpenChange }) {
                         />
                     </div>
 
-                    {/* Info about approval */}
-                    <p className="text-xs text-muted-foreground">
-                        Reviews are subject to admin approval before appearing publicly.
-                    </p>
+
                 </div>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                <DialogFooter className="grid grid-cols-2 gap-3 mt-2 sm:space-x-0">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => onOpenChange(false)}
+                        className="w-full border dark:border-white/10 hover:bg-muted/50"
+                    >
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} disabled={isSubmitting}>
-                        {isSubmitting ? "Submitting..." : existingReview ? "Update Review" : "Submit Review"}
+                    <Button 
+                        onClick={handleSubmit} 
+                        disabled={isSubmitting}
+                        className="w-full bg-[#ff6900] hover:bg-[#e55f00] text-white border-0"
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <img src="/assets/logo.svg" alt="" className="h-4 w-4 mr-2 animate-spin filter brightness-0 invert" />
+                                Submitting...
+                            </>
+                        ) : existingReview ? "Update Review" : "Submit Review"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

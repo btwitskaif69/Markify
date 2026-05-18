@@ -7,8 +7,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { secureFetch } from "@/client/lib/secureApi";
-import { FEATURES, getFeaturePath } from "@/data/features";
-import { SOLUTIONS, getSolutionPath } from "@/data/solutions";
 
 const STATIC_PAGES = [
   {
@@ -17,20 +15,6 @@ const STATIC_PAGES = [
     path: "/",
     type: "Page",
     keywords: ["bookmark manager", "markify", "save bookmarks"],
-  },
-  {
-    title: "Features",
-    description: "Explore the core features that power Markify.",
-    path: "/features",
-    type: "Page",
-    keywords: ["features", "bookmark tools", "productivity"],
-  },
-  {
-    title: "Solutions",
-    description: "Use cases for researchers, designers, developers, students, and teams.",
-    path: "/solutions",
-    type: "Page",
-    keywords: ["solutions", "use cases", "teams"],
   },
   {
     title: "Pricing",
@@ -144,20 +128,6 @@ const SearchPage = () => {
   }, []);
 
   const searchIndex = useMemo(() => {
-    const featureItems = FEATURES.map((feature) => ({
-      title: feature.title,
-      description: feature.description,
-      path: getFeaturePath(feature.slug),
-      type: "Feature",
-      keywords: feature.keywords || [],
-    }));
-    const solutionItems = SOLUTIONS.map((solution) => ({
-      title: solution.title,
-      description: solution.description,
-      path: getSolutionPath(solution.slug),
-      type: "Solution",
-      keywords: solution.keywords || [],
-    }));
     const blogItems = blogPosts
       .filter((post) => post?.slug)
       .map((post) => ({
@@ -167,7 +137,7 @@ const SearchPage = () => {
         type: "Blog post",
         keywords: post.tags || [],
       }));
-    return [...STATIC_PAGES, ...featureItems, ...solutionItems, ...blogItems];
+    return [...STATIC_PAGES, ...blogItems];
   }, [blogPosts]);
 
   const results = useMemo(() => {
@@ -209,7 +179,7 @@ const SearchPage = () => {
               Search Markify
             </h1>
             <p className="text-muted-foreground">
-              Find features, solutions, and helpful resources across the site.
+              Find helpful resources across the site.
             </p>
           </div>
 
@@ -220,7 +190,7 @@ const SearchPage = () => {
             <input
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              placeholder="Search for features, solutions, pricing..."
+              placeholder="Search for pages, pricing, and blog posts..."
               className="flex-1 rounded-xl border border-border bg-card px-4 py-3 text-base"
               aria-label="Search Markify"
             />
@@ -237,7 +207,9 @@ const SearchPage = () => {
               <>
                 <p className="text-sm text-muted-foreground mb-6">
                   {results.length} result{results.length === 1 ? "" : "s"} for{" "}
-                  <span className="text-foreground font-medium">&quot;{query}&quot;</span>
+                  <span className="text-foreground font-medium">
+                    &quot;{query}&quot;
+                  </span>
                 </p>
                 {results.length === 0 ? (
                   <div className="rounded-2xl border border-border bg-card/60 p-8 text-center">

@@ -8,10 +8,15 @@ import BookmarkListItem from "../Bookmarks/BookmarkListItem";
 import CmdK from "./CmdK";
 import BookmarkCardSkeleton from "../Bookmarks/BookmarkCardSkeleton";
 import ConfirmationDialog from "./ConfirmationDialog";
+import {
+  BOOKMARK_CATEGORY_OPTIONS,
+  normalizeBookmarkCategoryValue,
+} from "@/lib/bookmarkCategories";
 
 export default function Bookmarks({
   bookmarks = [],
   collections = [],
+  categories = BOOKMARK_CATEGORY_OPTIONS,
   isLoading = false,
   onEdit,
   onDelete,
@@ -21,6 +26,7 @@ export default function Bookmarks({
   onShare,
   onViewArchive,
   onRefreshArchive,
+  canShare = false,
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -40,39 +46,24 @@ export default function Bookmarks({
     [bookmarks]
   );
 
-  const availableCategories = useMemo(() => {
-    const categoryMap = new Map();
-
-    for (const bookmark of safeBookmarks) {
-      const category = typeof bookmark?.category === "string" ? bookmark.category.trim() : "";
-      if (!category) continue;
-
-      const key = category.toLowerCase();
-      if (!categoryMap.has(key)) {
-        categoryMap.set(key, category);
-      }
-    }
-
-    return Array.from(categoryMap.values()).sort((a, b) => a.localeCompare(b));
-  }, [safeBookmarks]);
-
   useEffect(() => {
     if (selectedCategory === "all") return;
-    const exists = availableCategories.some((category) => category === selectedCategory);
+    const exists = categories.some((category) => category === selectedCategory);
     if (!exists) {
       setSelectedCategory("all");
     }
-  }, [availableCategories, selectedCategory]);
+  }, [categories, selectedCategory]);
 
   const filteredBookmarks = safeBookmarks.filter((bookmark) => {
     const searchString = String(
       `${bookmark.tags || ""} ${bookmark.archive?.excerpt || ""} ${bookmark.archive?.siteName || ""}`
     );
+    const normalizedCategory = normalizeBookmarkCategoryValue(bookmark.category) || "Other";
     const matchesSearch =
       bookmark.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       bookmark.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       searchString.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || bookmark.category === selectedCategory;
+    const matchesCategory = selectedCategory === "all" || normalizedCategory === selectedCategory;
     const matchesFavorites = !showFavoritesOnly || bookmark.isFavorite;
     return matchesSearch && matchesCategory && matchesFavorites;
   });
@@ -166,7 +157,7 @@ export default function Bookmarks({
         setShowFavoritesOnly={setShowFavoritesOnly}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        categories={availableCategories}
+        categories={categories}
         fetchMoreBookmarks={fetchMoreBookmarks}
         onOpenCmdK={() => setCmdKOpen(true)}
         // Selection mode props
@@ -218,6 +209,7 @@ export default function Bookmarks({
                 collections={collections}
                 onMove={onMove}
                 onShare={onShare}
+                canShare={canShare}
                 onViewArchive={onViewArchive}
                 onRefreshArchive={onRefreshArchive}
                 // Selection mode props
@@ -259,6 +251,7 @@ export default function Bookmarks({
 Bookmarks.propTypes = {
   bookmarks: PropTypes.array,
   collections: PropTypes.array,
+  categories: PropTypes.array,
   isLoading: PropTypes.bool,
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
@@ -268,4 +261,5 @@ Bookmarks.propTypes = {
   onShare: PropTypes.func,
   onViewArchive: PropTypes.func,
   onRefreshArchive: PropTypes.func,
+  canShare: PropTypes.bool,
 };

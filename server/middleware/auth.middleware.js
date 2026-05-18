@@ -24,7 +24,17 @@ export const requireAuth = async (req) => {
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      select: { id: true, name: true, email: true, avatar: true, geminiUsage: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+        geminiUsage: true,
+        isSubscribed: true,
+        subscriptionEnds: true,
+        dodoCustomerId: true,
+        dodoSubscriptionId: true,
+      },
     });
 
     if (!user) {
@@ -37,10 +47,25 @@ export const requireAuth = async (req) => {
     req.user = { ...user, isAdmin: isAdminEmail(user.email) };
     return null;
   } catch (error) {
-    console.error(error);
+    console.error("Auth middleware error:", error);
+    
+    // If it's a token validation error, return 401
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError" ||
+      error.name === "NotBeforeError"
+    ) {
+      return NextResponse.json(
+        { message: "Not authorized, token failed" },
+        { status: 401 }
+      );
+    }
+    
+    // If it's a database connection error (e.g., Prisma can't reach Neon), return 500
+    // so the client doesn't forcefully log the user out.
     return NextResponse.json(
-      { message: "Not authorized, token failed" },
-      { status: 401 }
+      { message: "Internal server error during authentication" },
+      { status: 500 }
     );
   }
 };

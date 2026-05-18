@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 
 const API_URL = API_BASE_URL;
-const BOOKMARKS_CACHE_VERSION = "v2";
+const BOOKMARKS_CACHE_VERSION = "v3";
 
 const getCacheKey = (userId) =>
   userId ? `bookmarks_cache_${BOOKMARKS_CACHE_VERSION}_${userId}` : null;

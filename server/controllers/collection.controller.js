@@ -1,5 +1,6 @@
 import prisma from "../db/prismaClient";
 import { randomUUID } from "crypto";
+import { FREE_COLLECTION_LIMIT, hasActiveProAccess } from "@/lib/subscription";
 
 // GET all collections for the logged-in user
 export const getCollections = async (req, res) => {
@@ -26,6 +27,16 @@ export const createCollection = async (req, res) => {
     return res.status(400).json({ message: "Collection name is required." });
   }
   try {
+    const collectionCount = await prisma.collection.count({
+      where: { userId: req.user.id },
+    });
+
+    if (!hasActiveProAccess(req.user) && collectionCount >= FREE_COLLECTION_LIMIT) {
+      return res.status(403).json({
+        message: "Free plan includes up to 2 collections. Upgrade to Pro for unlimited collections.",
+      });
+    }
+
     const newCollection = await prisma.collection.create({
       data: { name, userId: req.user.id },
     });
@@ -105,6 +116,12 @@ export const renameCollection = async (req, res) => {
  */
 export const toggleShareCollection = async (req, res) => {
   try {
+    if (!hasActiveProAccess(req.user)) {
+      return res.status(403).json({
+        message: "Collection sharing is available on Pro.",
+      });
+    }
+
     const { collectionId } = req.params;
 
     // Get the collection

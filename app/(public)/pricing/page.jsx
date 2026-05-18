@@ -54,14 +54,12 @@ export default function Page() {
           or a growing team collaborating on shared collections, we have a pricing plan designed specifically for you.
         </p>
         <p>
-          Our Free plan offers a robust set of features to get you started immediately. You can save unlimited bookmarks, 
-          create nested folders, and take advantage of our powerful search capabilities without spending a dime. 
-          It is the perfect entry point for anyone wanting to experience the best free bookmark manager on the market.
+          Our Free plan includes up to 50 bookmarks, up to 2 collections, cross-browser sync, and a single HTML import option. 
+          It is the right fit for personal bookmark organization without export or team sharing features.
         </p>
         <p>
-          For power users and professionals, the Pro plan unlocks advanced functionality such as AI-powered auto-tagging, 
-          broken link detection, priority support, and enhanced security features. The Pro plan ensures your digital 
-          workspace remains organized, even as your collection grows into the thousands.
+          For power users and professionals, the Pro plan adds Chrome extension access, unlimited bookmarks, unlimited collections, 
+          bookmark and collection sharing, plus multi-format import and export options.
         </p>
         <p>
           Teams and organizations will benefit from our collaborative Team plan. This tier allows you to create shared workspaces, 

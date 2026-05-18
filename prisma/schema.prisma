@@ -25,14 +25,17 @@ model User {
   isVerified       Boolean      @default(false)
   createdAt        DateTime     @default(now())
   lastLoginAt      DateTime?
-  isSubscribed     Boolean      @default(false)
-  subscriptionEnds DateTime?
-  bookmarks        Bookmark[]
-  collections      Collection[]
-  passwordResets   PasswordResetToken[]
-  posts            BlogPost[]
-  geminiUsage      Int          @default(0)
-  review           Review?
+  isSubscribed       Boolean      @default(false)
+  subscriptionEnds   DateTime?
+  dodoCustomerId     String?      @unique
+  dodoSubscriptionId String?      @unique
+  bookmarks          Bookmark[]
+  collections        Collection[]
+  passwordResets     PasswordResetToken[]
+  posts              BlogPost[]
+  geminiUsage        Int          @default(0)
+  review             Review?
+  featureRequests    FeatureRequest[]
 }
 
 model PasswordResetToken {
@@ -139,6 +142,14 @@ enum ReviewStatus {
   REJECTED
 }
 
+enum FeatureRequestStatus {
+  PENDING
+  REVIEWED
+  PLANNED
+  DONE
+  REJECTED
+}
+
 model Review {
   id        String       @id @default(cuid())
   rating    Int          // 1-5 stars
@@ -147,4 +158,19 @@ model Review {
   createdAt DateTime     @default(now())
   user      User         @relation(fields: [userId], references: [id])
   userId    String       @unique  // One review per user
+}
+
+model FeatureRequest {
+  id        String               @id @default(cuid())
+  title     String
+  details   String
+  source    String?
+  status    FeatureRequestStatus  @default(PENDING)
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
 }

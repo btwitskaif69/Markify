@@ -1,3 +1,5 @@
+/* global chrome */
+
 // Markify Extension - Background Service Worker
 // Handles context menu, keyboard shortcuts, and quick save
 
@@ -31,6 +33,40 @@ chrome.runtime.onInstalled.addListener(() => {
         contexts: ['selection']
     });
 });
+
+const API_BASE = 'https://www.markify.tech/api';
+
+function hasActiveProAccess(user) {
+    if (!user?.isSubscribed) return false;
+
+    if (!user.subscriptionEnds) return true;
+
+    const subscriptionEnds = new Date(user.subscriptionEnds);
+    if (Number.isNaN(subscriptionEnds.getTime())) return true;
+
+    return subscriptionEnds.getTime() > Date.now();
+}
+
+async function refreshStoredUser(token) {
+    try {
+        const response = await fetch(`${API_BASE}/users/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const user = await response.json();
+        await chrome.storage.local.set({ markify_user: user });
+        return user;
+    } catch (error) {
+        console.log('Failed to refresh extension user profile:', error);
+        return null;
+    }
+}
 
 // Handle context menu click
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
@@ -75,7 +111,7 @@ async function quickSave(url, title, tabId) {
         // Get stored auth data
         const storage = await chrome.storage.local.get(['markify_token', 'markify_user']);
         const token = storage.markify_token;
-        const user = storage.markify_user;
+        let user = storage.markify_user;
 
         if (!token || !user) {
             showNotification(tabId, 'Please log in first', 'error');
@@ -83,12 +119,20 @@ async function quickSave(url, title, tabId) {
             return;
         }
 
+        const refreshedUser = await refreshStoredUser(token);
+        if (refreshedUser) {
+            user = refreshedUser;
+        }
+
+        if (!hasActiveProAccess(user)) {
+            showNotification(tabId, 'Chrome Extension Access is available on Pro.', 'warning');
+            chrome.action.openPopup();
+            return;
+        }
+
         // Set loading badge
         chrome.action.setBadgeText({ text: '...' });
         chrome.action.setBadgeBackgroundColor({ color: '#F59E0B' });
-
-        // First extract metadata
-        const API_BASE = 'https://www.markify.tech/api';
 
         let metadata = { title, description: '', image: null, tags: '' };
 
@@ -108,7 +152,7 @@ async function quickSave(url, title, tabId) {
                     metadata = metaData.data;
                 }
             }
-        } catch (e) {
+        } catch {
             // Continue with basic metadata
             console.log('Metadata extraction failed, using basic info');
         }
@@ -125,7 +169,6 @@ async function quickSave(url, title, tabId) {
                 url: url,
                 description: metadata.description || '',
                 tags: metadata.tags || '',
-                category: 'Other',
                 previewImage: metadata.image || null,
                 collectionId: null
             })
@@ -173,7 +216,7 @@ async function showNotification(tabId, message, type = 'success') {
             message,
             notificationType: type
         });
-    } catch (e) {
+    } catch {
         // Content script not loaded, inject it first
         try {
             await chrome.scripting.executeScript({
@@ -221,7 +264,7 @@ chrome.commands.onCommand.addListener(async (command) => {
         // Toggle floating button visibility
         try {
             await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_FLOATING_BUTTON' });
-        } catch (e) {
+        } catch {
             // Inject content script first
             await chrome.scripting.executeScript({
                 target: { tabId: tab.id },

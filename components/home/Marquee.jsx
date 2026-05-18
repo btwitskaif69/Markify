@@ -34,7 +34,7 @@ const Marquee = () => {
     }, []);
 
     return (
-        <section className="w-full pt-0 pb-6 md:pb-10 bg-background">
+        <section className="w-full pt-16 pb-6 md:pt-24 md:pb-10 bg-background">
             <div className="max-w-7xl mx-auto px-4 md:px-6">
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center mb-8 md:mb-10">

@@ -60,6 +60,17 @@ export function SignupForm({ className, ...props }) {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+    
+    if (id === "name") {
+      if (/[0-9]/.test(value)) {
+        toast.error("Name cannot contain numbers");
+      }
+      // Prevent numeric values in the name field
+      const sanitizedValue = value.replace(/[0-9]/g, "");
+      setFormData((prev) => ({ ...prev, [id]: sanitizedValue }));
+      return;
+    }
+    
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 

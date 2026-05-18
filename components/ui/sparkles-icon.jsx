@@ -1,80 +1,134 @@
-import { forwardRef, useImperativeHandle, useCallback } from "react";
-import { motion, useAnimate } from "motion/react";
+"use client";;
+import { cn } from "@/lib/utils";
+import { motion, useAnimation, useReducedMotion } from "motion/react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
 const SparklesIcon = forwardRef((
-  { size = 24, color = "currentColor", strokeWidth = 2, className = "" },
-  ref,
+ {
+  onMouseEnter,
+  onMouseLeave,
+  className,
+  size = 24,
+  duration = 1,
+  isAnimated = true,
+  ...props
+ },
+ ref,
 ) => {
-  const [scope, animate] = useAnimate();
+ const controls = useAnimation();
+ const reduced = useReducedMotion();
+ const isControlled = useRef(false);
 
-  const start = useCallback(async () => {
-    // main sparkle
-    animate(
-      ".sparkle-main",
-      { rotate: 180, scale: [1, 1.2, 1] },
-      { duration: 0.6, ease: "easeInOut" }
-    );
+ useImperativeHandle(ref, () => {
+  isControlled.current = true;
+  return {
+   startAnimation: () =>
+    reduced ? controls.start("normal") : controls.start("animate"),
+   stopAnimation: () => controls.start("normal"),
+  };
+ });
 
-    // top sparkle
-    animate(".sparkle-top", {
-      rotate: -90,
-      scale: [1, 0.8, 1.1],
-      opacity: [1, 0.6, 1],
-    }, { duration: 0.5, ease: "easeInOut", delay: 0.1 });
+ const handleEnter = useCallback((e) => {
+  if (!isAnimated || reduced) return;
+  if (!isControlled.current) controls.start("animate");
+  else onMouseEnter?.(e);
+ }, [controls, reduced, isAnimated, onMouseEnter]);
 
-    // bottom sparkle
-    animate(".sparkle-bottom", {
-      rotate: 90,
-      scale: [1, 1.15, 0.9],
-      opacity: [1, 0.7, 1],
-    }, { duration: 0.5, ease: "easeInOut", delay: 0.05 });
-  }, [animate]);
+ const handleLeave = useCallback((e) => {
+  if (!isControlled.current) controls.start("normal");
+  else onMouseLeave?.(e);
+ }, [controls, onMouseLeave]);
 
-  const stop = useCallback(() => {
-    animate(".sparkle-main", { rotate: 0, scale: 1 }, { duration: 0.25 });
-    animate(".sparkle-top", { rotate: 0, scale: 1, opacity: 1 }, { duration: 0.25 });
-    animate(".sparkle-bottom", { rotate: 0, scale: 1, opacity: 1 }, { duration: 0.25 });
-  }, [animate]);
+ const iconVariants = {
+  normal: { scale: 1, rotate: 0 },
+  animate: {
+   scale: [1, 1.06, 0.98, 1],
+   rotate: [0, -2, 1, 0],
+   transition: {
+    duration: 0.85 * duration,
+    ease: [0.22, 1, 0.36, 1],
+   },
+  },
+ };
 
-  useImperativeHandle(ref, () => ({
-    startAnimation: start,
-    stopAnimation: stop,
-  }));
+ const starVariants = {
+  normal: { opacity: 1, scale: 1 },
+  animate: {
+   opacity: [0.6, 1, 1],
+   scale: [0.7, 1.15, 1],
+   transition: {
+    duration: 0.7 * duration,
+    ease: "easeOut",
+    delay: 0.05,
+   },
+  },
+ };
 
-  return (
-    <motion.svg
-      ref={scope}
-      onHoverStart={start}
-      onHoverEnd={stop}
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={color}
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`cursor-pointer ${className}`}
-      style={{ overflow: "visible" }}>
-      {/* bottom sparkle */}
-      <motion.path
-        className="sparkle-bottom"
-        d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2z"
-        style={{ transformOrigin: "18px 18px" }} />
-      {/* top sparkle */}
-      <motion.path
-        className="sparkle-top"
-        d="M16 6a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2z"
-        style={{ transformOrigin: "18px 6px" }} />
-      {/* main sparkle */}
-      <motion.path
-        className="sparkle-main"
-        d="M9 18a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6z"
-        style={{ transformOrigin: "9px 12px" }} />
-    </motion.svg>
-  );
+ const crossVariants = {
+  normal: { opacity: 0.9, scale: 1, rotate: 0 },
+  animate: {
+   opacity: [0, 1],
+   scale: [0.4, 1],
+   rotate: [-45, 0],
+   transition: {
+    duration: 0.55 * duration,
+    ease: "easeOut",
+    delay: 0.16,
+   },
+  },
+ };
+
+ const dotVariants = {
+  normal: { opacity: 1, scale: 1, y: 0 },
+  animate: {
+   opacity: [0, 1],
+   scale: [0.4, 1],
+   y: [4, 0],
+   transition: {
+    duration: 0.5 * duration,
+    ease: "easeOut",
+    delay: 0.28,
+   },
+  },
+ };
+
+ return (
+  <motion.div
+   className={cn("inline-flex items-center justify-center", className)}
+   onMouseEnter={handleEnter}
+   onMouseLeave={handleLeave}
+   {...props}>
+   <motion.svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    animate={controls}
+    initial="normal"
+    variants={iconVariants}>
+    <motion.path
+     d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+     variants={starVariants}
+     initial="normal"
+     animate={controls} />
+    <motion.path d="M20 2v4" variants={crossVariants} initial="normal" animate={controls} />
+    <motion.path d="M22 4h-4" variants={crossVariants} initial="normal" animate={controls} />
+    <motion.circle
+     cx="4"
+     cy="20"
+     r="2"
+     variants={dotVariants}
+     initial="normal"
+     animate={controls} />
+   </motion.svg>
+  </motion.div>
+ );
 });
 
 SparklesIcon.displayName = "SparklesIcon";
-export default SparklesIcon;
+export { SparklesIcon };

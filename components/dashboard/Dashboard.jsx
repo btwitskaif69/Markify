@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { Sun, Moon } from "lucide-react";
 import { AnimationStyles } from "../theme-animations";
 import { useTheme } from "../theme-provider";
@@ -23,9 +24,12 @@ import ConfirmationDialog from "./ConfirmationDialog";
 import ShareDialog from "./ShareDialog";
 import Bookmarks from "./Bookmarks";
 import SharedItems from "./SharedItems";
+import BillingDashboard from "./BillingDashboard";
 import CmdK from "./CmdK";
 import WelcomeDialog from "./WelcomeDialog";
 import SEO from "@/components/SEO/SEO";
+import { BOOKMARK_CATEGORY_OPTIONS } from "@/lib/bookmarkCategories";
+import { toast } from "sonner";
 
 const INITIAL_FORM_STATE = {
   title: "",
@@ -37,19 +41,108 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function Dashboard() {
-  const { user, authFetch, isLoading: isAuthLoading } = useAuth();
+  const { user, authFetch, token, isLoading: isAuthLoading, hasProAccess, updateProfile } = useAuth();
   const { theme, setTheme } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [showWelcome, setShowWelcome] = useState(false);
   const isSharedView = pathname?.endsWith("/shared");
+  const isBillingView = pathname?.endsWith("/billing");
+  const dashboardPath = user ? `/dashboard/${user.id}` : "/login";
+  const billingPath = user ? `/dashboard/${user.id}/billing` : "/login";
+  const billingRedirectPath = isBillingView ? billingPath : dashboardPath;
+  const [showWelcome, setShowWelcome] = useState(false);
+  const sharedRedirectNotifiedRef = useRef(false);
+  const billingSyncHandledRef = useRef(false);
+  const billingSuccess = searchParams.get("billing") === "success" || searchParams.get("success") === "true";
+  const billingSubscriptionId = searchParams.get("subscription_id") || "";
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
       router.replace("/login");
     }
   }, [isAuthLoading, user, router]);
+
+  useEffect(() => {
+    if (isAuthLoading || !user) {
+      return;
+    }
+
+    if (!billingSuccess) {
+      billingSyncHandledRef.current = false;
+      return;
+    }
+
+    if (billingSyncHandledRef.current) {
+      return;
+    }
+
+    if (!billingSubscriptionId || !token) {
+      router.replace(billingRedirectPath);
+      return;
+    }
+
+    billingSyncHandledRef.current = true;
+
+    const syncSubscription = async () => {
+      try {
+        const response = await fetch("/api/billing/confirm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            subscriptionId: billingSubscriptionId,
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result?.message || "Failed to synchronize subscription.");
+        }
+
+        if (result?.user) {
+          updateProfile(result.user);
+        }
+
+        localStorage.removeItem("markify_pending_subscription");
+
+        toast.success("Pro subscription activated.");
+      } catch (error) {
+        console.error("Subscription sync failed:", error);
+        toast.error(error?.message || "Could not verify your subscription yet.");
+      } finally {
+        router.replace(billingRedirectPath);
+      }
+    };
+
+    void syncSubscription();
+  }, [
+    isAuthLoading,
+    user,
+    billingSuccess,
+    billingSubscriptionId,
+    token,
+    updateProfile,
+    router,
+    dashboardPath,
+    billingRedirectPath,
+  ]);
+
+  useEffect(() => {
+    if (isAuthLoading || !user || !isSharedView || hasProAccess) {
+      sharedRedirectNotifiedRef.current = false;
+      return;
+    }
+
+    if (!sharedRedirectNotifiedRef.current) {
+      sharedRedirectNotifiedRef.current = true;
+      toast.error("Shared items are available on Pro.");
+    }
+
+    router.replace(dashboardPath);
+  }, [isAuthLoading, user, isSharedView, hasProAccess, router, dashboardPath]);
 
   // Check for welcome param (new user onboarding)
   useEffect(() => {
@@ -75,22 +168,7 @@ export default function Dashboard() {
     refetchBookmarks,
   } = useDashboardData(user, authFetch, isAuthLoading);
 
-  const bookmarkCategories = useMemo(() => {
-    const source = Array.isArray(allBookmarks) ? allBookmarks : [];
-    const categoryMap = new Map();
-
-    for (const bookmark of source) {
-      const category = typeof bookmark?.category === "string" ? bookmark.category.trim() : "";
-      if (!category) continue;
-
-      const key = category.toLowerCase();
-      if (!categoryMap.has(key)) {
-        categoryMap.set(key, category);
-      }
-    }
-
-    return Array.from(categoryMap.values()).sort((a, b) => a.localeCompare(b));
-  }, [allBookmarks]);
+  const bookmarkCategories = BOOKMARK_CATEGORY_OPTIONS;
 
   const {
     handleSubmit,
@@ -100,7 +178,9 @@ export default function Dashboard() {
     handleMoveBookmark,
     handleRefreshArchive,
     isSubmitting
-  } = useBookmarkActions(authFetch, user, setAllBookmarks, collections);
+  } = useBookmarkActions(authFetch, user, setAllBookmarks, collections, {
+    bookmarkCount: allBookmarks.length,
+  });
 
 
   const {
@@ -116,7 +196,10 @@ export default function Dashboard() {
     handleRenameCollectionClick,
     openDeleteConfirm,
     confirmDelete,
-  } = useCollectionActions(authFetch, setCollections);
+  } = useCollectionActions(authFetch, setCollections, {
+    collectionCount: collections.length,
+    user,
+  });
 
   const { isDark, animationConfig, handleThemeToggle } = useThemeToggle(theme, setTheme);
 
@@ -210,6 +293,14 @@ export default function Dashboard() {
     );
   }
 
+  if (isSharedView && !hasProAccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6 text-center text-sm text-muted-foreground">
+        Redirecting to your bookmarks.
+      </div>
+    );
+  }
+
   return (
     <>
       <SEO
@@ -229,9 +320,9 @@ export default function Dashboard() {
         />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 justify-between px-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
+            <div className="flex items-center gap-1">
+              <SidebarTrigger className="-ml-1 size-6 [&>svg]:size-4" />
+              <Separator orientation="vertical" className="mr-1 h-4" />
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
@@ -249,6 +340,14 @@ export default function Dashboard() {
                       </BreadcrumbItem>
                     </>
                   )}
+                  {isBillingView && (
+                    <>
+                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbLink>Billing</BreadcrumbLink>
+                      </BreadcrumbItem>
+                    </>
+                  )}
                   {isSharedView && (
                     <>
                       <BreadcrumbSeparator className="hidden md:block" />
@@ -259,6 +358,7 @@ export default function Dashboard() {
                   )}
                 </BreadcrumbList>
               </Breadcrumb>
+
             </div>
 
             <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
@@ -271,22 +371,30 @@ export default function Dashboard() {
                 {isDark ? <Sun className="h-6 w-6 text-yellow-500" /> : <Moon className="h-6 w-6 text-gray-500" />}
               </div>
 
-              <BookmarkFormDialog
-                open={isBookmarkDialogOpen}
-                setOpen={setIsBookmarkDialogOpen}
-                formData={formData}
-                setFormData={setFormData}
-                onSubmit={(data) => handleSubmit(data, editingBookmark, previewData, () => setIsBookmarkDialogOpen(false))}
-                editingBookmark={editingBookmark}
-                previewData={previewData}
-                isFetchingPreview={isFetchingPreview}
-                previewError={previewError}
-                onUrlChange={handleUrlChange}
-                onAddClick={handleAddClick}
-                collections={collections}
-                categories={bookmarkCategories}
-                isSubmitting={isSubmitting}
-              />
+              {isBillingView && (
+                <Button asChild>
+                  <Link href={dashboardPath}>Dashboard</Link>
+                </Button>
+              )}
+
+              {!isBillingView && (
+                <BookmarkFormDialog
+                  open={isBookmarkDialogOpen}
+                  setOpen={setIsBookmarkDialogOpen}
+                  formData={formData}
+                  setFormData={setFormData}
+                  onSubmit={(data) => handleSubmit(data, editingBookmark, previewData, () => setIsBookmarkDialogOpen(false))}
+                  editingBookmark={editingBookmark}
+                  previewData={previewData}
+                  isFetchingPreview={isFetchingPreview}
+                  previewError={previewError}
+                  onUrlChange={handleUrlChange}
+                  onAddClick={handleAddClick}
+                  collections={collections}
+                  categories={bookmarkCategories}
+                  isSubmitting={isSubmitting}
+                />
+              )}
             </div>
           </header>
 
@@ -307,7 +415,9 @@ export default function Dashboard() {
             setCollectionName={setCollectionName}
           />
 
-          {isSharedView ? (
+          {isBillingView ? (
+            <BillingDashboard />
+          ) : isSharedView ? (
             <SharedItems
               bookmarks={allBookmarks}
               collections={collections}
@@ -324,11 +434,13 @@ export default function Dashboard() {
               onRenameCollection={handleRenameCollectionClick}
               onDeleteCollection={openDeleteConfirm}
               onShareCollection={handleShareCollection}
+              canShare={hasProAccess}
             />
           ) : (
             <Bookmarks
               bookmarks={bookmarks}
               collections={collections}
+              categories={bookmarkCategories}
               isLoading={isLoading}
               error={error}
               onEdit={handleEditClick}
@@ -339,6 +451,7 @@ export default function Dashboard() {
               onShare={handleShareBookmark}
               onViewArchive={handleViewArchive}
               onRefreshArchive={handleRefreshArchive}
+              canShare={hasProAccess}
             />
           )}
 

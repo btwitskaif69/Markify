@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import PropTypes from "prop-types";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CheckCircle,
@@ -9,6 +10,7 @@ import {
   FileText,
   Loader2,
   MessageSquare,
+  MessageSquarePlus,
   MoreHorizontal,
   Plus,
   Shield,
@@ -57,6 +59,14 @@ const StatCard = ({ title, value, icon: Icon, accent, helper }) => (
   </div>
 );
 
+StatCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.elementType.isRequired,
+  accent: PropTypes.string,
+  helper: PropTypes.string,
+};
+
 export default function AdminDashboard() {
   const { user, isAdmin, isLoading, isAuthenticated, authFetch } = useAuth();
   const router = useRouter();
@@ -75,6 +85,8 @@ export default function AdminDashboard() {
 
   const [pendingReviews, setPendingReviews] = useState([]);
   const [isPendingLoading, setIsPendingLoading] = useState(false);
+  const [featureRequests, setFeatureRequests] = useState([]);
+  const [isFeatureRequestsLoading, setIsFeatureRequestsLoading] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -93,7 +105,7 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error("Failed to load admin overview.");
       const data = await res.json();
       setOverview(data);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load admin overview.");
     } finally {
       setIsOverviewLoading(false);
@@ -107,7 +119,7 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error("Failed to load blog posts.");
       const data = await res.json();
       setPosts(data);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load blog posts.");
     } finally {
       setIsPostsLoading(false);
@@ -121,10 +133,24 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error("Failed to load pending reviews.");
       const data = await res.json();
       setPendingReviews(data);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load pending reviews.");
     } finally {
       setIsPendingLoading(false);
+    }
+  }, [authFetch]);
+
+  const fetchFeatureRequests = useCallback(async () => {
+    setIsFeatureRequestsLoading(true);
+    try {
+      const res = await authFetch(`${API_URL}/feature-requests`);
+      if (!res.ok) throw new Error("Failed to load feature requests.");
+      const data = await res.json();
+      setFeatureRequests(data);
+    } catch {
+      toast.error("Failed to load feature requests.");
+    } finally {
+      setIsFeatureRequestsLoading(false);
     }
   }, [authFetch]);
 
@@ -138,7 +164,8 @@ export default function AdminDashboard() {
     if (!isAdmin) return;
     if (activeView === "blog") fetchPosts();
     if (activeView === "reviews") fetchPendingReviews();
-  }, [activeView, fetchPosts, fetchPendingReviews, isAdmin]);
+    if (activeView === "feature-requests") fetchFeatureRequests();
+  }, [activeView, fetchPosts, fetchPendingReviews, fetchFeatureRequests, isAdmin]);
 
   const handleDelete = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
@@ -147,7 +174,7 @@ export default function AdminDashboard() {
       if (!res.ok && res.status !== 204) throw new Error("Failed to delete post.");
       toast.success("Post deleted successfully.");
       setPosts((prev) => prev.filter((post) => post.id !== postId));
-    } catch (err) {
+    } catch {
       toast.error("Failed to delete post.");
     }
   };
@@ -196,7 +223,7 @@ export default function AdminDashboard() {
 
       setPosts(prev => prev.map(p => selectedPosts.has(p.id) ? { ...p, published: true } : p));
       setSelectedPosts(new Set());
-    } catch (err) {
+    } catch {
       toast.error("Failed to bulk publish posts.");
     }
   };
@@ -218,7 +245,7 @@ export default function AdminDashboard() {
           }
           : prev
       );
-    } catch (err) {
+    } catch {
       toast.error("Failed to approve review.");
     }
   };
@@ -241,8 +268,30 @@ export default function AdminDashboard() {
           }
           : prev
       );
-    } catch (err) {
+    } catch {
       toast.error("Failed to reject review.");
+    }
+  };
+
+  const handleUpdateFeatureRequestStatus = async (requestId, status) => {
+    try {
+      const res = await authFetch(`${API_URL}/feature-requests/${requestId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update feature request.");
+
+      toast.success("Feature request updated.");
+      setFeatureRequests((prev) =>
+        prev.map((request) =>
+          request.id === requestId ? { ...request, status } : request
+        )
+      );
+      void fetchOverview();
+    } catch {
+      toast.error("Failed to update feature request.");
     }
   };
 
@@ -258,6 +307,8 @@ export default function AdminDashboard() {
       logins24h: activity.logins24h ?? 0,
       logins7d: activity.logins7d ?? 0,
       pendingReviews: moderation.pendingReviews ?? 0,
+      pendingFeatureRequests: moderation.pendingFeatureRequests ?? 0,
+      totalFeatureRequests: moderation.totalFeatureRequests ?? 0,
     };
   }, [overview]);
 
@@ -312,7 +363,7 @@ export default function AdminDashboard() {
       </div>
 
       <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Link
           href="/admin/manage-blogs"
           className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden block"
@@ -330,7 +381,7 @@ export default function AdminDashboard() {
 
         <div
           className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
-          onClick={() => setActiveView("reviews")}
+          onClick={() => handleViewChange("reviews")}
         >
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <MessageSquare className="h-24 w-24" />
@@ -346,6 +397,28 @@ export default function AdminDashboard() {
             </div>
             <p className="text-sm text-muted-foreground">
               Approve or reject user reviews.
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group relative overflow-hidden"
+          onClick={() => handleViewChange("feature-requests")}
+        >
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <MessageSquarePlus className="h-24 w-24" />
+          </div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="font-semibold">Feature Requests</h3>
+              {stats.pendingFeatureRequests > 0 && (
+                <span className="bg-violet-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {stats.pendingFeatureRequests}
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Track ideas users submit from the dashboard menu.
             </p>
           </div>
         </div>
@@ -375,7 +448,7 @@ export default function AdminDashboard() {
               Publish Selected ({selectedPosts.size})
             </Button>
           )}
-          <Button variant="outline" onClick={() => setActiveView("overview")}>
+          <Button variant="outline" onClick={() => handleViewChange("overview")}>
             Back to Overview
           </Button>
           <Button asChild>
@@ -513,7 +586,7 @@ export default function AdminDashboard() {
             Approve or reject user reviews before they appear on the site.
           </p>
         </div>
-        <Button variant="outline" onClick={() => setActiveView("overview")}>
+        <Button variant="outline" onClick={() => handleViewChange("overview")}>
           Back to Overview
         </Button>
       </div>
@@ -614,6 +687,147 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const renderFeatureRequestsManager = () => {
+    const statusStyles = {
+      PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+      REVIEWED: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+      PLANNED: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-400",
+      DONE: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+      REJECTED: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    };
+
+    const statusLabels = {
+      PENDING: "Pending",
+      REVIEWED: "Reviewed",
+      PLANNED: "Planned",
+      DONE: "Done",
+      REJECTED: "Rejected",
+    };
+
+    const updateStatusAction = (requestId, status) => {
+      handleUpdateFeatureRequestStatus(requestId, status);
+    };
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Feature Requests</h2>
+            <p className="text-muted-foreground">
+              Requests submitted by users from the dashboard menu.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => handleViewChange("overview")}>
+            Back to Overview
+          </Button>
+        </div>
+        <div className="rounded-md border bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Request</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isFeatureRequestsLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : featureRequests.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    No feature requests yet.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                featureRequests.map((request) => (
+                  <TableRow key={request.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={
+                            request.user?.avatar ||
+                            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                              request.user?.name || "User"
+                            )}&background=random`
+                          }
+                          alt={request.user?.name}
+                          width={32}
+                          height={32}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-8 w-8 rounded-full object-cover"
+                        />
+                        <div>
+                          <div className="font-medium">{request.user?.name}</div>
+                          <div className="text-xs text-muted-foreground">{request.user?.email}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-md">
+                      <div className="space-y-1">
+                        <p className="font-medium">{request.title}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{request.details}</p>
+                        {request.source ? (
+                          <p className="text-xs text-muted-foreground">Source: {request.source}</p>
+                        ) : null}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          statusStyles[request.status] || "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {statusLabels[request.status] || request.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>{formatDateUTC(request.createdAt)}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => updateStatusAction(request.id, "REVIEWED")}>
+                            Mark Reviewed
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => updateStatusAction(request.id, "PLANNED")}>
+                            Mark Planned
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => updateStatusAction(request.id, "DONE")}>
+                            Mark Done
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => updateStatusAction(request.id, "REJECTED")}
+                          >
+                            Reject
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <SEO title="Admin dashboard" description="Manage Markify content." noindex />
@@ -626,7 +840,7 @@ export default function AdminDashboard() {
             <Button
               size="sm"
               variant={activeView === "overview" ? "default" : "ghost"}
-              onClick={() => setActiveView("overview")}
+              onClick={() => handleViewChange("overview")}
             >
               Overview
             </Button>
@@ -636,9 +850,16 @@ export default function AdminDashboard() {
             <Button
               size="sm"
               variant={activeView === "reviews" ? "default" : "ghost"}
-              onClick={() => setActiveView("reviews")}
+              onClick={() => handleViewChange("reviews")}
             >
               Reviews
+            </Button>
+            <Button
+              size="sm"
+              variant={activeView === "feature-requests" ? "default" : "ghost"}
+              onClick={() => handleViewChange("feature-requests")}
+            >
+              Feature Requests
             </Button>
           </div>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -655,6 +876,7 @@ export default function AdminDashboard() {
             {activeView === "overview" && renderOverview()}
             {activeView === "blog" && renderBlogManager()}
             {activeView === "reviews" && renderReviewManager()}
+            {activeView === "feature-requests" && renderFeatureRequestsManager()}
           </section>
         </main>
       </div>

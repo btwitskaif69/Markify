@@ -59,8 +59,6 @@ export const generateMetadata = async ({ params }) => {
       title: "Blog page not found",
       description: "The requested blog page could not be found.",
       path: "/blog",
-      noindex: true,
-      nofollow: true,
     });
   }
 

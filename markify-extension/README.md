@@ -1,6 +1,7 @@
 # Markify Chrome Extension
 
 Save any webpage to Markify with one click. Multiple quick-save options for power users.
+Requires an active Pro plan.
 
 ## Installation
 
@@ -67,3 +68,4 @@ const API_BASE = 'http://localhost:3000/api';
 
 - Chrome 88+ (Manifest V3 support)
 - Logged-in Markify account
+- Active Markify Pro plan

@@ -7,7 +7,6 @@ import { ChevronRight, Bookmark, Shield } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -19,10 +18,10 @@ import { useAuth } from "@/client/context/AuthContext";
 
 export function NavMain({ totalBookmarks }) {
   const pathname = usePathname();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, hasProAccess } = useAuth();
   const dashboardPath = user ? `/dashboard/${user.id}` : "/login";
-  const sharedPath = user ? `/dashboard/${user.id}/shared` : "/login";
   const isAllBookmarksActive = pathname === dashboardPath;
+  const sharedPath = user ? `/dashboard/${user.id}/shared` : "/login";
   const isSharedActive = pathname === sharedPath;
   const isAdminActive = Boolean(isAdmin && pathname?.startsWith("/admin"));
 
@@ -38,12 +37,16 @@ export function NavMain({ totalBookmarks }) {
           isActive: isAllBookmarksActive,
           badge: totalBookmarks > 0 ? totalBookmarks : null,
         },
-        {
-          title: "Shared",
-          href: sharedPath,
-          isActive: isSharedActive,
-          badge: null,
-        },
+        ...(hasProAccess
+          ? [
+              {
+                title: "Shared",
+                href: sharedPath,
+                isActive: isSharedActive,
+                badge: null,
+              },
+            ]
+          : []),
       ],
     },
     ...(isAdmin && user
@@ -67,7 +70,6 @@ export function NavMain({ totalBookmarks }) {
 
   return (
     <SidebarGroup className="px-2 pt-2 pb-1">
-      <SidebarGroupLabel>Navigation</SidebarGroupLabel>
       <SidebarMenu>
         {navSections.map((section) => {
           if (section.alwaysOpen) {

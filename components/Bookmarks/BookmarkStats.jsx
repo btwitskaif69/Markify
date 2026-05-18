@@ -1,7 +1,9 @@
 // components/Bookmarks/BookmarkStats.jsx
 import { useMemo } from "react"
+import PropTypes from "prop-types"
 import { Card, CardContent } from "@/components/ui/card"
-import { Tag, Star, Filter } from "lucide-react"
+import { Bookmark, Star, Filter } from "lucide-react"
+import { normalizeBookmarkCategoryValue } from "@/lib/bookmarkCategories"
 
 export default function BookmarkStats({ bookmarks }) {
   // Single pass through bookmarks array (js-combine-iterations)
@@ -10,50 +12,50 @@ export default function BookmarkStats({ bookmarks }) {
     const categorySet = new Set();
     for (const b of bookmarks) {
       if (b.isFavorite) favCount++;
-      categorySet.add(b.category);
+      categorySet.add(normalizeBookmarkCategoryValue(b.category) || "Other");
     }
     return { total: bookmarks.length, favorites: favCount, categories: categorySet.size };
   }, [bookmarks]);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-      <Card className="col-span-2 md:col-span-1">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-              <Tag className="h-4 w-4 text-primary" />
+      <Card className="col-span-2 md:col-span-1 bg-background border dark:border-white/10 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-sm text-muted-foreground font-medium">Total Bookmarks</p>
+              <p className="text-3xl font-bold leading-none tracking-tight">{total}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Bookmarks</p>
-              <p className="text-2xl font-bold">{total}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Star className="h-4 w-4 text-yellow-600" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Favorites</p>
-              <p className="text-2xl font-bold">{favorites}</p>
+            <div className="w-12 h-12 rounded-xl border border-[#ff6900]/20 bg-[#ff6900]/5 flex items-center justify-center shrink-0">
+              <Bookmark className="h-5 w-5 text-[#ff6900]" />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-              <Filter className="h-4 w-4 text-green-600" />
+      <Card className="bg-background border dark:border-white/10 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-sm text-muted-foreground font-medium">Favorites</p>
+              <p className="text-3xl font-bold leading-none tracking-tight">{favorites}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Categories</p>
-              <p className="text-2xl font-bold">{categories}</p>
+            <div className="w-12 h-12 rounded-xl border border-yellow-500/20 bg-yellow-500/5 flex items-center justify-center shrink-0">
+              <Star className="h-5 w-5 text-yellow-500" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-background border dark:border-white/10 shadow-sm">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-sm text-muted-foreground font-medium">Categories</p>
+              <p className="text-3xl font-bold leading-none tracking-tight">{categories}</p>
+            </div>
+            <div className="w-12 h-12 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center shrink-0">
+              <Filter className="h-5 w-5 text-emerald-500" />
             </div>
           </div>
         </CardContent>
@@ -61,3 +63,7 @@ export default function BookmarkStats({ bookmarks }) {
     </div>
   )
 }
+
+BookmarkStats.propTypes = {
+  bookmarks: PropTypes.array,
+};

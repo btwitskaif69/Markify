@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import PropTypes from "prop-types";
 import { useAuth } from "@/client/context/AuthContext";
 import { toast } from "sonner";
-import { Upload, Download, Database, FileJson, FileSpreadsheet, FileCode, ChevronRight } from "lucide-react";
+import { Upload, Download, ArrowLeftRight, FileJson, FileSpreadsheet, FileCode, ChevronRight } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { parseBookmarksHtml } from "@/lib/bookmarkParser";
+import { buildBookmarkImportToastMessage } from "@/lib/bookmarkImport";
 
 const API_URL = API_BASE_URL;
 const BACKGROUND_PREVIEW_CONCURRENCY = 4;
@@ -102,7 +103,7 @@ const parseCSV = (csvText) => {
     // Ensure required fields exist
     if (bookmark.title && bookmark.url) {
       bookmark.description = bookmark.description || '';
-      bookmark.category = bookmark.category || 'Other';
+      bookmark.category = bookmark.category || '';
       bookmark.tags = bookmark.tags || '';
       bookmarks.push(bookmark);
     }
@@ -112,7 +113,7 @@ const parseCSV = (csvText) => {
 };
 
 export default function ImportExport({ onRefetch }) {
-  const { authFetch, user } = useAuth();
+  const { authFetch, user, hasProAccess } = useAuth();
   const fileInputRef = useRef(null);
   const [importFormat, setImportFormat] = useState(null);
 
@@ -190,15 +191,29 @@ export default function ImportExport({ onRefetch }) {
     });
 
     const data = await response.json();
+    const hasImportCounts =
+      typeof data?.createdCount === "number" ||
+      typeof data?.duplicateCount === "number" ||
+      typeof data?.limitSkippedCount === "number" ||
+      typeof data?.invalidCount === "number";
+
     if (!response.ok) {
-      throw new Error(data?.message || "Failed to import bookmarks.");
+      throw new Error(
+        hasImportCounts
+          ? buildBookmarkImportToastMessage(data)
+          : (data?.message || "Failed to import bookmarks.")
+      );
     }
 
     const message = typeof successMessageBuilder === "function"
       ? successMessageBuilder(data)
-      : `${data.createdCount} new bookmarks imported.${data.skippedCount > 0 ? ` ${data.skippedCount} were skipped as duplicates.` : ""}`;
+      : buildBookmarkImportToastMessage(data);
 
-    toast.success(message);
+    if ((data.createdCount || 0) > 0) {
+      toast.success(message);
+    } else {
+      toast.info(message);
+    }
 
     if (onRefetch) {
       await onRefetch();
@@ -214,6 +229,11 @@ export default function ImportExport({ onRefetch }) {
 
   // Export handlers
   const handleExport = async (format) => {
+    if (!hasProAccess) {
+      toast.error("Export is available on Pro.");
+      return;
+    }
+
     try {
       const response = await authFetch(`${API_URL}/bookmarks/export`);
       if (!response.ok) throw new Error("Export failed.");
@@ -320,9 +340,9 @@ export default function ImportExport({ onRefetch }) {
         <Collapsible asChild defaultOpen={true} className="group/collapsible">
           <SidebarMenuItem>
             <CollapsibleTrigger asChild>
-              <SidebarMenuButton tooltip="Data Management">
-                <Database className="h-4 w-4" />
-                <span>Data Management</span>
+              <SidebarMenuButton tooltip="Import & Export">
+                <ArrowLeftRight className="h-4 w-4" />
+                <span>Import & Export</span>
                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </SidebarMenuButton>
             </CollapsibleTrigger>
@@ -347,14 +367,18 @@ export default function ImportExport({ onRefetch }) {
                     >
                       <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleImportClick('json')} className="cursor-pointer">
-                        <FileJson className="mr-2 h-4 w-4" />
-                        JSON (.json)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleImportClick('csv')} className="cursor-pointer">
-                        <FileSpreadsheet className="mr-2 h-4 w-4" />
-                        CSV (.csv)
-                      </DropdownMenuItem>
+                      {hasProAccess ? (
+                        <>
+                          <DropdownMenuItem onClick={() => handleImportClick('json')} className="cursor-pointer">
+                            <FileJson className="mr-2 h-4 w-4" />
+                            JSON (.json)
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleImportClick('csv')} className="cursor-pointer">
+                            <FileSpreadsheet className="mr-2 h-4 w-4" />
+                            CSV (.csv)
+                          </DropdownMenuItem>
+                        </>
+                      ) : null}
                       <DropdownMenuItem onClick={() => handleImportClick('html')} className="cursor-pointer">
                         <FileCode className="mr-2 h-4 w-4" />
                         HTML (Browser)
@@ -364,37 +388,51 @@ export default function ImportExport({ onRefetch }) {
                 </SidebarMenuSubItem>
 
                 <SidebarMenuSubItem>
-                  <DropdownMenu modal={false}>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuSubButton asChild>
-                        <button type="button" className="flex w-full items-center gap-2">
-                          <Download className="h-4 w-4" />
-                          <span>Export Bookmark</span>
-                        </button>
-                      </SidebarMenuSubButton>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      side="right"
-                      sideOffset={4}
-                      className="w-48"
-                    >
-                      <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleExport('json')} className="cursor-pointer">
-                        <FileJson className="mr-2 h-4 w-4" />
-                        JSON (.json)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExport('csv')} className="cursor-pointer">
-                        <FileSpreadsheet className="mr-2 h-4 w-4" />
-                        CSV (.csv)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExport('html')} className="cursor-pointer">
-                        <FileCode className="mr-2 h-4 w-4" />
-                        HTML (Browser)
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {hasProAccess ? (
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuSubButton asChild>
+                          <button type="button" className="flex w-full items-center gap-2">
+                            <Download className="h-4 w-4" />
+                            <span>Export Bookmark</span>
+                          </button>
+                        </SidebarMenuSubButton>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="start"
+                        side="right"
+                        sideOffset={4}
+                        className="w-48"
+                      >
+                        <DropdownMenuLabel>Choose Format</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleExport('json')} className="cursor-pointer">
+                          <FileJson className="mr-2 h-4 w-4" />
+                          JSON (.json)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExport('csv')} className="cursor-pointer">
+                          <FileSpreadsheet className="mr-2 h-4 w-4" />
+                          CSV (.csv)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleExport('html')} className="cursor-pointer">
+                          <FileCode className="mr-2 h-4 w-4" />
+                          HTML (Browser)
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  ) : (
+                    <SidebarMenuSubButton asChild>
+                      <button
+                        type="button"
+                        className="flex w-full items-center gap-2 opacity-60"
+                        disabled
+                        title="Export is available on Pro"
+                      >
+                        <Download className="h-4 w-4" />
+                        <span>Export Pro only</span>
+                      </button>
+                    </SidebarMenuSubButton>
+                  )}
                 </SidebarMenuSubItem>
               </SidebarMenuSub>
             </CollapsibleContent>

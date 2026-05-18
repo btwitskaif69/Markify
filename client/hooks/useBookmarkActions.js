@@ -1,10 +1,18 @@
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { FREE_BOOKMARK_LIMIT, hasActiveProAccess } from "@/lib/subscription";
+import { buildBookmarkImportToastMessage } from "@/lib/bookmarkImport";
 import { useState, useCallback } from "react";
 
 const API_URL = API_BASE_URL;
 
-export function useBookmarkActions(authFetch, user, setAllBookmarks, collections) {
+export function useBookmarkActions(
+  authFetch,
+  user,
+  setAllBookmarks,
+  collections,
+  { bookmarkCount = 0 } = {}
+) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userId = user?.id;
 
@@ -16,6 +24,10 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
 
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null;
+    if (!isEditing && !hasActiveProAccess(user) && bookmarkCount >= FREE_BOOKMARK_LIMIT) {
+      toast.error("Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.");
+      return;
+    }
     const url = isEditing
       ? `${API_URL}/bookmarks/${bookmarkId}`
       : `${API_URL}/users/${userId}/bookmarks`;
@@ -48,7 +60,7 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
     } finally {
       setIsSubmitting(false);
     }
-  }, [authFetch, userId, setAllBookmarks]);
+  }, [authFetch, userId, setAllBookmarks, bookmarkCount, user]);
 
   const handleDelete = useCallback(async (id) => {
     let originalBookmarks;
@@ -161,13 +173,27 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
         body: JSON.stringify(bookmarks),
       });
 
+      const result = await response.json();
+      const hasImportCounts =
+        typeof result?.createdCount === "number" ||
+        typeof result?.duplicateCount === "number" ||
+        typeof result?.limitSkippedCount === "number" ||
+        typeof result?.invalidCount === "number";
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to import bookmarks.");
+        throw new Error(
+          hasImportCounts
+            ? buildBookmarkImportToastMessage(result)
+            : (result.message || "Failed to import bookmarks.")
+        );
       }
 
-      const result = await response.json();
-      toast.success(`${result.message} (${result.createdCount} imported, ${result.skippedCount} skipped)`);
+      const message = buildBookmarkImportToastMessage(result);
+      if ((result.createdCount || 0) > 0) {
+        toast.success(message);
+      } else {
+        toast.info(message);
+      }
       return true;
     } catch (err) {
       toast.error(err.message);
@@ -231,17 +257,26 @@ export function useBookmarkActions(authFetch, user, setAllBookmarks, collections
             body: JSON.stringify(bookmarks),
           });
 
+          const result = await response.json();
+          const hasImportCounts =
+            typeof result?.createdCount === "number" ||
+            typeof result?.duplicateCount === "number" ||
+            typeof result?.limitSkippedCount === "number" ||
+            typeof result?.invalidCount === "number";
+
           if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to import bookmarks.");
+            throw new Error(
+              hasImportCounts
+                ? buildBookmarkImportToastMessage(result)
+                : (result.message || "Failed to import bookmarks.")
+            );
           }
 
-          const result = await response.json();
-
-          if (result.createdCount === 0) {
-            toast.success("All bookmarks already synced! No new bookmarks to import.");
+          const message = buildBookmarkImportToastMessage(result);
+          if ((result.createdCount || 0) > 0) {
+            toast.success(message);
           } else {
-            toast.success(`${result.createdCount} bookmarks synced! (${result.skippedCount} duplicates skipped)`);
+            toast.info(message);
           }
 
           // Reload bookmarks to show the newly imported ones

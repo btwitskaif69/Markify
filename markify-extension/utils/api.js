@@ -1,3 +1,5 @@
+/* global chrome */
+
 // Markify Extension - API Client
 // Handles all communication with Markify backend
 
@@ -53,7 +55,23 @@ async function clearAuth() {
  */
 async function isAuthenticated() {
   const token = await getToken();
-  return !!token;
+  const user = await getUser();
+  return !!(token && user);
+}
+
+function parseDate(value) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function hasActiveProAccess(user) {
+  if (!user?.isSubscribed) return false;
+
+  const subscriptionEnds = parseDate(user.subscriptionEnds);
+  if (!subscriptionEnds) return true;
+
+  return subscriptionEnds.getTime() > Date.now();
 }
 
 /**
@@ -79,7 +97,7 @@ async function apiRequest(endpoint, options = {}) {
     if (text) {
       try {
         data = JSON.parse(text);
-      } catch (e) {
+      } catch {
         throw new Error('Invalid response from server');
       }
     }
@@ -92,6 +110,25 @@ async function apiRequest(endpoint, options = {}) {
   } catch (error) {
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
       throw new Error('Network error - please check your connection');
+    }
+    throw error;
+  }
+}
+
+/**
+ * Refresh the stored user profile from the backend.
+ */
+async function refreshUser() {
+  const token = await getToken();
+  if (!token) return null;
+
+  try {
+    const data = await apiRequest('/users/profile');
+    await setUser(data);
+    return data;
+  } catch (error) {
+    if (String(error?.message || '').includes('401')) {
+      await clearAuth();
     }
     throw error;
   }
@@ -139,10 +176,12 @@ async function saveBookmark(bookmark) {
     throw new Error('User not authenticated');
   }
 
-  // Add default category if not provided (required by Prisma schema)
+  if (!hasActiveProAccess(user)) {
+    throw new Error('Chrome Extension Access is available on Pro.');
+  }
+
   const bookmarkData = {
     ...bookmark,
-    category: bookmark.category || 'Other'
   };
 
   return await apiRequest(`/users/${user.id}/bookmarks`, {
@@ -159,6 +198,8 @@ window.MarkifyAPI = {
   setUser,
   clearAuth,
   isAuthenticated,
+  hasActiveProAccess,
+  refreshUser,
   login,
   getCollections,
   extractMetadata,

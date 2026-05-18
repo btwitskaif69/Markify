@@ -5,12 +5,20 @@ import os from "os";
 import { randomUUID } from "crypto";
 import keywordExtractor from "keyword-extractor";
 import { extractMetadataFromHtml } from "@/server/utils/metadata";
-import { resolveBookmarkCategory } from "@/server/utils/category";
+import {
+  normalizeBookmarkCategoryValue,
+  normalizeBookmarkRecord,
+  resolveBookmarkCategory,
+} from "@/server/utils/category";
+import {
+  analyzeBookmarkImportBatch,
+} from "@/lib/bookmarkImport";
 import {
   bookmarkArchiveSummarySelect,
   getBookmarkArchivePayload,
   refreshBookmarkArchiveForBookmark,
 } from "@/server/services/bookmark-archive.service";
+import { FREE_BOOKMARK_LIMIT, hasActiveProAccess } from "@/lib/subscription";
 
 const bookmarkArchiveInclude = {
   archive: {
@@ -18,11 +26,14 @@ const bookmarkArchiveInclude = {
   },
 };
 
-const getBookmarkWithArchive = (bookmarkId) =>
-  prisma.bookmark.findUnique({
+const getBookmarkWithArchive = async (bookmarkId) => {
+  const bookmark = await prisma.bookmark.findUnique({
     where: { id: bookmarkId },
     include: bookmarkArchiveInclude,
   });
+
+  return normalizeBookmarkRecord(bookmark);
+};
 
 /**
  * Creates a new bookmark for a specific user.
@@ -31,14 +42,29 @@ export const addBookmark = async (req, res) => {
   try {
     const { userId } = req.params;
     const { title, url, description, category, tags, isFavorite, previewImage, collectionId } = req.body;
+    const ownerId = req.user.id;
+
+    if (userId && userId !== ownerId) {
+      return res.status(403).json({ message: "Unauthorized." });
+    }
 
     if (!title || !url) {
       return res.status(400).json({ message: 'Title and URL are required.' });
     }
 
+    const bookmarkCount = await prisma.bookmark.count({
+      where: { userId: ownerId },
+    });
+
+    if (!hasActiveProAccess(req.user) && bookmarkCount >= FREE_BOOKMARK_LIMIT) {
+      return res.status(403).json({
+        message: "Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.",
+      });
+    }
+
     const existingBookmark = await prisma.bookmark.findFirst({
       where: {
-        userId: userId,
+        userId: ownerId,
         OR: [
           { title: { equals: title, mode: 'insensitive' } },
           { url: url }
@@ -58,7 +84,7 @@ export const addBookmark = async (req, res) => {
         category: resolveBookmarkCategory({ category, title, url, description, tags }),
         tags,
         isFavorite,
-        userId: userId,
+        userId: ownerId,
         previewImage,
         collectionId,
       },
@@ -84,12 +110,15 @@ export const addBookmark = async (req, res) => {
 export const getBookmarksForUser = async (req, res) => {
   try {
     const { userId } = req.params;
+    if (userId && userId !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized." });
+    }
     const bookmarks = await prisma.bookmark.findMany({
-      where: { userId: userId },
+      where: { userId: req.user.id },
       orderBy: { createdAt: 'desc' },
       include: bookmarkArchiveInclude,
     });
-    res.status(200).json(bookmarks);
+    res.status(200).json(bookmarks.map(normalizeBookmarkRecord));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -196,6 +225,12 @@ export const bulkDeleteBookmarks = async (req, res) => {
 
 export const exportBookmarks = async (req, res) => {
   try {
+    if (!hasActiveProAccess(req.user)) {
+      return res.status(403).json({
+        message: "Bookmark export is available on Pro.",
+      });
+    }
+
     const bookmarks = await prisma.bookmark.findMany({
       where: { userId: req.user.id },
       select: {
@@ -208,7 +243,7 @@ export const exportBookmarks = async (req, res) => {
         isFavorite: true,
       }
     });
-    res.status(200).json(bookmarks);
+    res.status(200).json(bookmarks.map(normalizeBookmarkRecord));
   } catch {
     res.status(500).json({ message: "Failed to export bookmarks." });
   }
@@ -226,29 +261,41 @@ export const importBookmarks = async (req, res) => {
       where: { userId: req.user.id },
       select: { title: true, url: true },
     });
-    const existingTitles = new Set(existingBookmarks.map(b => b.title.toLowerCase()));
-    const existingUrls = new Set(existingBookmarks.map(b => b.url));
 
-    const newBookmarks = [];
+    const hasProAccess = hasActiveProAccess(req.user);
+    const currentBookmarkCount = hasProAccess
+      ? 0
+      : await prisma.bookmark.count({
+        where: { userId: req.user.id },
+      });
+    const remainingSlots = hasProAccess
+      ? null
+      : Math.max(0, FREE_BOOKMARK_LIMIT - currentBookmarkCount);
 
-    for (const bookmark of bookmarksToImport) {
-      if (
-        bookmark.title &&
-        bookmark.url &&
-        !existingTitles.has(bookmark.title.toLowerCase()) &&
-        !existingUrls.has(bookmark.url)
-      ) {
-        newBookmarks.push(bookmark);
-        existingTitles.add(bookmark.title.toLowerCase());
-        existingUrls.add(bookmark.url);
-      }
+    const importPlan = analyzeBookmarkImportBatch({
+      bookmarks: bookmarksToImport,
+      existingBookmarks,
+      remainingSlots,
+    });
+
+    if (!hasProAccess && remainingSlots === 0) {
+      return res.status(403).json({
+        message: "Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.",
+        freeLimit: FREE_BOOKMARK_LIMIT,
+        createdCount: 0,
+        duplicateCount: importPlan.duplicateCount,
+        invalidCount: importPlan.invalidCount,
+        limitSkippedCount: importPlan.limitSkippedCount,
+        skippedCount: importPlan.skippedCount,
+        createdIds: [],
+      });
     }
 
-    const skippedCount = bookmarksToImport.length - newBookmarks.length;
+    const bookmarksToCreate = importPlan.bookmarksToCreate;
     let createdIds = [];
 
-    if (newBookmarks.length > 0) {
-      const dataToCreate = newBookmarks.map(bookmark => ({
+    if (bookmarksToCreate.length > 0) {
+      const dataToCreate = bookmarksToCreate.map(bookmark => ({
         title: bookmark.title,
         url: bookmark.url,
         description: bookmark.description || "",
@@ -273,7 +320,7 @@ export const importBookmarks = async (req, res) => {
       const createdBookmarks = await prisma.bookmark.findMany({
         where: {
           userId: req.user.id,
-          url: { in: newBookmarks.map(b => b.url) },
+          url: { in: bookmarksToCreate.map(b => b.url) },
         },
         select: { id: true, previewImage: true },
         orderBy: { createdAt: 'desc' },
@@ -287,8 +334,12 @@ export const importBookmarks = async (req, res) => {
 
     res.status(201).json({
       message: `Import complete.`,
-      createdCount: newBookmarks.length,
-      skippedCount: skippedCount,
+      createdCount: bookmarksToCreate.length,
+      duplicateCount: importPlan.duplicateCount,
+      invalidCount: importPlan.invalidCount,
+      limitSkippedCount: importPlan.limitSkippedCount,
+      skippedCount: importPlan.skippedCount,
+      freeLimit: FREE_BOOKMARK_LIMIT,
       createdIds: createdIds, // Frontend will use these to fetch previews one by one
     });
 
@@ -367,30 +418,42 @@ export const syncLocalBookmarks = async (req, res) => {
       where: { userId: req.user.id },
       select: { title: true, url: true },
     });
-    const existingTitles = new Set(existingBookmarks.map(b => b.title.toLowerCase()));
-    const existingUrls = new Set(existingBookmarks.map(b => b.url));
 
-    const newBookmarks = [];
+    const hasProAccess = hasActiveProAccess(req.user);
+    const currentBookmarkCount = hasProAccess
+      ? 0
+      : await prisma.bookmark.count({
+        where: { userId: req.user.id },
+      });
+    const remainingSlots = hasProAccess
+      ? null
+      : Math.max(0, FREE_BOOKMARK_LIMIT - currentBookmarkCount);
 
-    for (const bookmark of bookmarks) {
-      if (
-        bookmark.title &&
-        bookmark.url &&
-        !existingTitles.has(bookmark.title.toLowerCase()) &&
-        !existingUrls.has(bookmark.url)
-      ) {
-        newBookmarks.push(bookmark);
-        existingTitles.add(bookmark.title.toLowerCase());
-        existingUrls.add(bookmark.url);
-      }
+    const importPlan = analyzeBookmarkImportBatch({
+      bookmarks,
+      existingBookmarks,
+      remainingSlots,
+    });
+
+    if (!hasProAccess && remainingSlots === 0) {
+      return res.status(403).json({
+        message: "Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.",
+        freeLimit: FREE_BOOKMARK_LIMIT,
+        createdCount: 0,
+        duplicateCount: importPlan.duplicateCount,
+        invalidCount: importPlan.invalidCount,
+        limitSkippedCount: importPlan.limitSkippedCount,
+        skippedCount: importPlan.skippedCount,
+        createdIds: [],
+      });
     }
 
-    const skippedCount = bookmarks.length - newBookmarks.length;
+    const bookmarksToCreate = importPlan.bookmarksToCreate;
     let createdIds = [];
 
-    if (newBookmarks.length > 0) {
+    if (bookmarksToCreate.length > 0) {
       // Create bookmarks WITHOUT previews (fast)
-      const dataToCreate = newBookmarks.map(bookmark => ({
+      const dataToCreate = bookmarksToCreate.map(bookmark => ({
         title: bookmark.title,
         url: bookmark.url,
         description: "",
@@ -421,7 +484,7 @@ export const syncLocalBookmarks = async (req, res) => {
         },
         select: { id: true },
         orderBy: { createdAt: 'desc' },
-        take: newBookmarks.length,
+        take: bookmarksToCreate.length,
       });
 
       createdIds = createdBookmarks.map(b => b.id);
@@ -429,8 +492,12 @@ export const syncLocalBookmarks = async (req, res) => {
 
     res.status(201).json({
       message: `Sync complete.`,
-      createdCount: newBookmarks.length,
-      skippedCount: skippedCount,
+      createdCount: bookmarksToCreate.length,
+      duplicateCount: importPlan.duplicateCount,
+      invalidCount: importPlan.invalidCount,
+      limitSkippedCount: importPlan.limitSkippedCount,
+      skippedCount: importPlan.skippedCount,
+      freeLimit: FREE_BOOKMARK_LIMIT,
       source: bookmarksFilePath.includes('Brave') ? 'Brave' : (bookmarksFilePath.includes('Edge') ? 'Edge' : 'Chrome'),
       createdIds: createdIds, // Frontend will use these to fetch previews one by one
     });
@@ -493,13 +560,18 @@ export const fetchBookmarkPreview = async (req, res) => {
         const tags = extractedKeywords.slice(0, 5).join(', ');
 
         // Update the bookmark with preview data and tags
-        const resolvedCategory = resolveBookmarkCategory({
-          category: bookmark.category,
-          title: metadata.title || bookmark.title,
-          url: bookmark.url,
-          description: metadata.description || bookmark.description || "",
-          tags: tags || bookmark.tags,
-        });
+        const currentCategory = normalizeBookmarkCategoryValue(bookmark.category);
+        const resolvedCategory =
+          currentCategory && currentCategory !== "Other"
+            ? currentCategory
+            : resolveBookmarkCategory({
+                category: "",
+                title: metadata.title || bookmark.title,
+                url: bookmark.url,
+                description: metadata.description || bookmark.description || "",
+                tags: tags || bookmark.tags,
+                allowOther: false,
+              });
 
         const updatedBookmark = await prisma.bookmark.update({
           where: { id: bookmarkId },
@@ -672,6 +744,12 @@ export const refreshBookmarkArchive = async (req, res) => {
  */
 export const toggleShareBookmark = async (req, res) => {
   try {
+    if (!hasActiveProAccess(req.user)) {
+      return res.status(403).json({
+        message: "Bookmark sharing is available on Pro.",
+      });
+    }
+
     const { bookmarkId } = req.params;
 
     // Get the bookmark
@@ -737,7 +815,7 @@ export const getSharedBookmark = async (req, res) => {
       title: bookmark.title,
       url: bookmark.url,
       description: bookmark.description,
-      category: bookmark.category,
+      category: normalizeBookmarkCategoryValue(bookmark.category) || bookmark.category,
       tags: bookmark.tags,
       previewImage: bookmark.previewImage,
       createdAt: bookmark.createdAt,

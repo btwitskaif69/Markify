@@ -5,7 +5,9 @@ import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Command,
   CommandEmpty,
@@ -51,6 +53,7 @@ useEffect(() => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-full max-w-[90vw] md:max-w-4xl lg:max-w-5xl overflow-hidden p-0 shadow-lg flex flex-col max-h-[70vh]">
+        <VisuallyHidden><DialogTitle>Bookmark Search</DialogTitle></VisuallyHidden>
         <Command label="Command Menu" className="flex flex-col flex-grow overflow-hidden bg-background!">
           <CommandInput 
             placeholder="Search your bookmarks..."

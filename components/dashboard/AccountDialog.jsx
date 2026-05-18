@@ -187,12 +187,10 @@ export default function AccountDialog({ open, setOpen, user, authFetch, onProfil
                             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button type="submit" disabled={isSubmitting} className="bg-[#ff6900] hover:bg-[#e55f00] text-white border-0">
                                 {isSubmitting ? (
                                     <>
-                                        <div className="w-5 h-5 bg-primary-foreground rounded-full flex items-center justify-center animate-spin mr-2">
-                                            <img src={logo} alt="" width={12} height={12} className="w-3 h-3" />
-                                        </div>
+                                        <img src={logo} alt="" className="h-4 w-4 mr-2 animate-spin filter brightness-0 invert" />
                                         Saving...
                                     </>
                                 ) : (

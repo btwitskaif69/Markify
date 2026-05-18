@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "motion/react";
+import PropTypes from "prop-types";
 import { cn } from "@/lib/utils";
 
 export function ImagesBadge({
@@ -29,11 +30,16 @@ export function ImagesBadge({
 
   return (
     <Component
-      href={href}
-      target={target}
-      rel={target === "_blank" ? "noopener noreferrer" : undefined}
+      {...(href
+        ? {
+            href,
+            target,
+            rel: target === "_blank" ? "noopener noreferrer" : undefined,
+          }
+        : {})}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-2 perspective-[1000px] transform-3d",
+        "inline-flex items-center gap-2 perspective-[1000px] transform-3d",
+        href && "cursor-pointer",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -151,3 +157,26 @@ export function ImagesBadge({
     </Component>
   );
 }
+
+ImagesBadge.propTypes = {
+  text: PropTypes.string.isRequired,
+  images: PropTypes.arrayOf(PropTypes.string).isRequired,
+  className: PropTypes.string,
+  href: PropTypes.string,
+  target: PropTypes.string,
+  folderSize: PropTypes.shape({
+    width: PropTypes.number,
+    height: PropTypes.number,
+  }),
+  teaserImageSize: PropTypes.shape({
+    width: PropTypes.number,
+    height: PropTypes.number,
+  }),
+  hoverImageSize: PropTypes.shape({
+    width: PropTypes.number,
+    height: PropTypes.number,
+  }),
+  hoverTranslateY: PropTypes.number,
+  hoverSpread: PropTypes.number,
+  hoverRotation: PropTypes.number,
+};

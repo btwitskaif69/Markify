@@ -1,7 +1,10 @@
 import { Resend } from "resend";
+import { getAdminEmails } from "../utils/admin";
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const ENV = globalThis?.process?.env || {};
+const RESEND_API_KEY = ENV.RESEND_API_KEY;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+const DEFAULT_ADMIN_NOTIFICATION_EMAIL = ENV.SUPPORT_EMAIL || "support@markify.tech";
 
 if (!RESEND_API_KEY) {
   console.warn("RESEND_API_KEY is not set. Email sending is disabled.");
@@ -13,13 +16,69 @@ const ensureResend = () => {
   }
 };
 
+const escapeHtml = (value = "") =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+const truncateText = (value = "", maxLength = 800) => {
+  const text = String(value).trim();
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength).trimEnd()}...`;
+};
+
+const formatHtmlText = (value = "", maxLength = 800) =>
+  escapeHtml(truncateText(value, maxLength)).replace(/\n/g, "<br />");
+
+const getAdminNotificationRecipients = () => {
+  const recipients = getAdminEmails();
+  if (recipients.length > 0) {
+    return recipients;
+  }
+
+  return [DEFAULT_ADMIN_NOTIFICATION_EMAIL].filter(Boolean);
+};
+
+const sendEmail = async ({ to, subject, html, text, replyTo }) => {
+  ensureResend();
+  const emailPayload = {
+    from: "Markify <noreply@markify.tech>",
+    to,
+    subject,
+    html,
+  };
+
+  if (text) {
+    emailPayload.text = text;
+  }
+
+  if (replyTo) {
+    emailPayload.replyTo = replyTo;
+  }
+
+  const { data, error } = await resend.emails.send({
+    ...emailPayload,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
 export const sendPasswordResetEmail = async (toEmail, resetLink) => {
   try {
     ensureResend();
-    const { data, error } = await resend.emails.send({
-      from: 'Markify <noreply@markify.tech>',
+    const data = await sendEmail({
       to: [toEmail],
-      subject: 'Reset Your Markify Password',
+      subject: "Reset Your Markify Password",
       html: `
         <div style="background-color:#111111; padding:40px; text-align:center; font-family:Arial, sans-serif; color:#fff;">
           <div style="max-width:480px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
@@ -38,10 +97,6 @@ export const sendPasswordResetEmail = async (toEmail, resetLink) => {
         </div>
       `,
     });
-
-    if (error) {
-      throw new Error(error.message);
-    }
     return data;
   } catch (error) {
     console.error('SPECIFIC ERROR FROM RESEND:', error);
@@ -52,10 +107,9 @@ export const sendPasswordResetEmail = async (toEmail, resetLink) => {
 export const sendVerificationEmail = async (toEmail, code) => {
   try {
     ensureResend();
-    const { data, error } = await resend.emails.send({
-      from: 'Markify <noreply@markify.tech>',
+    const data = await sendEmail({
       to: [toEmail],
-      subject: 'Verify Your Markify Account',
+      subject: "Verify Your Markify Account",
       html: `
         <div style="background-color:#111111; padding:40px; text-align:center; font-family:Arial, sans-serif; color:#fff;">
           <div style="max-width:480px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
@@ -73,10 +127,6 @@ export const sendVerificationEmail = async (toEmail, code) => {
         </div>
       `,
     });
-
-    if (error) {
-      throw new Error(error.message);
-    }
     return data;
   } catch (error) {
     console.error('Error sending verification email:', error);
@@ -91,10 +141,9 @@ export const sendWelcomeEmail = async (toEmail, userName) => {
       return null;
     }
     const firstName = userName ? userName.split(' ')[0] : 'there';
-    const { data, error } = await resend.emails.send({
-      from: 'Markify <noreply@markify.tech>',
+    const data = await sendEmail({
       to: [toEmail],
-      subject: 'Welcome to Markify! 🎉',
+      subject: "Welcome to Markify! 🎉",
       html: `
         <div style="background-color:#111111; padding:40px; text-align:center; font-family:Arial, sans-serif; color:#fff;">
           <div style="max-width:480px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
@@ -124,15 +173,196 @@ export const sendWelcomeEmail = async (toEmail, userName) => {
         </div>
       `,
     });
-
-    if (error) {
-      throw new Error(error.message);
-    }
     return data;
   } catch (error) {
     console.error('Error sending welcome email:', error);
     // Don't throw - welcome email is non-critical
     return null;
+  }
+};
+
+export const sendSignupNotificationEmail = async ({ name, email, source = "email signup" }) => {
+  try {
+    if (!resend) {
+      console.warn("Skipping signup notification; RESEND_API_KEY is not set.");
+      return null;
+    }
+
+    const recipients = getAdminNotificationRecipients();
+    if (recipients.length === 0) {
+      console.warn("Skipping signup notification; no admin recipients configured.");
+      return null;
+    }
+
+    const appUrl = ENV.FRONTEND_URL || ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const displayName = truncateText(name || email || "New user", 80);
+    const safeName = escapeHtml(displayName);
+    const safeEmail = escapeHtml(email || "Unknown email");
+    const safeSource = escapeHtml(source);
+
+    return await sendEmail({
+      to: recipients,
+      subject: `New Markify signup: ${displayName}`,
+      html: `
+        <div style="background-color:#111111; padding:40px; font-family:Arial, sans-serif; color:#fff;">
+          <div style="max-width:560px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
+            <p style="margin:0 0 12px; color:#ff4500; font-size:12px; letter-spacing:0.12em; text-transform:uppercase;">New account</p>
+            <h2 style="color:#fff; margin:0 0 16px;">A new Markify user signed up</h2>
+            <div style="background-color:#222; padding:18px; border-radius:8px; margin:20px 0; line-height:1.7;">
+              <p style="margin:0;"><strong>Name:</strong> ${safeName}</p>
+              <p style="margin:0;"><strong>Email:</strong> ${safeEmail}</p>
+              <p style="margin:0;"><strong>Source:</strong> ${safeSource}</p>
+              <p style="margin:0;"><strong>Time:</strong> ${escapeHtml(new Date().toLocaleString())}</p>
+            </div>
+            <a href="${appUrl}/admin" style="display:inline-block; padding:12px 24px; background-color:#ff4500; color:#fff; text-decoration:none; font-weight:bold; border-radius:6px; margin:8px 0 0;">
+              Open Admin Dashboard
+            </a>
+          </div>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Error sending signup notification email:", error);
+    return null;
+  }
+};
+
+export const sendReviewNotificationEmail = async ({
+  name,
+  email,
+  rating,
+  content,
+  isUpdate = false,
+}) => {
+  try {
+    if (!resend) {
+      console.warn("Skipping review notification; RESEND_API_KEY is not set.");
+      return null;
+    }
+
+    const recipients = getAdminNotificationRecipients();
+    if (recipients.length === 0) {
+      console.warn("Skipping review notification; no admin recipients configured.");
+      return null;
+    }
+
+    const appUrl = ENV.FRONTEND_URL || ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const displayName = truncateText(name || email || "User", 80);
+    const safeName = escapeHtml(displayName);
+    const safeEmail = escapeHtml(email || "Unknown email");
+    const safeContent = formatHtmlText(content || "", 1000);
+    const safeRating = Number(rating) || 0;
+    const actionLabel = isUpdate ? "updated" : "submitted";
+
+    return await sendEmail({
+      to: recipients,
+      subject: `Markify review ${actionLabel}: ${displayName}`,
+      html: `
+        <div style="background-color:#111111; padding:40px; font-family:Arial, sans-serif; color:#fff;">
+          <div style="max-width:640px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
+            <p style="margin:0 0 12px; color:#ff4500; font-size:12px; letter-spacing:0.12em; text-transform:uppercase;">New review</p>
+            <h2 style="color:#fff; margin:0 0 16px;">A user ${actionLabel} a review</h2>
+            <div style="background-color:#222; padding:18px; border-radius:8px; margin:20px 0; line-height:1.7;">
+              <p style="margin:0;"><strong>Name:</strong> ${safeName}</p>
+              <p style="margin:0;"><strong>Email:</strong> ${safeEmail}</p>
+              <p style="margin:0;"><strong>Rating:</strong> ${safeRating}/5</p>
+              <p style="margin:0;"><strong>Status:</strong> Pending moderation</p>
+            </div>
+            <div style="background-color:#151515; padding:18px; border-radius:8px; border:1px solid #2a2a2a;">
+              <p style="margin:0 0 8px; color:#bbb; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Review content</p>
+              <div style="color:#fff; line-height:1.7; white-space:normal;">${safeContent}</div>
+            </div>
+            <a href="${appUrl}/admin?view=reviews" style="display:inline-block; padding:12px 24px; background-color:#ff4500; color:#fff; text-decoration:none; font-weight:bold; border-radius:6px; margin:16px 0 0;">
+              Review in Admin
+            </a>
+          </div>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Error sending review notification email:", error);
+    return null;
+  }
+};
+
+export const sendFeatureRequestEmail = async ({
+  name,
+  email,
+  title,
+  details,
+  source = "dashboard dropdown",
+  plan = "Free",
+  userId = "",
+}) => {
+  try {
+    if (!resend) {
+      console.warn("Skipping feature request notification; RESEND_API_KEY is not set.");
+      return null;
+    }
+
+    const recipients = getAdminNotificationRecipients();
+    if (recipients.length === 0) {
+      console.warn("Skipping feature request notification; no admin recipients configured.");
+      return null;
+    }
+
+    const appUrl = ENV.FRONTEND_URL || ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const safeName = escapeHtml(truncateText(name || email || "User", 80));
+    const safeEmail = escapeHtml(email || "Unknown email");
+    const safeTitle = escapeHtml(truncateText(title || "Feature request", 140));
+    const safeDetails = formatHtmlText(details || "", 2000);
+    const plainTextDetails = truncateText(details || "", 2000);
+    const safeSource = escapeHtml(truncateText(source, 120));
+    const safePlan = escapeHtml(truncateText(plan, 40));
+    const safeUserId = escapeHtml(userId || "Unknown");
+    const plainTextBody = [
+      "A user requested a new feature",
+      "",
+      `Name: ${truncateText(name || email || "User", 80)}`,
+      `Email: ${email || "Unknown email"}`,
+      `Title: ${truncateText(title || "Feature request", 140)}`,
+      `Plan: ${plan}`,
+      `Source: ${source}`,
+      `User ID: ${userId || "Unknown"}`,
+      "",
+      "Details:",
+      plainTextDetails,
+      "",
+      `${appUrl}/admin`,
+    ].join("\n");
+
+    return await sendEmail({
+      to: recipients,
+      subject: `Markify feature request: ${truncateText(title || "New idea", 80)}`,
+      replyTo: email || undefined,
+      text: plainTextBody,
+      html: `
+        <div style="background-color:#111111; padding:40px; font-family:Arial, sans-serif; color:#fff;">
+          <div style="max-width:640px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
+            <p style="margin:0 0 12px; color:#ff4500; font-size:12px; letter-spacing:0.12em; text-transform:uppercase;">Feature request</p>
+            <h2 style="color:#fff; margin:0 0 16px;">A user requested a new feature</h2>
+            <div style="background-color:#222; padding:18px; border-radius:8px; margin:20px 0; line-height:1.7;">
+              <p style="margin:0;"><strong>Name:</strong> ${safeName}</p>
+              <p style="margin:0;"><strong>Email:</strong> ${safeEmail}</p>
+              <p style="margin:0;"><strong>Title:</strong> ${safeTitle}</p>
+              <p style="margin:0;"><strong>Plan:</strong> ${safePlan}</p>
+              <p style="margin:0;"><strong>Source:</strong> ${safeSource}</p>
+              <p style="margin:0;"><strong>User ID:</strong> ${safeUserId}</p>
+            </div>
+            <div style="background-color:#151515; padding:18px; border-radius:8px; border:1px solid #2a2a2a;">
+              <p style="margin:0 0 8px; color:#bbb; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Details</p>
+              <div style="color:#fff; line-height:1.7; white-space:normal;">${safeDetails}</div>
+            </div>
+            <a href="${appUrl}/admin" style="display:inline-block; padding:12px 24px; background-color:#ff4500; color:#fff; text-decoration:none; font-weight:bold; border-radius:6px; margin:16px 0 0;">
+              Open Admin Dashboard
+            </a>
+          </div>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Error sending feature request email:", error);
+    throw error;
   }
 };
 

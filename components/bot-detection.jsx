@@ -49,7 +49,7 @@ const BotDetection = ({
             className="pointer-events-none absolute bottom-[20px] left-[148px] h-[250px] w-[250px] origin-bottom-left"
             style={{
               background:
-                "radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.3) 5%, transparent 60%)",
+                "radial-gradient(circle at 0% 100%, color-mix(in srgb, var(--foreground), transparent 70%) 5%, transparent 60%)",
             }}
             initial={{ opacity: 0.7, rotate: -55 }}
             animate={{
@@ -76,7 +76,8 @@ const BotDetection = ({
                   height={5}
                   rx={1}
                   ry={1}
-                  fill="#404040" />
+                  fill="currentColor"
+                  className="text-muted-foreground/60" />
               </g>
             ))}
           </svg>

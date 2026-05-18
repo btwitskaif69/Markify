@@ -115,6 +115,7 @@ html.lenis body {
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 }
+
 .dark {
   --background: #000000;
   --foreground: #fafafa;

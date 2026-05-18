@@ -2,7 +2,7 @@ export const WHAT_IS_MARKIFY_FAQS = [
   {
     question: "Is Markify free to use?",
     answer:
-      "Yes! Markify offers a generous free tier that includes all core bookmarking features. Premium plans are available for power users who need advanced features like unlimited collections and priority support.",
+      "Yes! Markify offers a free tier with up to 50 bookmarks, up to 2 collections, cross-browser sync, and a single HTML import option. Premium plans add unlimited bookmarks, unlimited collections, sharing, and multi-format import/export.",
   },
   {
     question: "Can I import my existing bookmarks?",
