@@ -75,20 +75,22 @@ const Navbar = () => {
         <MobileNavHeader>
           <NavbarLogo />
 
-          <button
-            onClick={handleThemeToggle}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className={`flex items-end mr-5 cursor-pointer relative z-50 transition-transform duration-1000 bg-transparent border-none ${isDark ? "rotate-180" : "rotate-0"
-              }`}
-          >
-            {isDark ? (
-              <Sun className="h-6 w-6 text-yellow-500" />
-            ) : (
-              <Moon className="h-6 w-6 text-gray-500" />
-            )}
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleThemeToggle}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              className={`flex items-center cursor-pointer relative z-50 transition-transform duration-1000 bg-transparent border-none ${isDark ? "rotate-180" : "rotate-0"
+                }`}
+            >
+              {isDark ? (
+                <Sun className="h-6 w-6 text-yellow-500" />
+              ) : (
+                <Moon className="h-6 w-6 text-gray-500" />
+              )}
+            </button>
 
-          <MobileNavToggle isOpen={mobileOpen} onClick={toggleMobileMenu} />
+            <MobileNavToggle isOpen={mobileOpen} onClick={toggleMobileMenu} />
+          </div>
         </MobileNavHeader>
 
         <MobileNavMenu isOpen={mobileOpen} onClose={closeMobileMenu}>
