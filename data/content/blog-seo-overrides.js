@@ -24,11 +24,6 @@ export const BLOG_SEO_OVERRIDES = {
         href: "/blog/markify-vs-raindrop-io-which-bookmark-manager-is-right-for-you",
         summary: "Feature and workflow comparison for teams and solo researchers.",
       },
-      {
-        name: "Markify vs Browser Bookmarks",
-        href: "/blog/markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
-        summary: "Native browser folders versus structured collections and search.",
-      },
     ],
   },
   "how-to-build-a-personal-knowledge-base-with-markify": {

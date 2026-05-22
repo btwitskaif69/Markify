@@ -1,5 +1,6 @@
 import prisma from "../db/prismaClient";
 import { extractMetadataFromHtml } from "../utils/metadata";
+import { runWithPrismaRetry } from "../db/prismaRetry";
 
 const ARCHIVE_TIMEOUT_MS = 12000;
 const MAX_TEXT_LENGTH = 120000;
@@ -241,22 +242,26 @@ const buildArchiveUpsert = (bookmarkId, payload) => ({
 });
 
 export const getBookmarkArchivePayload = async (bookmarkId, userId) => {
-  return prisma.bookmark.findFirst({
-    where: {
-      id: bookmarkId,
-      userId,
-    },
-    select: {
-      id: true,
-      title: true,
-      url: true,
-      description: true,
-      previewImage: true,
-      archive: {
-        select: bookmarkArchiveDetailSelect,
-      },
-    },
-  });
+  return runWithPrismaRetry(
+    () =>
+      prisma.bookmark.findFirst({
+        where: {
+          id: bookmarkId,
+          userId,
+        },
+        select: {
+          id: true,
+          title: true,
+          url: true,
+          description: true,
+          previewImage: true,
+          archive: {
+            select: bookmarkArchiveDetailSelect,
+          },
+        },
+      }),
+    { label: "Bookmark archive lookup" }
+  );
 };
 
 export const refreshBookmarkArchiveForBookmark = async (bookmark) => {
@@ -264,18 +269,22 @@ export const refreshBookmarkArchiveForBookmark = async (bookmark) => {
     throw new Error("Bookmark id and URL are required for archiving.");
   }
 
-  await prisma.bookmarkArchive.upsert({
-    where: { bookmarkId: bookmark.id },
-    update: {
-      status: "PENDING",
-      failureReason: null,
-      sourceStatusCode: null,
-    },
-    create: {
-      bookmarkId: bookmark.id,
-      status: "PENDING",
-    },
-  });
+  await runWithPrismaRetry(
+    () =>
+      prisma.bookmarkArchive.upsert({
+        where: { bookmarkId: bookmark.id },
+        update: {
+          status: "PENDING",
+          failureReason: null,
+          sourceStatusCode: null,
+        },
+        create: {
+          bookmarkId: bookmark.id,
+          status: "PENDING",
+        },
+      }),
+    { label: "Bookmark archive pending upsert" }
+  );
 
   try {
     const source = await fetchArchiveSource(bookmark.url);
@@ -286,23 +295,27 @@ export const refreshBookmarkArchiveForBookmark = async (bookmark) => {
       statusCode: source.statusCode,
     });
 
-    const archive = await prisma.bookmarkArchive.upsert(
-      buildArchiveUpsert(bookmark.id, {
-        status: archivePayload.status,
-        archivedAt: archivePayload.archivedAt,
-        sourceStatusCode: archivePayload.sourceStatusCode,
-        contentType: archivePayload.contentType,
-        canonicalUrl: archivePayload.canonicalUrl,
-        siteName: archivePayload.siteName,
-        author: archivePayload.author,
-        publishedAt: archivePayload.publishedAt,
-        excerpt: archivePayload.excerpt,
-        textContent: archivePayload.textContent,
-        contentHtml: archivePayload.contentHtml,
-        wordCount: archivePayload.wordCount,
-        readTimeMinutes: archivePayload.readTimeMinutes,
-        failureReason: archivePayload.failureReason,
-      })
+    const archive = await runWithPrismaRetry(
+      () =>
+        prisma.bookmarkArchive.upsert(
+          buildArchiveUpsert(bookmark.id, {
+            status: archivePayload.status,
+            archivedAt: archivePayload.archivedAt,
+            sourceStatusCode: archivePayload.sourceStatusCode,
+            contentType: archivePayload.contentType,
+            canonicalUrl: archivePayload.canonicalUrl,
+            siteName: archivePayload.siteName,
+            author: archivePayload.author,
+            publishedAt: archivePayload.publishedAt,
+            excerpt: archivePayload.excerpt,
+            textContent: archivePayload.textContent,
+            contentHtml: archivePayload.contentHtml,
+            wordCount: archivePayload.wordCount,
+            readTimeMinutes: archivePayload.readTimeMinutes,
+            failureReason: archivePayload.failureReason,
+          })
+        ),
+      { label: "Bookmark archive final upsert" }
     );
 
     const bookmarkUpdates = {};
@@ -314,10 +327,14 @@ export const refreshBookmarkArchiveForBookmark = async (bookmark) => {
     }
 
     if (Object.keys(bookmarkUpdates).length > 0) {
-      await prisma.bookmark.update({
-        where: { id: bookmark.id },
-        data: bookmarkUpdates,
-      });
+      await runWithPrismaRetry(
+        () =>
+          prisma.bookmark.update({
+            where: { id: bookmark.id },
+            data: bookmarkUpdates,
+          }),
+        { label: "Bookmark archive bookmark update" }
+      );
     }
 
     return {
@@ -325,15 +342,19 @@ export const refreshBookmarkArchiveForBookmark = async (bookmark) => {
       bookmarkUpdates,
     };
   } catch (error) {
-    const archive = await prisma.bookmarkArchive.upsert(
-      buildArchiveUpsert(
-        bookmark.id,
-        buildFailurePayload(
-          error?.message || "Failed to archive bookmark.",
-          error?.statusCode,
-          error?.contentType
-        )
-      )
+    const archive = await runWithPrismaRetry(
+      () =>
+        prisma.bookmarkArchive.upsert(
+          buildArchiveUpsert(
+            bookmark.id,
+            buildFailurePayload(
+              error?.message || "Failed to archive bookmark.",
+              error?.statusCode,
+              error?.contentType
+            )
+          )
+        ),
+      { label: "Bookmark archive failure upsert" }
     );
 
     return {

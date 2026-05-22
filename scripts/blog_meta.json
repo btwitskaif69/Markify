@@ -36,12 +36,6 @@
     "coverImage": "https://assets.markify.tech/blog-covers/pkb-guide.png"
   },
   {
-    "title": "Markify vs Browser Bookmarks: Why Built-in Bookmarks Aren't Enough",
-    "slug": "markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough",
-    "excerpt": "Still using the star icon in your browser? Here's why moving to a dedicated manager like Markify is the upgrade your digital life needs.",
-    "coverImage": "https://assets.markify.tech/blog-covers/markify-vs-browser.png"
-  },
-  {
     "title": "5 Reasons Developers Choose Markify Over Browser Bookmarks",
     "slug": "5-reasons-developers-choose-markify-over-browser-bookmarks",
     "excerpt": "Code snippets, GitHub repos, and documentation. See why developers are switching to Markify to manage their tech stack resources.",
@@ -150,28 +144,10 @@
     "coverImage": "https://assets.markify.tech/blog-covers/developers-choice.png"
   },
   {
-    "title": "Best Bookmark Manager for Mac 2026",
-    "slug": "best-bookmark-manager-for-mac-2026",
-    "excerpt": "Mac users deserve a beautiful bookmark manager. Discover the best options for macOS and Safari in 2026.",
-    "coverImage": "https://assets.markify.tech/blog-covers/pkb-guide.png"
-  },
-  {
-    "title": "Best Bookmark Manager for Android 2026",
-    "slug": "best-bookmark-manager-for-android-2026",
-    "excerpt": "Save and organize bookmarks on your Android phone. Here are the best bookmark manager apps for Android in 2026.",
-    "coverImage": "https://assets.markify.tech/blog-covers/manage-hundreds.png"
-  },
-  {
     "title": "Best Bookmark Manager for Firefox 2026",
     "slug": "best-bookmark-manager-for-firefox-2026",
     "excerpt": "Firefox users value privacy and customization. Find the best bookmark manager extensions for Firefox in 2026.",
     "coverImage": "https://assets.markify.tech/blog-covers/markify-vs-browser.png"
-  },
-  {
-    "title": "Best Bookmark Manager for Safari 2026",
-    "slug": "best-bookmark-manager-for-safari-2026",
-    "excerpt": "Safari users on Mac and iPhone need a bookmark manager that integrates seamlessly. Here are the best options in 2026.",
-    "coverImage": "https://assets.markify.tech/blog-covers/markify-vs-pocket.png"
   },
   {
     "title": "Best Bookmark Manager for Chrome 2026",
@@ -220,12 +196,6 @@
     "slug": "download-a-reliable-bookmark-organizer",
     "excerpt": "Find and download a reliable bookmark organizer tool. Compare desktop apps, browser extensions, and web apps.",
     "coverImage": "https://assets.markify.tech/blog-covers/manage-hundreds.png"
-  },
-  {
-    "title": "Bookmark Managers with Cloud Sync",
-    "slug": "bookmark-managers-with-cloud-sync",
-    "excerpt": "Cloud sync keeps your bookmarks accessible everywhere. Discover the best bookmark managers with reliable cloud sync.",
-    "coverImage": "https://assets.markify.tech/blog-covers/cloud-sync-2026.png"
   },
   {
     "title": "Organize Bookmarks Efficiently",

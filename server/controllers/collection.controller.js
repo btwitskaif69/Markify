@@ -1,21 +1,26 @@
 import prisma from "../db/prismaClient";
 import { randomUUID } from "crypto";
 import { FREE_COLLECTION_LIMIT, hasActiveProAccess } from "@/lib/subscription";
+import { runWithPrismaRetry } from "../db/prismaRetry";
 
 // GET all collections for the logged-in user
 export const getCollections = async (req, res) => {
   try {
-    const collections = await prisma.collection.findMany({
-      where: { userId: req.user.id },
-      orderBy: { name: 'asc' },
-      include: {
-        _count: {
-          select: { bookmarks: true },
-        },
-      },
-    });
+    const collections = await runWithPrismaRetry(
+      () =>
+        prisma.collection.findMany({
+          where: { userId: req.user.id },
+          orderBy: { name: "asc" },
+          include: {
+            _count: {
+              select: { bookmarks: true },
+            },
+          },
+        }),
+      { label: "Collection list lookup" }
+    );
     res.status(200).json(collections);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Failed to get collections." });
   }
 };
@@ -27,9 +32,10 @@ export const createCollection = async (req, res) => {
     return res.status(400).json({ message: "Collection name is required." });
   }
   try {
-    const collectionCount = await prisma.collection.count({
-      where: { userId: req.user.id },
-    });
+    const collectionCount = await runWithPrismaRetry(
+      () => prisma.collection.count({ where: { userId: req.user.id } }),
+      { label: "Collection count lookup" }
+    );
 
     if (!hasActiveProAccess(req.user) && collectionCount >= FREE_COLLECTION_LIMIT) {
       return res.status(403).json({
@@ -57,9 +63,10 @@ export const deleteCollection = async (req, res) => {
     const { collectionId } = req.params;
 
     // Optional: Check if the collection belongs to the user making the request
-    const collection = await prisma.collection.findUnique({
-      where: { id: collectionId },
-    });
+    const collection = await runWithPrismaRetry(
+      () => prisma.collection.findUnique({ where: { id: collectionId } }),
+      { label: "Collection delete lookup" }
+    );
 
     if (!collection || collection.userId !== req.user.id) {
       return res.status(404).json({ message: "Collection not found or you don't have permission." });
@@ -89,7 +96,10 @@ export const renameCollection = async (req, res) => {
     const { name } = req.body;
 
     // Optional: Check if the collection belongs to the user
-    const collection = await prisma.collection.findUnique({ where: { id: collectionId } });
+    const collection = await runWithPrismaRetry(
+      () => prisma.collection.findUnique({ where: { id: collectionId } }),
+      { label: "Collection rename lookup" }
+    );
     if (!collection || collection.userId !== req.user.id) {
       return res.status(404).json({ message: "Collection not found." });
     }
@@ -125,9 +135,10 @@ export const toggleShareCollection = async (req, res) => {
     const { collectionId } = req.params;
 
     // Get the collection
-    const collection = await prisma.collection.findUnique({
-      where: { id: collectionId },
-    });
+    const collection = await runWithPrismaRetry(
+      () => prisma.collection.findUnique({ where: { id: collectionId } }),
+      { label: "Collection share lookup" }
+    );
 
     if (!collection) {
       return res.status(404).json({ message: "Collection not found." });
@@ -165,30 +176,34 @@ export const getSharedCollection = async (req, res) => {
   try {
     const { shareId } = req.params;
 
-    const collection = await prisma.collection.findUnique({
-      where: { shareId: shareId },
-      include: {
-        user: {
-          select: {
-            name: true,
-            avatar: true,
+    const collection = await runWithPrismaRetry(
+      () =>
+        prisma.collection.findUnique({
+          where: { shareId: shareId },
+          include: {
+            user: {
+              select: {
+                name: true,
+                avatar: true,
+              }
+            },
+            bookmarks: {
+              orderBy: { createdAt: 'desc' },
+              select: {
+                id: true,
+                title: true,
+                url: true,
+                description: true,
+                category: true,
+                tags: true,
+                previewImage: true,
+                createdAt: true,
+              }
+            }
           }
-        },
-        bookmarks: {
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            title: true,
-            url: true,
-            description: true,
-            category: true,
-            tags: true,
-            previewImage: true,
-            createdAt: true,
-          }
-        }
-      }
-    });
+        }),
+      { label: "Shared collection lookup" }
+    );
 
     if (!collection) {
       return res.status(404).json({ message: "Shared collection not found." });

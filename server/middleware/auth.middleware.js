@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import prisma from "../db/prismaClient";
 import { isAdminEmail } from "../utils/admin";
+import { runWithPrismaRetry } from "../db/prismaRetry";
 
 const getAuthToken = (headers = {}) => {
   const authHeader = headers.authorization || headers.Authorization;
@@ -22,20 +23,24 @@ export const requireAuth = async (req) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatar: true,
-        geminiUsage: true,
-        isSubscribed: true,
-        subscriptionEnds: true,
-        dodoCustomerId: true,
-        dodoSubscriptionId: true,
-      },
-    });
+    const user = await runWithPrismaRetry(
+      () =>
+        prisma.user.findUnique({
+          where: { id: decoded.id },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            geminiUsage: true,
+            isSubscribed: true,
+            subscriptionEnds: true,
+            dodoCustomerId: true,
+            dodoSubscriptionId: true,
+          },
+        }),
+      { label: "Auth user lookup" }
+    );
 
     if (!user) {
       return NextResponse.json(

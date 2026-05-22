@@ -19,6 +19,7 @@ import {
   refreshBookmarkArchiveForBookmark,
 } from "@/server/services/bookmark-archive.service";
 import { FREE_BOOKMARK_LIMIT, hasActiveProAccess } from "@/lib/subscription";
+import { runWithPrismaRetry } from "../db/prismaRetry";
 
 const bookmarkArchiveInclude = {
   archive: {
@@ -27,10 +28,14 @@ const bookmarkArchiveInclude = {
 };
 
 const getBookmarkWithArchive = async (bookmarkId) => {
-  const bookmark = await prisma.bookmark.findUnique({
-    where: { id: bookmarkId },
-    include: bookmarkArchiveInclude,
-  });
+  const bookmark = await runWithPrismaRetry(
+    () =>
+      prisma.bookmark.findUnique({
+        where: { id: bookmarkId },
+        include: bookmarkArchiveInclude,
+      }),
+    { label: "Bookmark detail lookup" }
+  );
 
   return normalizeBookmarkRecord(bookmark);
 };
@@ -52,9 +57,10 @@ export const addBookmark = async (req, res) => {
       return res.status(400).json({ message: 'Title and URL are required.' });
     }
 
-    const bookmarkCount = await prisma.bookmark.count({
-      where: { userId: ownerId },
-    });
+    const bookmarkCount = await runWithPrismaRetry(
+      () => prisma.bookmark.count({ where: { userId: ownerId } }),
+      { label: "Bookmark count lookup" }
+    );
 
     if (!hasActiveProAccess(req.user) && bookmarkCount >= FREE_BOOKMARK_LIMIT) {
       return res.status(403).json({
@@ -62,15 +68,19 @@ export const addBookmark = async (req, res) => {
       });
     }
 
-    const existingBookmark = await prisma.bookmark.findFirst({
-      where: {
-        userId: ownerId,
-        OR: [
-          { title: { equals: title, mode: 'insensitive' } },
-          { url: url }
-        ],
-      },
-    });
+    const existingBookmark = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findFirst({
+          where: {
+            userId: ownerId,
+            OR: [
+              { title: { equals: title, mode: 'insensitive' } },
+              { url: url }
+            ],
+          },
+        }),
+      { label: "Bookmark duplicate lookup" }
+    );
 
     if (existingBookmark) {
       return res.status(409).json({ message: `A bookmark with this ${existingBookmark.title.toLowerCase() === title.toLowerCase() ? 'title' : 'URL'} already exists.` });
@@ -113,11 +123,15 @@ export const getBookmarksForUser = async (req, res) => {
     if (userId && userId !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized." });
     }
-    const bookmarks = await prisma.bookmark.findMany({
-      where: { userId: req.user.id },
-      orderBy: { createdAt: 'desc' },
-      include: bookmarkArchiveInclude,
-    });
+    const bookmarks = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findMany({
+          where: { userId: req.user.id },
+          orderBy: { createdAt: "desc" },
+          include: bookmarkArchiveInclude,
+        }),
+      { label: "Bookmark list lookup" }
+    );
     res.status(200).json(bookmarks.map(normalizeBookmarkRecord));
   } catch (error) {
     console.error(error);
@@ -135,16 +149,20 @@ export const updateBookmark = async (req, res) => {
     const shouldRefreshArchive = Boolean(updates.refreshArchive) || Object.prototype.hasOwnProperty.call(updates, "url");
     delete updates.refreshArchive;
 
-    const existingBookmark = await prisma.bookmark.findUnique({
-      where: { id: bookmarkId },
-      select: {
-        title: true,
-        url: true,
-        description: true,
-        tags: true,
-        category: true,
-      },
-    });
+    const existingBookmark = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findUnique({
+          where: { id: bookmarkId },
+          select: {
+            title: true,
+            url: true,
+            description: true,
+            tags: true,
+            category: true,
+          },
+        }),
+      { label: "Bookmark update lookup" }
+    );
 
     if (!existingBookmark) {
       return res.status(404).json({ message: "Bookmark not found." });
@@ -231,18 +249,22 @@ export const exportBookmarks = async (req, res) => {
       });
     }
 
-    const bookmarks = await prisma.bookmark.findMany({
-      where: { userId: req.user.id },
-      select: {
-        title: true,
-        previewImage: true,
-        url: true,
-        description: true,
-        category: true,
-        tags: true,
-        isFavorite: true,
-      }
-    });
+    const bookmarks = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findMany({
+          where: { userId: req.user.id },
+          select: {
+            title: true,
+            previewImage: true,
+            url: true,
+            description: true,
+            category: true,
+            tags: true,
+            isFavorite: true,
+          }
+        }),
+      { label: "Bookmark export lookup" }
+    );
     res.status(200).json(bookmarks.map(normalizeBookmarkRecord));
   } catch {
     res.status(500).json({ message: "Failed to export bookmarks." });
@@ -257,17 +279,22 @@ export const importBookmarks = async (req, res) => {
       return res.status(400).json({ message: "Invalid file format. An array of bookmarks is expected." });
     }
 
-    const existingBookmarks = await prisma.bookmark.findMany({
-      where: { userId: req.user.id },
-      select: { title: true, url: true },
-    });
+    const existingBookmarks = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findMany({
+          where: { userId: req.user.id },
+          select: { title: true, url: true },
+        }),
+      { label: "Bookmark import lookup" }
+    );
 
     const hasProAccess = hasActiveProAccess(req.user);
     const currentBookmarkCount = hasProAccess
       ? 0
-      : await prisma.bookmark.count({
-        where: { userId: req.user.id },
-      });
+      : await runWithPrismaRetry(
+        () => prisma.bookmark.count({ where: { userId: req.user.id } }),
+        { label: "Bookmark import count" }
+      );
     const remainingSlots = hasProAccess
       ? null
       : Math.max(0, FREE_BOOKMARK_LIMIT - currentBookmarkCount);
@@ -317,14 +344,18 @@ export const importBookmarks = async (req, res) => {
       });
 
       // Retrieve the IDs of newly created bookmarks (those needing preview enrichment)
-      const createdBookmarks = await prisma.bookmark.findMany({
-        where: {
-          userId: req.user.id,
-          url: { in: bookmarksToCreate.map(b => b.url) },
-        },
-        select: { id: true, previewImage: true },
-        orderBy: { createdAt: 'desc' },
-      });
+      const createdBookmarks = await runWithPrismaRetry(
+        () =>
+          prisma.bookmark.findMany({
+            where: {
+              userId: req.user.id,
+              url: { in: bookmarksToCreate.map(b => b.url) },
+            },
+            select: { id: true, previewImage: true },
+            orderBy: { createdAt: 'desc' },
+          }),
+        { label: "Bookmark import created lookup" }
+      );
 
       // Only return IDs of bookmarks that don't have preview images
       createdIds = createdBookmarks
@@ -414,17 +445,22 @@ export const syncLocalBookmarks = async (req, res) => {
       return res.status(200).json({ message: "No bookmarks found in the file.", createdCount: 0, skippedCount: 0, createdIds: [] });
     }
 
-    const existingBookmarks = await prisma.bookmark.findMany({
-      where: { userId: req.user.id },
-      select: { title: true, url: true },
-    });
+    const existingBookmarks = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findMany({
+          where: { userId: req.user.id },
+          select: { title: true, url: true },
+        }),
+      { label: "Browser bookmark import lookup" }
+    );
 
     const hasProAccess = hasActiveProAccess(req.user);
     const currentBookmarkCount = hasProAccess
       ? 0
-      : await prisma.bookmark.count({
-        where: { userId: req.user.id },
-      });
+      : await runWithPrismaRetry(
+        () => prisma.bookmark.count({ where: { userId: req.user.id } }),
+        { label: "Browser bookmark import count" }
+      );
     const remainingSlots = hasProAccess
       ? null
       : Math.max(0, FREE_BOOKMARK_LIMIT - currentBookmarkCount);
@@ -476,16 +512,20 @@ export const syncLocalBookmarks = async (req, res) => {
       });
 
       // Get the IDs of newly created bookmarks (those without preview images and tagged as imported-browser)
-      const createdBookmarks = await prisma.bookmark.findMany({
-        where: {
-          userId: req.user.id,
-          tags: "imported-browser",
-          previewImage: null,
-        },
-        select: { id: true },
-        orderBy: { createdAt: 'desc' },
-        take: bookmarksToCreate.length,
-      });
+      const createdBookmarks = await runWithPrismaRetry(
+        () =>
+          prisma.bookmark.findMany({
+            where: {
+              userId: req.user.id,
+              tags: "imported-browser",
+              previewImage: null,
+            },
+            select: { id: true },
+            orderBy: { createdAt: 'desc' },
+            take: bookmarksToCreate.length,
+          }),
+        { label: "Browser bookmark import created lookup" }
+      );
 
       createdIds = createdBookmarks.map(b => b.id);
     }
@@ -518,9 +558,10 @@ export const fetchBookmarkPreview = async (req, res) => {
     const TIMEOUT_MS = 8000;
 
     // Get the bookmark
-    const bookmark = await prisma.bookmark.findUnique({
-      where: { id: bookmarkId },
-    });
+    const bookmark = await runWithPrismaRetry(
+      () => prisma.bookmark.findUnique({ where: { id: bookmarkId } }),
+      { label: "Bookmark preview lookup" }
+    );
 
     if (!bookmark) {
       return res.status(404).json({ message: "Bookmark not found." });
@@ -711,9 +752,10 @@ export const getBookmarkArchive = async (req, res) => {
 export const refreshBookmarkArchive = async (req, res) => {
   try {
     const { bookmarkId } = req.params;
-    const bookmark = await prisma.bookmark.findUnique({
-      where: { id: bookmarkId },
-    });
+    const bookmark = await runWithPrismaRetry(
+      () => prisma.bookmark.findUnique({ where: { id: bookmarkId } }),
+      { label: "Bookmark archive refresh lookup" }
+    );
 
     if (!bookmark) {
       return res.status(404).json({ message: "Bookmark not found." });
@@ -753,9 +795,10 @@ export const toggleShareBookmark = async (req, res) => {
     const { bookmarkId } = req.params;
 
     // Get the bookmark
-    const bookmark = await prisma.bookmark.findUnique({
-      where: { id: bookmarkId },
-    });
+    const bookmark = await runWithPrismaRetry(
+      () => prisma.bookmark.findUnique({ where: { id: bookmarkId } }),
+      { label: "Bookmark sharing lookup" }
+    );
 
     if (!bookmark) {
       return res.status(404).json({ message: "Bookmark not found." });
@@ -793,17 +836,21 @@ export const getSharedBookmark = async (req, res) => {
   try {
     const { shareId } = req.params;
 
-    const bookmark = await prisma.bookmark.findUnique({
-      where: { shareId: shareId },
-      include: {
-        user: {
-          select: {
-            name: true,
-            avatar: true,
+    const bookmark = await runWithPrismaRetry(
+      () =>
+        prisma.bookmark.findUnique({
+          where: { shareId: shareId },
+          include: {
+            user: {
+              select: {
+                name: true,
+                avatar: true,
+              }
+            }
           }
-        }
-      }
-    });
+        }),
+      { label: "Shared bookmark lookup" }
+    );
 
     if (!bookmark) {
       return res.status(404).json({ message: "Shared bookmark not found." });

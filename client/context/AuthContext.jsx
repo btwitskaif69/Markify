@@ -238,10 +238,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token, authFetch, logout, saveToken, saveUser, reconcilePendingSubscription]);
 
-  useEffect(() => {
-    verifyUser();
-  }, [verifyUser]);
-
   const login = useCallback((userData, authToken) => {
     saveToken(authToken);
     saveUser(userData);
@@ -275,9 +271,22 @@ export const AuthProvider = ({ children }) => {
     };
   }, [user, token, login, logout, authFetch, isLoading, updateProfile]);
 
+  const shouldVerifySession = PROTECTED_PATH_PREFIXES.some((path) =>
+    (pathname || "").startsWith(path)
+  );
+
   const shouldShowGlobalLoader =
     isLoading &&
     PROTECTED_PATH_PREFIXES.some((path) => (pathname || "").startsWith(path));
+
+  useEffect(() => {
+    if (!shouldVerifySession) {
+      setIsLoading(false);
+      return;
+    }
+
+    verifyUser();
+  }, [shouldVerifySession, verifyUser]);
 
   return (
     <AuthContext.Provider value={authValue}>

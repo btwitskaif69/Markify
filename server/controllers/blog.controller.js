@@ -5,8 +5,11 @@ import { deleteImage } from "../services/r2.service.js";
 
 // ... (existing imports and helpers)
 
+const ENV = globalThis.process?.env || {};
+const PUBLIC_CACHE_CONTROL = "public, s-maxage=600, stale-while-revalidate=86400";
+
 const clearBlogCache = async () => {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !redis) return;
+  if (!ENV.UPSTASH_REDIS_REST_URL || !redis) return;
   try {
     // We need to clear the list of posts
     // Since our cache key is dynamic (cache:/api/blog), we can try to delete that specific key
@@ -56,6 +59,7 @@ export const getPublishedPosts = async (req, res) => {
       },
       orderBy: { createdAt: "desc" },
     });
+    res.set("Cache-Control", PUBLIC_CACHE_CONTROL);
     res.status(200).json(posts);
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -79,6 +83,7 @@ export const getPostBySlug = async (req, res) => {
       return res.status(404).json({ message: "Post not found." });
     }
 
+    res.set("Cache-Control", PUBLIC_CACHE_CONTROL);
     res.status(200).json(post);
   } catch (error) {
     console.error("Error fetching post:", error);
@@ -147,7 +152,7 @@ export const updatePost = async (req, res) => {
     // Delete old cover image from R2 if a new one is being uploaded
     if (coverImage && existing.coverImage && coverImage !== existing.coverImage) {
       // Only delete if the old image is on our R2 bucket
-      if (existing.coverImage.includes(process.env.R2_PUBLIC_URL)) {
+      if (existing.coverImage.includes(ENV.R2_PUBLIC_URL)) {
         await deleteImage(existing.coverImage);
       }
     }
@@ -171,7 +176,7 @@ export const updatePost = async (req, res) => {
     // Invalidate cache
     await clearBlogCache();
     // Also invalidate individual post cache if we cached by slug (optional, if we add that later)
-    if (process.env.UPSTASH_REDIS_REST_URL && redis) {
+    if (ENV.UPSTASH_REDIS_REST_URL && redis) {
       await redis.del(`cache:/api/blog/${existing.slug}`);
       if (slug !== existing.slug) {
         await redis.del(`cache:/api/blog/${slug}`);
@@ -217,7 +222,7 @@ export const deletePost = async (req, res) => {
 
     // Invalidate cache
     await clearBlogCache();
-    if (process.env.UPSTASH_REDIS_REST_URL) {
+    if (ENV.UPSTASH_REDIS_REST_URL) {
       await redis.del(`cache:/api/blog/${existing.slug}`);
     }
 

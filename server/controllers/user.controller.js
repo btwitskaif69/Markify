@@ -11,6 +11,7 @@ import {
 import { uploadImage, deleteImage } from "../services/r2.service";
 import admin from "../config/firebase";
 import { isAdminEmail } from "../utils/admin";
+import { runWithPrismaRetry } from "../db/prismaRetry";
 
 const ENV = globalThis?.process?.env || {};
 
@@ -196,9 +197,10 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required." });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await runWithPrismaRetry(
+      () => prisma.user.findUnique({ where: { email } }),
+      { label: "Login user lookup" }
+    );
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password." });
@@ -214,10 +216,14 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-    });
+    await runWithPrismaRetry(
+      () =>
+        prisma.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        }),
+      { label: "Login lastLoginAt update" }
+    );
 
     const token = generateToken(user.id);
     const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };

@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.markify.tech/</loc><lastmod>2026-05-19T06:34:45.255Z</lastmod><changefreq>daily</changefreq><priority>1</priority></url>
-  <url><loc>https://www.markify.tech/about</loc><lastmod>2026-05-19T06:34:45.255Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.markify.tech/pricing</loc><lastmod>2026-05-19T06:34:45.255Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.markify.tech/blog</loc><lastmod>2026-05-19T06:34:45.255Z</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://www.markify.tech/contact</loc><lastmod>2026-05-19T06:34:45.255Z</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.markify.tech/</loc><lastmod>2026-05-21T07:59:33.953Z</lastmod><changefreq>daily</changefreq><priority>1</priority></url>
+  <url><loc>https://www.markify.tech/about</loc><lastmod>2026-05-21T07:59:33.953Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.markify.tech/pricing</loc><lastmod>2026-05-21T07:59:33.953Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.markify.tech/blog</loc><lastmod>2026-05-21T07:59:33.953Z</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.markify.tech/contact</loc><lastmod>2026-05-21T07:59:33.953Z</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://www.markify.tech/blog/best-bookmark-manager-for-windows-2026</loc><lastmod>2026-05-15T12:03:59.713Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.markify.tech/blog/best-bookmark-manager-for-mac-2026</loc><lastmod>2026-05-15T11:57:13.681Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.markify.tech/blog/best-bookmark-manager-android-2026</loc><lastmod>2026-05-13T12:49:18.496Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/best-bookmark-manager-firefox-2026</loc><lastmod>2026-05-09T09:07:33.338Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.markify.tech/blog/best-bookmark-manager-safari-2026</loc><lastmod>2026-05-09T08:58:53.737Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/best-bookmark-manager-chrome-2026</loc><lastmod>2026-05-07T10:33:50.270Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/download-a-reliable-bookmark-organizer</loc><lastmod>2026-05-07T10:25:57.664Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.markify.tech/blog/bookmark-managers-with-cloud-sync</loc><lastmod>2026-05-06T05:52:37.632Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/unlock-collaboration-share-your-bookmarks-and-collections-with-markify</loc><lastmod>2026-05-06T05:49:27.288Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/where-to-download-a-reliable-bookmark-organizer-tool</loc><lastmod>2026-05-06T05:45:45.985Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/bookmark-manager-search-and-tagging</loc><lastmod>2026-05-05T07:37:17.387Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
@@ -59,10 +55,9 @@
   <url><loc>https://www.markify.tech/blog/markify-for-students-organize-research-without-the-chaos</loc><lastmod>2026-02-20T11:50:31.418Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/markify-vs-notion-for-bookmarks-when-simpler-is-better</loc><lastmod>2026-02-20T11:50:02.172Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/why-we-built-markify-a-bookmark-manager-that-respects-your-time</loc><lastmod>2026-02-20T11:18:19.954Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.markify.tech/blog/markify-vs-browser-bookmarks-why-built-in-bookmarks-aren-t-enough</loc><lastmod>2026-02-20T11:17:40.921Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://www.markify.tech/blog/best-bookmark-manager-with-built-in-search-and-tagging</loc><lastmod>2026-02-20T11:16:49.169Z</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://www.markify.tech/blog/page/2</loc><lastmod>2026-05-19T06:34:45.254Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://www.markify.tech/blog/page/3</loc><lastmod>2026-05-19T06:34:45.254Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://www.markify.tech/blog/page/4</loc><lastmod>2026-05-19T06:34:45.254Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://www.markify.tech/blog/page/5</loc><lastmod>2026-05-19T06:34:45.254Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.markify.tech/blog/page/2</loc><lastmod>2026-05-21T07:59:33.952Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.markify.tech/blog/page/3</loc><lastmod>2026-05-21T07:59:33.952Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.markify.tech/blog/page/4</loc><lastmod>2026-05-21T07:59:33.952Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://www.markify.tech/blog/page/5</loc><lastmod>2026-05-21T07:59:33.952Z</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>
 </urlset>

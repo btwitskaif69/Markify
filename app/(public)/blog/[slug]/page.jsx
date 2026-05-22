@@ -9,7 +9,7 @@ import {
 } from "@/lib/seo";
 import { getBlogContentModel } from "@/lib/content/blog-meta";
 import prisma from "@/server/db/prismaClient";
-import { permanentRedirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamicParams = true;

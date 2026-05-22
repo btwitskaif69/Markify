@@ -43,25 +43,30 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     bookmarksRef.current = allBookmarks;
   }, [allBookmarks]);
 
-  const fetchBookmarks = useCallback(async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setError(null);
-      const res = await authFetch(`${API_URL}/users/${userId}/bookmarks`);
-      if (!res.ok) throw new Error("Failed to fetch bookmarks.");
+      const res = await authFetch(`${API_URL}/dashboard/bootstrap`);
+      if (!res.ok) throw new Error("Failed to fetch dashboard data.");
 
       const data = await res.json();
-      if (!Array.isArray(data)) {
-        console.error("Expected bookmarks to be an array, received:", data);
+      const bookmarksArray = Array.isArray(data?.bookmarks) ? data.bookmarks : null;
+      const collectionsArray = Array.isArray(data?.collections) ? data.collections : null;
+
+      if (!bookmarksArray || !collectionsArray) {
+        console.error("Expected dashboard bootstrap data, received:", data);
         setAllBookmarks([]);
+        setCollections([]);
         if (user?.id && typeof window !== "undefined") {
           localStorage.removeItem(getCacheKey(user.id));
         }
         return;
       }
 
-      setAllBookmarks(data);
+      setAllBookmarks(bookmarksArray);
+      setCollections(collectionsArray);
       if (user?.id && typeof window !== "undefined") {
-        localStorage.setItem(getCacheKey(user.id), JSON.stringify(data));
+        localStorage.setItem(getCacheKey(user.id), JSON.stringify(bookmarksArray));
       }
     } catch (err) {
       if (err.message !== "Session expired") {
@@ -69,7 +74,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
         toast.error(err.message);
       }
     }
-  }, [authFetch, userId, user?.id]);
+  }, [authFetch, user?.id]);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -88,35 +93,10 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       setIsLoading(true);
     }
 
-    fetchBookmarks().finally(() => {
+    fetchDashboardData().finally(() => {
       setIsLoading(false);
     });
-
-    authFetch(`${API_URL}/collections`)
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        let collectionsArray = [];
-        if (Array.isArray(data)) {
-          collectionsArray = data;
-        } else if (data && Array.isArray(data.collections)) {
-          collectionsArray = data.collections;
-        } else if (data && Array.isArray(data.data)) {
-          collectionsArray = data.data;
-        } else {
-          console.error(
-            "Expected collections to be an array (or in `collections`/`data`), received:",
-            data
-          );
-        }
-
-        setCollections(collectionsArray);
-      })
-      .catch((err) => {
-        if (err.message !== "Session expired") {
-          toast.error(err.message);
-        }
-      });
-  }, [userId, user, authFetch, isAuthLoading, router, fetchBookmarks]);
+  }, [userId, user, authFetch, isAuthLoading, router, fetchDashboardData]);
 
   const refetchBookmarks = useCallback(async () => {
     const shouldShowLoader = bookmarksRef.current.length === 0;
@@ -124,9 +104,9 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       setIsLoading(true);
     }
 
-    await fetchBookmarks();
+    await fetchDashboardData();
     setIsLoading(false);
-  }, [fetchBookmarks]);
+  }, [fetchDashboardData]);
 
   const bookmarks = useMemo(() => {
     if (!activeCollectionId) return allBookmarks;

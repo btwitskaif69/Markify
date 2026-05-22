@@ -1,6 +1,8 @@
 import prisma from "../db/prismaClient";
 import { sendReviewNotificationEmail } from "../services/email.service";
 
+const PUBLIC_CACHE_CONTROL = "public, s-maxage=600, stale-while-revalidate=3600";
+
 // Create or update a review for the logged-in user
 const createReview = async (req, res) => {
     try {
@@ -84,6 +86,7 @@ const getReviews = async (req, res) => {
             }
         });
 
+        res.set("Cache-Control", PUBLIC_CACHE_CONTROL);
         res.status(200).json(reviews);
     } catch (error) {
         console.error('Error fetching reviews:', error);

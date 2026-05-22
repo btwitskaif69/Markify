@@ -154,10 +154,6 @@ export default function ImportExport({ onRefetch }) {
               id: 'enrichment-progress'
             });
           }
-
-          if (onRefetch && (processedCount % 15 === 0 || processedCount === total)) {
-            void onRefetch();
-          }
         }
       }
     };
