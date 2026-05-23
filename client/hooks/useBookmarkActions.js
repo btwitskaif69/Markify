@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
 import { FREE_BOOKMARK_LIMIT, hasActiveProAccess } from "@/lib/subscription";
 import { buildBookmarkImportToastMessage } from "@/lib/bookmarkImport";
+import { clearBookmarkCache, replaceBookmarkCache } from "@/client/lib/bookmarkCache";
 import { useState, useCallback } from "react";
 
 const API_URL = API_BASE_URL;
@@ -11,10 +12,22 @@ export function useBookmarkActions(
   user,
   setAllBookmarks,
   collections,
-  { bookmarkCount = 0 } = {}
+  { bookmarkCount = 0, getBookmarksSnapshot } = {}
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userId = user?.id;
+  const getLatestBookmarks = useCallback(() => {
+    const snapshot = typeof getBookmarksSnapshot === "function" ? getBookmarksSnapshot() : [];
+    return Array.isArray(snapshot) ? snapshot : [];
+  }, [getBookmarksSnapshot]);
+
+  const syncBookmarks = useCallback(
+    (nextBookmarks) => {
+      setAllBookmarks(nextBookmarks);
+      replaceBookmarkCache(userId, nextBookmarks);
+    },
+    [setAllBookmarks, userId]
+  );
 
   const handleSubmit = useCallback(async (bookmarkData, editingBookmark, previewData, closeDialog) => {
     if (!editingBookmark && !userId) {
@@ -45,11 +58,11 @@ export function useBookmarkActions(
       if (!response.ok) throw new Error(`Failed to submit bookmark.`);
       const { bookmark: returnedBookmark } = await response.json();
 
-      setAllBookmarks((prev) =>
-        isEditing
-          ? prev.map((b) => (b.id === returnedBookmark.id ? returnedBookmark : b))
-          : [returnedBookmark, ...prev]
-      );
+      const currentBookmarks = getLatestBookmarks();
+      const nextBookmarks = isEditing
+        ? currentBookmarks.map((b) => (b.id === returnedBookmark.id ? returnedBookmark : b))
+        : [returnedBookmark, ...currentBookmarks];
+      syncBookmarks(nextBookmarks);
 
       toast.success(isEditing ? "Bookmark updated!" : "Bookmark added!");
       closeDialog();
@@ -60,14 +73,12 @@ export function useBookmarkActions(
     } finally {
       setIsSubmitting(false);
     }
-  }, [authFetch, userId, setAllBookmarks, bookmarkCount, user]);
+  }, [authFetch, userId, bookmarkCount, user, getLatestBookmarks, syncBookmarks]);
 
   const handleDelete = useCallback(async (id) => {
-    let originalBookmarks;
-    setAllBookmarks((prev) => {
-      originalBookmarks = prev;
-      return prev.filter((b) => b.id !== id);
-    });
+    const originalBookmarks = getLatestBookmarks();
+    const nextBookmarks = originalBookmarks.filter((b) => b.id !== id);
+    syncBookmarks(nextBookmarks);
     toast.success("Bookmark deleted.");
     try {
       const response = await authFetch(`${API_URL}/bookmarks/${id}`, { method: "DELETE" });
@@ -75,17 +86,15 @@ export function useBookmarkActions(
     } catch (err) {
       if (err.message !== "Session expired") {
         toast.error("Failed to delete. Restoring bookmark.");
-        setAllBookmarks(originalBookmarks);
+        syncBookmarks(originalBookmarks);
       }
     }
-  }, [authFetch, setAllBookmarks]);
+  }, [authFetch, getLatestBookmarks, syncBookmarks]);
 
   const handleToggleFavorite = useCallback(async (id, currentIsFavorite) => {
-    let originalBookmarks;
-    setAllBookmarks((prev) => {
-      originalBookmarks = prev;
-      return prev.map((b) => (b.id === id ? { ...b, isFavorite: !b.isFavorite } : b));
-    });
+    const originalBookmarks = getLatestBookmarks();
+    const optimisticBookmarks = originalBookmarks.map((b) => (b.id === id ? { ...b, isFavorite: !b.isFavorite } : b));
+    syncBookmarks(optimisticBookmarks);
     try {
       const response = await authFetch(`${API_URL}/bookmarks/${id}`, {
         method: "PATCH",
@@ -93,14 +102,16 @@ export function useBookmarkActions(
       });
       if (!response.ok) throw new Error("Failed to update favorite status.");
       const { bookmark: returnedBookmark } = await response.json();
-      setAllBookmarks((prev) => prev.map((b) => (b.id === id ? returnedBookmark : b)));
+      const latestBookmarks = getLatestBookmarks();
+      const nextBookmarks = latestBookmarks.map((b) => (b.id === id ? returnedBookmark : b));
+      syncBookmarks(nextBookmarks);
     } catch (err) {
       if (err.message !== "Session expired") {
         toast.error("Could not update favorite status.");
-        setAllBookmarks(originalBookmarks);
+        syncBookmarks(originalBookmarks);
       }
     }
-  }, [authFetch, setAllBookmarks]);
+  }, [authFetch, getLatestBookmarks, syncBookmarks]);
 
   const handleMoveBookmark = useCallback(async (bookmarkId, collectionId) => {
     try {
@@ -112,7 +123,9 @@ export function useBookmarkActions(
       if (!response.ok) throw new Error("Failed to move bookmark.");
       const { bookmark: returnedBookmark } = await response.json();
 
-      setAllBookmarks((prev) => prev.map((b) => (b.id === returnedBookmark.id ? returnedBookmark : b)));
+      const latestBookmarks = getLatestBookmarks();
+      const nextBookmarks = latestBookmarks.map((b) => (b.id === returnedBookmark.id ? returnedBookmark : b));
+      syncBookmarks(nextBookmarks);
 
       let toastMessage = "Bookmark moved successfully!";
       if (collectionId) {
@@ -128,7 +141,7 @@ export function useBookmarkActions(
     } catch {
       toast.error("Failed to move bookmark.");
     }
-  }, [authFetch, setAllBookmarks, collections]);
+  }, [authFetch, collections, getLatestBookmarks, syncBookmarks]);
 
   const handleRefreshArchive = useCallback(async (bookmarkId, { silent = false } = {}) => {
     try {
@@ -142,11 +155,11 @@ export function useBookmarkActions(
       }
 
       if (result.bookmark) {
-        setAllBookmarks((prev) =>
-          prev.map((bookmark) =>
-            bookmark.id === result.bookmark.id ? result.bookmark : bookmark
-          )
+        const latestBookmarks = getLatestBookmarks();
+        const nextBookmarks = latestBookmarks.map((bookmark) =>
+          bookmark.id === result.bookmark.id ? result.bookmark : bookmark
         );
+        syncBookmarks(nextBookmarks);
       }
 
       if (!silent) {
@@ -164,7 +177,7 @@ export function useBookmarkActions(
       }
       throw err;
     }
-  }, [authFetch, setAllBookmarks]);
+  }, [authFetch, getLatestBookmarks, syncBookmarks]);
 
   const handleImportBookmarks = useCallback(async (bookmarks) => {
     try {
@@ -194,12 +207,13 @@ export function useBookmarkActions(
       } else {
         toast.info(message);
       }
+      clearBookmarkCache(userId);
       return true;
     } catch (err) {
       toast.error(err.message);
       return false;
     }
-  }, [authFetch]);
+  }, [authFetch, userId]);
 
   /**
    * Syncs bookmarks by importing Chrome's exported bookmarks HTML file
@@ -284,8 +298,12 @@ export function useBookmarkActions(
             const reloadResponse = await authFetch(`${API_URL}/users/${userId}/bookmarks`);
             if (reloadResponse.ok) {
               const updatedBookmarks = await reloadResponse.json();
-              setAllBookmarks(updatedBookmarks);
+              syncBookmarks(updatedBookmarks);
+            } else {
+              clearBookmarkCache(userId);
             }
+          } else {
+            clearBookmarkCache(userId);
           }
 
           resolve(true);
@@ -302,7 +320,7 @@ export function useBookmarkActions(
 
       fileInput.click();
     });
-  }, [authFetch, userId, setAllBookmarks]);
+  }, [authFetch, userId, syncBookmarks]);
 
   /**
    * Deletes multiple bookmarks at once using the bulk delete endpoint
@@ -311,11 +329,9 @@ export function useBookmarkActions(
     if (!ids || ids.length === 0) return;
 
     // Optimistically remove from state
-    let originalBookmarks;
-    setAllBookmarks((prev) => {
-      originalBookmarks = prev;
-      return prev.filter((b) => !ids.includes(b.id));
-    });
+    const originalBookmarks = getLatestBookmarks();
+    const nextBookmarks = originalBookmarks.filter((b) => !ids.includes(b.id));
+    syncBookmarks(nextBookmarks);
 
     try {
       const response = await authFetch(`${API_URL}/bookmarks/bulk-delete`, {
@@ -330,10 +346,10 @@ export function useBookmarkActions(
     } catch (err) {
       if (err.message !== "Session expired") {
         toast.error("Failed to delete. Restoring bookmarks.");
-        setAllBookmarks(originalBookmarks);
+        syncBookmarks(originalBookmarks);
       }
     }
-  }, [authFetch, setAllBookmarks]);
+  }, [authFetch, getLatestBookmarks, syncBookmarks]);
 
   return {
     handleSubmit,

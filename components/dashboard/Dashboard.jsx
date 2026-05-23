@@ -15,6 +15,7 @@ import { useAuth } from "@/client/context/AuthContext";
 import { useDashboardData } from "@/client/hooks/useDashboardData";
 import { useBookmarkActions } from "@/client/hooks/useBookmarkActions";
 import { useCollectionActions } from "@/client/hooks/useCollectionActions";
+import { replaceBookmarkCache } from "@/client/lib/bookmarkCache";
 import { useThemeToggle } from "@/client/hooks/useThemeToggle";
 import { usePreview } from "@/client/hooks/usePreview";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
@@ -166,6 +167,7 @@ export default function Dashboard() {
     error,
     activeCollection,
     refetchBookmarks,
+    getBookmarksSnapshot,
   } = useDashboardData(user, authFetch, isAuthLoading);
 
   const bookmarkCategories = BOOKMARK_CATEGORY_OPTIONS;
@@ -180,6 +182,7 @@ export default function Dashboard() {
     isSubmitting
   } = useBookmarkActions(authFetch, user, setAllBookmarks, collections, {
     bookmarkCount: allBookmarks.length,
+    getBookmarksSnapshot,
   });
 
 
@@ -274,9 +277,11 @@ export default function Dashboard() {
 
   const handleShareToggle = (updatedItem) => {
     if (shareType === "bookmark") {
-      setAllBookmarks((prev) =>
-        prev.map((b) => (b.id === updatedItem.id ? updatedItem : b))
+      const nextBookmarks = getBookmarksSnapshot().map((b) =>
+        b.id === updatedItem.id ? updatedItem : b
       );
+      setAllBookmarks(nextBookmarks);
+      replaceBookmarkCache(user?.id, nextBookmarks);
     } else {
       setCollections((prev) =>
         prev.map((c) => (c.id === updatedItem.id ? updatedItem : c))

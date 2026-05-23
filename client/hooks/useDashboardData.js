@@ -4,26 +4,9 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { readBookmarkCache, replaceBookmarkCache } from "@/client/lib/bookmarkCache";
 
 const API_URL = API_BASE_URL;
-const BOOKMARKS_CACHE_VERSION = "v3";
-
-const getCacheKey = (userId) =>
-  userId ? `bookmarks_cache_${BOOKMARKS_CACHE_VERSION}_${userId}` : null;
-
-const readCachedBookmarks = (userId) => {
-  if (typeof window === "undefined" || !userId) {
-    return [];
-  }
-
-  try {
-    const cached = localStorage.getItem(getCacheKey(userId));
-    return cached ? JSON.parse(cached) : [];
-  } catch (error) {
-    console.error("Failed to parse bookmark cache", error);
-    return [];
-  }
-};
 
 export function useDashboardData(user, authFetch, isAuthLoading) {
   const params = useParams();
@@ -32,16 +15,32 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
   const userId = getParamValue(params?.userId);
   const activeCollectionId = getParamValue(params?.collectionId);
 
-  const cachedBookmarks = readCachedBookmarks(user?.id);
-  const [allBookmarks, setAllBookmarks] = useState(cachedBookmarks);
+  const cachedSnapshot = readBookmarkCache(user?.id);
+  const [allBookmarks, setAllBookmarksState] = useState(cachedSnapshot.bookmarks);
   const [collections, setCollections] = useState([]);
-  const [isLoading, setIsLoading] = useState(cachedBookmarks.length === 0);
+  const [isLoading, setIsLoading] = useState(!cachedSnapshot.hasCache);
   const [error, setError] = useState(null);
   const bookmarksRef = useRef(allBookmarks);
+  const hasHydratedBookmarksRef = useRef(cachedSnapshot.hasCache);
+
+  const setAllBookmarks = useCallback((nextBookmarks) => {
+    bookmarksRef.current = nextBookmarks;
+    setAllBookmarksState(nextBookmarks);
+  }, []);
 
   useEffect(() => {
     bookmarksRef.current = allBookmarks;
   }, [allBookmarks]);
+
+  useEffect(() => {
+    const snapshot = readBookmarkCache(user?.id);
+    hasHydratedBookmarksRef.current = snapshot.hasCache;
+    bookmarksRef.current = snapshot.bookmarks;
+    setAllBookmarks(snapshot.bookmarks);
+    setCollections([]);
+    setError(null);
+    setIsLoading(!snapshot.hasCache);
+  }, [user?.id, setAllBookmarks]);
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -54,27 +53,20 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       const collectionsArray = Array.isArray(data?.collections) ? data.collections : null;
 
       if (!bookmarksArray || !collectionsArray) {
-        console.error("Expected dashboard bootstrap data, received:", data);
-        setAllBookmarks([]);
-        setCollections([]);
-        if (user?.id && typeof window !== "undefined") {
-          localStorage.removeItem(getCacheKey(user.id));
-        }
-        return;
+        throw new Error("Dashboard data was malformed.");
       }
 
       setAllBookmarks(bookmarksArray);
       setCollections(collectionsArray);
-      if (user?.id && typeof window !== "undefined") {
-        localStorage.setItem(getCacheKey(user.id), JSON.stringify(bookmarksArray));
-      }
+      hasHydratedBookmarksRef.current = true;
+      replaceBookmarkCache(user?.id, bookmarksArray);
     } catch (err) {
       if (err.message !== "Session expired") {
         setError(err.message);
         toast.error(err.message);
       }
     }
-  }, [authFetch, user?.id]);
+  }, [authFetch, user?.id, setAllBookmarks]);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -88,7 +80,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
       return;
     }
 
-    const shouldShowLoader = bookmarksRef.current.length === 0;
+    const shouldShowLoader = !hasHydratedBookmarksRef.current && bookmarksRef.current.length === 0;
     if (shouldShowLoader) {
       setIsLoading(true);
     }
@@ -99,7 +91,7 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
   }, [userId, user, authFetch, isAuthLoading, router, fetchDashboardData]);
 
   const refetchBookmarks = useCallback(async () => {
-    const shouldShowLoader = bookmarksRef.current.length === 0;
+    const shouldShowLoader = !hasHydratedBookmarksRef.current && bookmarksRef.current.length === 0;
     if (shouldShowLoader) {
       setIsLoading(true);
     }
@@ -118,6 +110,8 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     return collections.find((collection) => collection.id === activeCollectionId) || null;
   }, [activeCollectionId, collections]);
 
+  const getBookmarksSnapshot = useCallback(() => bookmarksRef.current, []);
+
   return {
     allBookmarks,
     bookmarks,
@@ -132,5 +126,6 @@ export function useDashboardData(user, authFetch, isAuthLoading) {
     isFetchingMore: false,
     activeCollectionId,
     activeCollection,
+    getBookmarksSnapshot,
   };
 }
