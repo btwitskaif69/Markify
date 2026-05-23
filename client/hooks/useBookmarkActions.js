@@ -25,7 +25,7 @@ export function useBookmarkActions(
     const isEditing = !!editingBookmark;
     const bookmarkId = isEditing ? editingBookmark.id : null;
     if (!isEditing && !hasActiveProAccess(user) && bookmarkCount >= FREE_BOOKMARK_LIMIT) {
-      toast.error("Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.");
+      toast.error(`Free plan includes up to ${FREE_BOOKMARK_LIMIT} bookmarks. Upgrade to Pro for unlimited bookmarks.`);
       return;
     }
     const url = isEditing

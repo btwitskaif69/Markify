@@ -19,7 +19,7 @@ const features = [
     },
     {
         name: "Smart Collections",
-        description: "Organize with AI precision",
+        description: "Organize with precision",
         icon: <FolderPlus className="w-4 h-4 text-green-500" />,
     },
     {

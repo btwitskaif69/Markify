@@ -64,7 +64,7 @@ export const addBookmark = async (req, res) => {
 
     if (!hasActiveProAccess(req.user) && bookmarkCount >= FREE_BOOKMARK_LIMIT) {
       return res.status(403).json({
-        message: "Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.",
+        message: `Free plan includes up to ${FREE_BOOKMARK_LIMIT} bookmarks. Upgrade to Pro for unlimited bookmarks.`,
       });
     }
 
@@ -307,7 +307,7 @@ export const importBookmarks = async (req, res) => {
 
     if (!hasProAccess && remainingSlots === 0) {
       return res.status(403).json({
-        message: "Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.",
+        message: `Free plan includes up to ${FREE_BOOKMARK_LIMIT} bookmarks. Upgrade to Pro for unlimited bookmarks.`,
         freeLimit: FREE_BOOKMARK_LIMIT,
         createdCount: 0,
         duplicateCount: importPlan.duplicateCount,
@@ -473,7 +473,7 @@ export const syncLocalBookmarks = async (req, res) => {
 
     if (!hasProAccess && remainingSlots === 0) {
       return res.status(403).json({
-        message: "Free plan includes up to 50 bookmarks. Upgrade to Pro for unlimited bookmarks.",
+        message: `Free plan includes up to ${FREE_BOOKMARK_LIMIT} bookmarks. Upgrade to Pro for unlimited bookmarks.`,
         freeLimit: FREE_BOOKMARK_LIMIT,
         createdCount: 0,
         duplicateCount: importPlan.duplicateCount,

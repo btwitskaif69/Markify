@@ -1,6 +1,7 @@
 import PricingPage from "@/app/(public)/_components/Pricing";
 import StructuredData from "@/components/SEO/StructuredData";
 import { PRICING_TIERS } from "@/data/pricingTiers";
+import { FREE_BOOKMARK_LIMIT } from "@/lib/subscription";
 import {
   buildBreadcrumbSchema,
   buildProductSchema,
@@ -54,7 +55,7 @@ export default function Page() {
           or a growing team collaborating on shared collections, we have a pricing plan designed specifically for you.
         </p>
         <p>
-          Our Free plan includes up to 50 bookmarks, up to 2 collections, cross-browser sync, and a single HTML import option. 
+          Our Free plan includes up to {FREE_BOOKMARK_LIMIT} bookmarks, up to 2 collections, cross-browser sync, and a single HTML import option. 
           It is the right fit for personal bookmark organization without export or team sharing features.
         </p>
         <p>

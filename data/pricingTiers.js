@@ -1,10 +1,12 @@
+import { FREE_BOOKMARK_LIMIT } from "@/lib/subscription";
+
 export const PRICING_TIERS = [
   {
     name: "Free",
     price: "0",
     description: "Great for individuals building a clean personal bookmark workflow.",
     features: [
-      "Up to 50 Bookmarks",
+      `Up to ${FREE_BOOKMARK_LIMIT} Bookmarks`,
       "Up to 2 Collections",
       "Cross-Browser Sync",
       "Single Import Option (No Export)",

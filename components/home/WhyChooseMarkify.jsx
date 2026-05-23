@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Check, X, Bookmark } from "lucide-react";
 
 const markifyFeatures = [
-    "Smart AI-powered organization",
+    "Smart organization",
     "Lightning-fast search & discovery",
     "Cross-browser sync & backup",
     "Advanced tagging system",

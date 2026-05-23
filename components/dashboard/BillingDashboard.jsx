@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAuth } from "@/client/context/AuthContext";
+import { FREE_BOOKMARK_LIMIT } from "@/lib/subscription";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -152,8 +153,8 @@ const BillingDashboard = () => {
       ]
     : [
         {
-          name: "Up to 50 Bookmarks",
-          description: "Save and organize up to 50 bookmarks.",
+          name: `Up to ${FREE_BOOKMARK_LIMIT} Bookmarks`,
+          description: `Save and organize up to ${FREE_BOOKMARK_LIMIT} bookmarks.`,
           icon: BadgeCheck,
           color: "text-[#ff6900]",
           borderColor: "border-[#ff6900]/20",

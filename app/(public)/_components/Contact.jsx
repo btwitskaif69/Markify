@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { FREE_BOOKMARK_LIMIT } from "@/lib/subscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -160,7 +161,7 @@ const Contact = () => {
     },
     {
       question: "Is Markify free to use?",
-      answer: "Yes! Markify offers a free tier with up to 50 bookmarks, up to 2 collections, cross-browser sync, and a single HTML import option. Pro unlocks unlimited bookmarks, unlimited collections, sharing, and multi-format import/export."
+      answer: `Yes! Markify offers a free tier with up to ${FREE_BOOKMARK_LIMIT} bookmarks, up to 2 collections, cross-browser sync, and a single HTML import option. Pro unlocks unlimited bookmarks, unlimited collections, sharing, and multi-format import/export.`
     },
     {
       question: "Can I import my existing bookmarks?",

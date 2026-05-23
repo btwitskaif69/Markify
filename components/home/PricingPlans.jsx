@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { BookOpen, Sparkles, Bookmark, Laptop, Layers, Puzzle, Folder, Share2, ArrowRightLeft, Download } from "lucide-react";
+import { BookOpen, Sparkles, Bookmark, Laptop, Layers, Folder, Share2, ArrowRightLeft, Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { useAuth } from "@/client/context/AuthContext";
+import { FREE_BOOKMARK_LIMIT } from "@/lib/subscription";
 
 const PLANS = [
     {
@@ -17,7 +18,7 @@ const PLANS = [
         badge: "Best for personal use",
         popular: false,
         features: [
-            { text: "Up to 50 Bookmarks", icon: Bookmark },
+            { text: `Up to ${FREE_BOOKMARK_LIMIT} Bookmarks`, icon: Bookmark },
             { text: "Up to 2 Collections", icon: Folder },
             { text: "Cross-Browser Sync", icon: Laptop },
             { text: "Single Import Option (No Export)", icon: Download },
