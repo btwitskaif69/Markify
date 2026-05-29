@@ -1,22 +1,23 @@
 "use client";
 
 // Home.jsx
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/home/Hero';
 import PricingPlans from '@/components/home/PricingPlans';
 import Footer from '@/components/Footer';
 import LazySection from "@/components/LazySection";
 
-// Lazy load below-fold components
-const Marquee = lazy(() => import('@/components/home/Marquee'));
-const FeatureHighlight = lazy(() => import('@/components/home/FeatureHighlight'));
-const BentoGridSection = lazy(() => import('@/components/home/BentoGridSection'));
-const StressFreeCTA = lazy(() => import('@/components/home/StressFreeCTA'));
-const WhyChooseMarkify = lazy(() => import('@/components/home/WhyChooseMarkify'));
-const ReviewsMarquee = lazy(() => import('@/components/home/ReviewsMarquee'));
-const FinalCTA = lazy(() => import('@/components/home/FinalCTA'));
-const HomeFAQ = lazy(() => import('@/components/home/HomeFAQ'));
+// Dynamically load below-fold components (SSR enabled by default in next/dynamic)
+const Marquee = dynamic(() => import('@/components/home/Marquee'));
+const FeatureHighlight = dynamic(() => import('@/components/home/FeatureHighlight'));
+const BentoGridSection = dynamic(() => import('@/components/home/BentoGridSection'));
+const StressFreeCTA = dynamic(() => import('@/components/home/StressFreeCTA'));
+const WhyChooseMarkify = dynamic(() => import('@/components/home/WhyChooseMarkify'));
+const ReviewsMarquee = dynamic(() => import('@/components/home/ReviewsMarquee'));
+const FinalCTA = dynamic(() => import('@/components/home/FinalCTA'));
+const HomeFAQ = dynamic(() => import('@/components/home/HomeFAQ'));
 
 const SectionFallback = ({ title, description }) => (
   <section className="relative w-full min-h-[420px] px-4 py-20">

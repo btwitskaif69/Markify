@@ -134,8 +134,9 @@ const Hero = () => {
 
             {/* Heading */}
             <h1 className="mt-6 flex w-full flex-col items-center text-center text-4xl font-medium leading-tight tracking-tight text-foreground sm:text-5xl md:text-7xl lg:text-8xl ">
-              <span className="hero-heading-line inline-block text-center md:whitespace-nowrap ">The <span className="inline-block bg-clip-text text-transparent pb-1 box-decoration-clone" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>Only</span> Bookmark Manager</span>
-              <span className="hero-heading-line inline-block text-center md:whitespace-nowrap ">You&apos;ll Ever <span className="inline-block bg-clip-text text-transparent box-decoration-clone" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>Need</span></span>
+              <span className="sr-only">The Only Bookmark Manager You'll Ever Need</span>
+              <span aria-hidden="true" className="hero-heading-line inline-block text-center md:whitespace-nowrap ">The <span className="inline-block bg-clip-text text-transparent pb-1 box-decoration-clone" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>Only</span> Bookmark Manager</span>
+              <span aria-hidden="true" className="hero-heading-line inline-block text-center md:whitespace-nowrap ">You&apos;ll Ever <span className="inline-block bg-clip-text text-transparent box-decoration-clone" style={{ backgroundImage: 'linear-gradient(to bottom, #fdba74 0%, #f97316 45%, #c2410c 100%)' }}>Need</span></span>
             </h1>
 
             {/* Subheading */}

@@ -32,7 +32,7 @@ const SimpleMarkdownRenderer = ({ content }) => {
     let html = text
       .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold mt-4 mb-2">$1</h3>')
       .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold mt-6 mb-3 border-b pb-1">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-extrabold mt-8 mb-4">$1</h1>')
+      .replace(/^# (.*$)/gim, '<h2 class="text-3xl font-extrabold mt-8 mb-4">$1</h2>')
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
       .replace(/__(.*?)__/gim, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/gim, '<em>$1</em>')

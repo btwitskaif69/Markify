@@ -194,6 +194,7 @@ export const AwardBadge = ({
       ref={ref}
       href={link}
       target="_blank"
+      rel="noopener noreferrer"
       className="block w-[180px] sm:w-[260px] h-auto cursor-pointer"
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}

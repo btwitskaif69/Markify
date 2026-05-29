@@ -63,21 +63,20 @@ const nextConfig = {
       { source: "/home/", destination: "/", permanent: true },
       { source: "/Home", destination: "/", permanent: true },
       { source: "/Home/", destination: "/", permanent: true },
-      { source: "/solutions/:path*", destination: "/", permanent: true },
-      { source: "/solutions", destination: "/", permanent: true },
-      { source: "/terms", destination: "/", permanent: true },
-      { source: "/what-is-markify", destination: "/", permanent: true },
     ];
   },
   async headers() {
+    const securityHeaders = [
+      { key: "Content-Security-Policy", value: contentSecurityPolicy },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "X-Frame-Options", value: "SAMEORIGIN" },
+    ];
+
     return [
       {
-        source: "/:path*",
-        headers: [
-          { key: "Content-Security-Policy", value: contentSecurityPolicy },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-        ],
+        source: "/(.*)",
+        headers: securityHeaders,
       },
       {
         source: "/_next/static/:path*",
