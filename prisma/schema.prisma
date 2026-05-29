@@ -23,6 +23,7 @@ model User {
   password         String
   avatar           String?
   isVerified       Boolean      @default(false)
+  hasSeenOnboarding Boolean     @default(false)
   createdAt        DateTime     @default(now())
   lastLoginAt      DateTime?
   isSubscribed       Boolean      @default(false)

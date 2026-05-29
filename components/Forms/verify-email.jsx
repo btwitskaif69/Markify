@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import PropTypes from "prop-types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/client/context/AuthContext";
 import { secureFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
+import { markOnboardingPending } from "@/client/lib/onboardingPrompt";
 import { Mail, RefreshCw } from "lucide-react";
 import SEO from "@/components/SEO/SEO";
 
@@ -108,6 +110,7 @@ export function VerifyEmail({ className, ...props }) {
             }
 
             toast.success("Account verified successfully!");
+            markOnboardingPending(data.user.id);
             login(data.user, data.token);
             router.push(`/dashboard/${data.user.id}?welcome=true`);
         } catch (error) {
@@ -209,7 +212,7 @@ export function VerifyEmail({ className, ...props }) {
 
                             {/* Resend Section */}
                             <div className="text-center text-sm text-muted-foreground">
-                                Didn't receive the code?{" "}
+                                Didn&apos;t receive the code?{" "}
                                 <button
                                     type="button"
                                     onClick={handleResend}
@@ -242,3 +245,7 @@ export function VerifyEmail({ className, ...props }) {
 }
 
 export default VerifyEmail;
+
+VerifyEmail.propTypes = {
+    className: PropTypes.string,
+};

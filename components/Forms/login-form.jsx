@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PropTypes from "prop-types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,11 @@ import { useAuth } from '@/client/context/AuthContext';
 import { Eye, EyeOff } from "lucide-react";
 import { secureFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
+import {
+  hasOnboardingPending,
+  hasOnboardingSeen,
+  markOnboardingPending,
+} from "@/client/lib/onboardingPrompt";
 import SEO from "@/components/SEO/SEO";
 
 // The URL now includes the full path to the login endpoint
@@ -34,7 +40,8 @@ export function LoginForm({ className, ...props }) {
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
-      router.replace(`/dashboard/${user.id}`);
+      const onboardingQuery = hasOnboardingPending(user.id) ? "?welcome=true" : "";
+      router.replace(`/dashboard/${user.id}${onboardingQuery}`);
     }
   }, [isAuthenticated, user, authLoading, router]);
   // ... existing state ...
@@ -81,6 +88,11 @@ export function LoginForm({ className, ...props }) {
       }
 
       toast.success("Logged in with Google successfully!");
+      const shouldShowOnboarding =
+        data.user?.showOnboarding === true || data.isNewUser || !hasOnboardingSeen(data.user.id);
+      if (shouldShowOnboarding) {
+        markOnboardingPending(data.user.id);
+      }
       login(data.user, data.token);
       try {
         localStorage.setItem("lastLoginMethod", "google");
@@ -89,7 +101,7 @@ export function LoginForm({ className, ...props }) {
       }
       setLastLoginMethod("google");
 
-      if (data.isNewUser) {
+      if (shouldShowOnboarding) {
         router.push(`/dashboard/${data.user.id}?welcome=true`);
       } else {
         router.push(`/dashboard/${data.user.id}`);
@@ -252,7 +264,7 @@ export function LoginForm({ className, ...props }) {
               </div>
             </div>
             <div className="mt-4 text-center text-sm text-zinc-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="underline underline-offset-4 hover:text-primary text-white">
                 Sign up
               </Link>
@@ -263,3 +275,7 @@ export function LoginForm({ className, ...props }) {
     </div>
   );
 }
+
+LoginForm.propTypes = {
+  className: PropTypes.string,
+};

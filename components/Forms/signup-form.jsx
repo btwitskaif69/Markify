@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PropTypes from "prop-types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,11 @@ import { toast } from "sonner";
 import { useAuth } from "@/client/context/AuthContext";
 import { secureFetch } from "@/client/lib/secureApi";
 import { API_BASE_URL } from "@/client/lib/apiConfig";
+import {
+  hasOnboardingPending,
+  hasOnboardingSeen,
+  markOnboardingPending,
+} from "@/client/lib/onboardingPrompt";
 import SEO from "@/components/SEO/SEO";
 import PasswordInput from "@/components/password-input-2";
 
@@ -34,7 +40,8 @@ export function SignupForm({ className, ...props }) {
   // Redirect authenticated users to their dashboard
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
-      router.replace(`/dashboard/${user.id}`);
+      const onboardingQuery = hasOnboardingPending(user.id) ? "?welcome=true" : "";
+      router.replace(`/dashboard/${user.id}${onboardingQuery}`);
     }
   }, [isAuthenticated, user, authLoading, router]);
 
@@ -93,6 +100,11 @@ export function SignupForm({ className, ...props }) {
       }
 
       toast.success("Signed up with Google successfully!");
+      const shouldShowOnboarding =
+        data.user?.showOnboarding === true || data.isNewUser || !hasOnboardingSeen(data.user.id);
+      if (shouldShowOnboarding) {
+        markOnboardingPending(data.user.id);
+      }
       login(data.user, data.token);
       try {
         localStorage.setItem("lastLoginMethod", "google");
@@ -101,7 +113,7 @@ export function SignupForm({ className, ...props }) {
       }
       setLastLoginMethod("google");
 
-      if (data.isNewUser) {
+      if (shouldShowOnboarding) {
         router.push(`/dashboard/${data.user.id}?welcome=true`);
       } else {
         router.push(`/dashboard/${data.user.id}`);
@@ -265,4 +277,8 @@ export function SignupForm({ className, ...props }) {
     </div>
   );
 }
+
+SignupForm.propTypes = {
+  className: PropTypes.string,
+};
 

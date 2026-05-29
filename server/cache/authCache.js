@@ -24,6 +24,7 @@ const loadAuthUserFromDatabase = async (userId) => {
           email: true,
           avatar: true,
           geminiUsage: true,
+          hasSeenOnboarding: true,
           isSubscribed: true,
           subscriptionEnds: true,
           dodoCustomerId: true,
@@ -40,6 +41,7 @@ const loadAuthUserFromDatabase = async (userId) => {
   return {
     ...user,
     isAdmin: isAdminEmail(user.email),
+    showOnboarding: !user.hasSeenOnboarding,
   };
 };
 

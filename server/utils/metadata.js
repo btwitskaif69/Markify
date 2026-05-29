@@ -1,11 +1,13 @@
 const decodeHtmlEntities = (value = "") =>
   value
+    .replace(/&nbsp;/gi, " ")
     .replace(/&amp;/gi, "&")
     .replace(/&quot;/gi, "\"")
-    .replace(/&#39;/gi, "'")
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(Number.parseInt(code, 16)))
     .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&nbsp;/gi, " ");
+    .replace(/&gt;/gi, ">");
 
 const normalizeText = (value = "") => decodeHtmlEntities(value).replace(/\s+/g, " ").trim();
 

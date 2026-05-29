@@ -30,6 +30,17 @@ const generateVerificationCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const toUserResponse = (user, extra = {}) => {
+  const userResponse = {
+    ...user,
+    isAdmin: isAdminEmail(user.email),
+    showOnboarding: !user.hasSeenOnboarding,
+    ...extra,
+  };
+  delete userResponse.password;
+  return userResponse;
+};
+
 /**
  * Initiates signup by creating a verification token and sending email.
  */
@@ -139,8 +150,7 @@ export const verifyEmail = async (req, res) => {
       console.error('Failed to send signup notification email:', err)
     );
 
-    const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
-    delete userResponse.password;
+    const userResponse = toUserResponse(user, { showOnboarding: true });
     res.status(201).json({ message: 'Account verified successfully!', user: userResponse, token });
   } catch (error) {
     if (error.code === 'P2002') {
@@ -227,8 +237,7 @@ export const loginUser = async (req, res) => {
     );
 
     const token = generateToken(user.id);
-    const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
-    delete userResponse.password;
+    const userResponse = toUserResponse(user);
     res.status(200).json({ message: "Login successful", user: userResponse, token });
   } catch (error) {
     console.error("loginUser error:", error);
@@ -395,6 +404,7 @@ export const updateUserProfile = async (req, res) => {
         name: true,
         email: true,
         avatar: true,
+        hasSeenOnboarding: true,
         isSubscribed: true,
         subscriptionEnds: true,
         dodoCustomerId: true,
@@ -403,7 +413,10 @@ export const updateUserProfile = async (req, res) => {
     });
     await invalidateAuthUserCache(userId);
 
-    res.status(200).json({ message: "Profile updated successfully.", user: updatedUser });
+    res.status(200).json({
+      message: "Profile updated successfully.",
+      user: toUserResponse(updatedUser),
+    });
   } catch (error) {
     console.error("updateUserProfile error:", error.message);
     console.error("Full error:", error);
@@ -486,8 +499,7 @@ export const googleAuth = async (req, res) => {
     const token = generateToken(user.id);
 
     // Return User and Token
-    const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
-    delete userResponse.password;
+    const userResponse = toUserResponse(user, { showOnboarding: isNewUser || !user.hasSeenOnboarding });
     await invalidateAuthUserCache(user.id);
 
     res.status(200).json({
@@ -499,6 +511,38 @@ export const googleAuth = async (req, res) => {
 
   } catch (error) {
     console.error("googleAuth error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const completeOnboarding = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { hasSeenOnboarding: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        avatar: true,
+        hasSeenOnboarding: true,
+        isSubscribed: true,
+        subscriptionEnds: true,
+        dodoCustomerId: true,
+        dodoSubscriptionId: true,
+      },
+    });
+
+    await invalidateAuthUserCache(userId);
+
+    res.status(200).json({
+      message: "Onboarding completed.",
+      user: toUserResponse(updatedUser, { showOnboarding: false }),
+    });
+  } catch (error) {
+    console.error("completeOnboarding error:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

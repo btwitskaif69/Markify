@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
@@ -18,6 +18,11 @@ import { useBookmarkActions } from "@/client/hooks/useBookmarkActions";
 import { useCollectionActions } from "@/client/hooks/useCollectionActions";
 import { useThemeToggle } from "@/client/hooks/useThemeToggle";
 import { usePreview } from "@/client/hooks/usePreview";
+import {
+  consumeOnboardingPending,
+  hasOnboardingSeen,
+  markOnboardingSeen,
+} from "@/client/lib/onboardingPrompt";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
 import BookmarkArchiveDialog from "@/components/Bookmarks/BookmarkArchiveDialog";
 import CollectionFormDialog from "@/components/Collections/CollectionFormDialog";
@@ -27,7 +32,7 @@ import Bookmarks from "./Bookmarks";
 import SharedItems from "./SharedItems";
 import BillingDashboard from "./BillingDashboard";
 import CmdK from "./CmdK";
-import WelcomeDialog from "./WelcomeDialog";
+import OnboardingDialog from "./OnboardingDialog";
 import SEO from "@/components/SEO/SEO";
 import { BOOKMARK_CATEGORY_OPTIONS } from "@/lib/bookmarkCategories";
 import { toast } from "sonner";
@@ -55,6 +60,7 @@ export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(false);
   const sharedRedirectNotifiedRef = useRef(false);
   const billingSyncHandledRef = useRef(false);
+  const onboardingCompletionRef = useRef(false);
   const billingSuccess = searchParams.get("billing") === "success" || searchParams.get("success") === "true";
   const billingSubscriptionId = searchParams.get("subscription_id") || "";
 
@@ -147,15 +153,59 @@ export default function Dashboard() {
 
   // Check for welcome param (new user onboarding)
   useEffect(() => {
-    if (searchParams.get("welcome") === "true") {
-      setShowWelcome(true);
-      // Remove the query param from URL.
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("welcome");
-      const query = params.toString();
-      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    if (!user) {
+      return;
     }
-  }, [searchParams, router, pathname]);
+
+    const hasWelcomeQuery = searchParams.get("welcome") === "true";
+    const shouldShowOnboarding =
+      hasWelcomeQuery ||
+      consumeOnboardingPending(user.id) ||
+      (user.showOnboarding === true && !hasOnboardingSeen(user.id));
+
+    if (shouldShowOnboarding) {
+      if (globalThis.process?.env?.NODE_ENV === "development") {
+        console.debug("[onboarding] dashboard trigger detected", {
+          userId: user.id,
+          source: user.showOnboarding === true ? "profile" : hasWelcomeQuery ? "query" : "pending",
+        });
+      }
+
+      setShowWelcome(true);
+      if (hasWelcomeQuery) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("welcome");
+        const query = params.toString();
+        router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      }
+    }
+  }, [searchParams, router, pathname, user]);
+
+  const handleOnboardingOpenChange = useCallback((nextOpen) => {
+    setShowWelcome(nextOpen);
+
+    if (!nextOpen && user?.id) {
+      markOnboardingSeen(user.id);
+
+      if (!onboardingCompletionRef.current) {
+        onboardingCompletionRef.current = true;
+        authFetch("/api/users/onboarding", { method: "PATCH" })
+          .then(async (response) => {
+            const result = await response.json();
+            if (!response.ok) {
+              throw new Error(result?.message || "Failed to update onboarding status.");
+            }
+
+            if (result?.user) {
+              updateProfile(result.user);
+            }
+          })
+          .catch((error) => {
+            console.warn("Onboarding completion update failed:", error);
+          });
+      }
+    }
+  }, [authFetch, updateProfile, user?.id]);
 
   const {
     allBookmarks,
@@ -504,9 +554,9 @@ export default function Dashboard() {
           onRefreshArchive={handleRefreshArchive}
         />
 
-        <WelcomeDialog
+        <OnboardingDialog
           open={showWelcome}
-          onOpenChange={setShowWelcome}
+          onOpenChange={handleOnboardingOpenChange}
           userName={user?.name}
         />
       </SidebarProvider>
