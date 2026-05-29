@@ -124,6 +124,10 @@ const nextConfig = {
         headers: noIndexAssetHeaders,
       },
       {
+        source: "/(.*\\.mp4)$",
+        headers: noIndexAssetHeaders,
+      },
+      {
         // Allow Chrome extension to access API routes
         source: "/api/:path*",
         headers: [

@@ -6,7 +6,6 @@ import {
   buildBreadcrumbSchema,
   buildProductSchema,
   buildWebPageSchema,
-  buildWebPageSchema,
   getCanonicalUrl,
 } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
