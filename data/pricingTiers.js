@@ -29,17 +29,4 @@ export const PRICING_TIERS = [
     cta: "Get Pro",
     highlighted: true,
   },
-  {
-    name: "Team",
-    price: "19",
-    description: "Collaborate on research and resources as a team.",
-    features: [
-      "Shared collections",
-      "Roles & permissions",
-      "Team activity overview",
-      "Priority support",
-    ],
-    cta: "Contact sales",
-    highlighted: false,
-  },
 ];

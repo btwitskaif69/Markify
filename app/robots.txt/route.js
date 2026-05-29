@@ -9,6 +9,9 @@ const DISALLOW_PATHS = [
   "/signup",
   "/forgot-password",
   "/reset-password",
+  "/solutions",
+  "/terms",
+  "/what-is-markify",
 ];
 
 const AI_BOTS = [

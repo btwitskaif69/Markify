@@ -63,6 +63,10 @@ const nextConfig = {
       { source: "/home/", destination: "/", permanent: true },
       { source: "/Home", destination: "/", permanent: true },
       { source: "/Home/", destination: "/", permanent: true },
+      { source: "/solutions/:path*", destination: "/", permanent: true },
+      { source: "/solutions", destination: "/", permanent: true },
+      { source: "/terms", destination: "/", permanent: true },
+      { source: "/what-is-markify", destination: "/", permanent: true },
     ];
   },
   async headers() {

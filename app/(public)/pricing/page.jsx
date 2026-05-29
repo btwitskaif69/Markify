@@ -6,6 +6,7 @@ import {
   buildBreadcrumbSchema,
   buildProductSchema,
   buildWebPageSchema,
+  buildWebPageSchema,
   getCanonicalUrl,
 } from "@/lib/seo";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -13,7 +14,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 export const metadata = buildMetadata({
   title: "Bookmark Manager Pricing & Plans",
   description:
-    "Compare Markify Free, Pro, and Team plans with transparent pricing, feature limits, and collaboration options for individuals and teams.",
+    "Compare Markify Free and Pro plans with transparent pricing, feature limits, and collaboration options for individuals and teams.",
   path: "/pricing",
 });
 
@@ -26,7 +27,7 @@ export default function Page() {
   const webPageSchema = buildWebPageSchema({
     title: "Markify pricing",
     description:
-      "Compare Markify Free, Pro, and Team plans with transparent pricing and feature limits.",
+      "Compare Markify Free and Pro plans with transparent pricing and feature limits.",
     path: "/pricing",
     type: "WebPage",
   });
@@ -61,11 +62,6 @@ export default function Page() {
         <p>
           For power users and professionals, the Pro plan adds Chrome extension access, unlimited bookmarks, unlimited collections, 
           bookmark and collection sharing, plus multi-format import and export options.
-        </p>
-        <p>
-          Teams and organizations will benefit from our collaborative Team plan. This tier allows you to create shared workspaces, 
-          manage user permissions, and ensure that everyone in your company has access to the same curated resources. 
-          Say goodbye to lost links in Slack channels or endless email threads. With Markify Team, knowledge sharing becomes effortless.
         </p>
         <p>
           Compare our pricing tiers to see detailed feature limits, integrations, and collaboration options. 
