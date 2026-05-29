@@ -7,6 +7,7 @@ import {
   Sparkles,
   BadgeCheck,
   CreditCard,
+  Bug,
   MessageSquarePlus,
   Star,
 } from "lucide-react";
@@ -22,12 +23,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/client/context/AuthContext";
 import AccountDialog from "./AccountDialog";
+import { IssueReportDialog } from "./IssueReportDialog";
 import { FeatureRequestDialog } from "./FeatureRequestDialog";
 import { ReviewDialog } from "./ReviewDialog";
 
 export function NavUser({ user }) {
   const { logout, authFetch, updateProfile, hasProAccess, token } = useAuth();
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [issueReportDialogOpen, setIssueReportDialogOpen] = useState(false);
   const [featureRequestDialogOpen, setFeatureRequestDialogOpen] = useState(false);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -156,6 +159,13 @@ export function NavUser({ user }) {
               <MessageSquarePlus className="mr-2 h-4 w-4" />
               <span>Request a Feature</span>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => setIssueReportDialogOpen(true)}
+            >
+              <Bug className="mr-2 h-4 w-4" />
+              <span>Report an Issue</span>
+            </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer" onClick={() => setReviewDialogOpen(true)}>
               <Star className="mr-2 h-4 w-4" />
               <span>Leave a Review</span>
@@ -178,6 +188,10 @@ export function NavUser({ user }) {
       />
 
       <ReviewDialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen} />
+      <IssueReportDialog
+        open={issueReportDialogOpen}
+        onOpenChange={setIssueReportDialogOpen}
+      />
       <FeatureRequestDialog
         open={featureRequestDialogOpen}
         onOpenChange={setFeatureRequestDialogOpen}

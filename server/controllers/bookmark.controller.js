@@ -18,6 +18,7 @@ import {
   getBookmarkArchivePayload,
   refreshBookmarkArchiveForBookmark,
 } from "@/server/services/bookmark-archive.service";
+import { invalidateDashboardBootstrapCache } from "../cache/dashboardCache";
 import { FREE_BOOKMARK_LIMIT, hasActiveProAccess } from "@/lib/subscription";
 import { runWithPrismaRetry } from "../db/prismaRetry";
 
@@ -103,6 +104,7 @@ export const addBookmark = async (req, res) => {
     await refreshBookmarkArchiveForBookmark(newBookmark);
 
     const bookmark = await getBookmarkWithArchive(newBookmark.id);
+    await invalidateDashboardBootstrapCache(ownerId);
 
     res.status(201).json({ message: 'Bookmark added successfully', bookmark });
   } catch (error) {
@@ -188,6 +190,7 @@ export const updateBookmark = async (req, res) => {
     }
 
     const bookmark = await getBookmarkWithArchive(bookmarkId);
+    await invalidateDashboardBootstrapCache(req.user.id);
 
     res.status(200).json({ message: 'Bookmark updated', bookmark });
   } catch (error) {
@@ -205,6 +208,7 @@ export const deleteBookmark = async (req, res) => {
     await prisma.bookmark.delete({
       where: { id: bookmarkId },
     });
+    await invalidateDashboardBootstrapCache(req.user.id);
     res.status(204).send();
   } catch (error) {
     console.error(error);
@@ -230,6 +234,9 @@ export const bulkDeleteBookmarks = async (req, res) => {
         userId: req.user.id,
       },
     });
+    if (result.count > 0) {
+      await invalidateDashboardBootstrapCache(req.user.id);
+    }
 
     res.status(200).json({
       message: `${result.count} bookmarks deleted.`,
@@ -361,6 +368,10 @@ export const importBookmarks = async (req, res) => {
       createdIds = createdBookmarks
         .filter(b => !b.previewImage)
         .map(b => b.id);
+    }
+
+    if (bookmarksToCreate.length > 0) {
+      await invalidateDashboardBootstrapCache(req.user.id);
     }
 
     res.status(201).json({
@@ -530,6 +541,10 @@ export const syncLocalBookmarks = async (req, res) => {
       createdIds = createdBookmarks.map(b => b.id);
     }
 
+    if (bookmarksToCreate.length > 0) {
+      await invalidateDashboardBootstrapCache(req.user.id);
+    }
+
     res.status(201).json({
       message: `Sync complete.`,
       createdCount: bookmarksToCreate.length,
@@ -625,6 +640,7 @@ export const fetchBookmarkPreview = async (req, res) => {
         });
 
         const bookmarkWithArchive = await getBookmarkWithArchive(updatedBookmark.id);
+        await invalidateDashboardBootstrapCache(req.user.id);
 
         return res.status(200).json({
           success: true,
@@ -767,6 +783,7 @@ export const refreshBookmarkArchive = async (req, res) => {
 
     const { archive, error } = await refreshBookmarkArchiveForBookmark(bookmark);
     const bookmarkWithArchive = await getBookmarkWithArchive(bookmarkId);
+    await invalidateDashboardBootstrapCache(req.user.id);
 
     return res.status(200).json({
       message: error ? "Archive refresh completed with issues." : "Archive refreshed successfully.",
@@ -816,6 +833,7 @@ export const toggleShareBookmark = async (req, res) => {
       where: { id: bookmarkId },
       data: { shareId: newShareId },
     });
+    await invalidateDashboardBootstrapCache(req.user.id);
 
     res.status(200).json({
       message: newShareId ? "Sharing enabled." : "Sharing disabled.",

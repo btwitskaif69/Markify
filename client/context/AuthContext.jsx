@@ -19,6 +19,66 @@ const AuthContext = createContext(null);
 const PROTECTED_PATH_PREFIXES = ["/dashboard", "/admin"];
 const PENDING_SUBSCRIPTION_KEY = "markify_pending_subscription";
 const PENDING_SUBSCRIPTION_TTL_MS = 1000 * 60 * 60 * 24;
+const SESSION_VERIFICATION_KEY = "markify_session_verification";
+const SESSION_VERIFICATION_TTL_MS = 1000 * 60 * 10;
+const IS_DEVELOPMENT = globalThis.process?.env?.NODE_ENV === "development";
+
+const readStoredSessionVerification = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const stored = sessionStorage.getItem(SESSION_VERIFICATION_KEY);
+    if (!stored) {
+      return null;
+    }
+
+    const parsed = JSON.parse(stored);
+    const userId = typeof parsed?.userId === "string" ? parsed.userId : "";
+    const verifiedAt = Number(parsed?.verifiedAt || 0);
+
+    if (!userId || !verifiedAt) {
+      return null;
+    }
+
+    return { userId, verifiedAt };
+  } catch {
+    return null;
+  }
+};
+
+const writeSessionVerification = (userId) => {
+  if (typeof window === "undefined" || !userId) {
+    return;
+  }
+
+  sessionStorage.setItem(
+    SESSION_VERIFICATION_KEY,
+    JSON.stringify({ userId, verifiedAt: Date.now() })
+  );
+};
+
+const clearSessionVerification = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  sessionStorage.removeItem(SESSION_VERIFICATION_KEY);
+};
+
+const hasFreshSessionVerification = (userId) => {
+  if (typeof window === "undefined" || !userId) {
+    return false;
+  }
+
+  const stored = readStoredSessionVerification();
+  return Boolean(
+    stored &&
+      stored.userId === userId &&
+      Date.now() - stored.verifiedAt < SESSION_VERIFICATION_TTL_MS
+  );
+};
 
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
@@ -36,12 +96,14 @@ export const AuthProvider = ({ children }) => {
           console.warn("Invalid user data in localStorage, clearing...");
           localStorage.removeItem("user");
           localStorage.removeItem("token");
+          clearSessionVerification();
           return null;
         }
         return parsed;
       } catch (e) {
         console.error("Failed to parse stored user:", e);
         localStorage.removeItem("user");
+        clearSessionVerification();
         return null;
       }
     }
@@ -60,6 +122,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", authToken);
     } else {
       localStorage.removeItem("token");
+      clearSessionVerification();
     }
     setToken(authToken);
   }, []);
@@ -68,8 +131,10 @@ export const AuthProvider = ({ children }) => {
     if (typeof window === "undefined") return;
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
+      writeSessionVerification(userData.id);
     } else {
       localStorage.removeItem("user");
+      clearSessionVerification();
     }
     setUser(userData);
   }, []);
@@ -199,6 +264,13 @@ export const AuthProvider = ({ children }) => {
       return;
     }
     try {
+      if (IS_DEVELOPMENT) {
+        console.debug("[auth/profile] verifying session", {
+          pathname,
+          tokenPresent: Boolean(token),
+        });
+      }
+
       const response = await authFetch(`${API_BASE_URL}/users/profile`, {
         timeoutMs: AUTH_TIMEOUT_MS,
       });
@@ -236,7 +308,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [token, authFetch, logout, saveToken, saveUser, reconcilePendingSubscription]);
+  }, [token, authFetch, logout, saveToken, saveUser, reconcilePendingSubscription, pathname]);
 
   const login = useCallback((userData, authToken) => {
     saveToken(authToken);
@@ -285,8 +357,21 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    if (token && user?.id && hasFreshSessionVerification(user.id)) {
+      if (IS_DEVELOPMENT) {
+        console.debug("[auth/profile] session cache hit", {
+          userId: user.id,
+          pathname,
+        });
+      }
+
+      setIsLoading(false);
+      void reconcilePendingSubscription(user);
+      return;
+    }
+
     verifyUser();
-  }, [shouldVerifySession, verifyUser]);
+  }, [shouldVerifySession, token, user, pathname, verifyUser, reconcilePendingSubscription]);
 
   return (
     <AuthContext.Provider value={authValue}>

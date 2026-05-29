@@ -8,14 +8,14 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, RefreshCw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationStyles } from "../theme-animations";
 import { useTheme } from "../theme-provider";
 import { useAuth } from "@/client/context/AuthContext";
 import { useDashboardData } from "@/client/hooks/useDashboardData";
 import { useBookmarkActions } from "@/client/hooks/useBookmarkActions";
 import { useCollectionActions } from "@/client/hooks/useCollectionActions";
-import { replaceBookmarkCache } from "@/client/lib/bookmarkCache";
 import { useThemeToggle } from "@/client/hooks/useThemeToggle";
 import { usePreview } from "@/client/hooks/usePreview";
 import BookmarkFormDialog from "@/components/Bookmarks/BookmarkFormDialog";
@@ -164,6 +164,7 @@ export default function Dashboard() {
     collections,
     setCollections,
     isLoading,
+    isRefreshing,
     error,
     activeCollection,
     refetchBookmarks,
@@ -281,7 +282,6 @@ export default function Dashboard() {
         b.id === updatedItem.id ? updatedItem : b
       );
       setAllBookmarks(nextBookmarks);
-      replaceBookmarkCache(user?.id, nextBookmarks);
     } else {
       setCollections((prev) =>
         prev.map((c) => (c.id === updatedItem.id ? updatedItem : c))
@@ -369,6 +369,30 @@ export default function Dashboard() {
             <AnimationStyles variant={animationConfig.variant} start={animationConfig.start} />
 
             <div className="flex items-center gap-5">
+              {!isBillingView && (
+                <TooltipProvider delayDuration={150}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => void refetchBookmarks({ force: true })}
+                        disabled={isLoading || isRefreshing}
+                        className="gap-2"
+                        aria-label="Sync dashboard"
+                      >
+                        <RefreshCw className={`h-4 w-4 ${isLoading || isRefreshing ? "animate-spin" : ""}`} />
+                        {isRefreshing ? "Syncing..." : "Sync Dashboard"}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" variant="neutral">
+                      Reload latest data.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+
               <div
                 onClick={handleThemeToggle}
                 className={`flex items-end cursor-pointer transition-transform duration-1000 ${isDark ? "rotate-180" : "rotate-0"}`}

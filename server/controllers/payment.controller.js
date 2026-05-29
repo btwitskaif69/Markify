@@ -1,6 +1,7 @@
 import { withDodoFallback } from "@/lib/dodopayments";
 import prisma from "@/server/db/prismaClient";
 import { hasActiveProAccess } from "@/lib/subscription";
+import { invalidateAuthUserCache } from "../cache/authCache";
 
 const ENV = globalThis?.process?.env || {};
 
@@ -244,6 +245,7 @@ export const confirmSubscriptionPurchase = async (req, res) => {
         geminiUsage: true,
       },
     });
+    await invalidateAuthUserCache(req.user.id);
 
     return res.status(200).json({
       message: "Subscription synchronized successfully.",

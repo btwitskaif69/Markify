@@ -1,6 +1,7 @@
 import prisma from "../db/prismaClient";
 import { randomUUID } from "crypto";
 import { FREE_COLLECTION_LIMIT, hasActiveProAccess } from "@/lib/subscription";
+import { invalidateDashboardBootstrapCache } from "../cache/dashboardCache";
 import { runWithPrismaRetry } from "../db/prismaRetry";
 
 // GET all collections for the logged-in user
@@ -46,6 +47,7 @@ export const createCollection = async (req, res) => {
     const newCollection = await prisma.collection.create({
       data: { name, userId: req.user.id },
     });
+    await invalidateDashboardBootstrapCache(req.user.id);
     res.status(201).json({ message: 'Collection created', collection: newCollection });
   } catch (error) {
     if (error.code === 'P2002') {
@@ -82,6 +84,7 @@ export const deleteCollection = async (req, res) => {
         where: { id: collectionId },
       }),
     ]);
+    await invalidateDashboardBootstrapCache(req.user.id);
 
     res.status(204).send(); // Success with no content
   } catch (error) {
@@ -108,6 +111,7 @@ export const renameCollection = async (req, res) => {
       where: { id: collectionId },
       data: { name },
     });
+    await invalidateDashboardBootstrapCache(req.user.id);
 
     res.status(200).json({ message: 'Collection renamed', collection: updatedCollection });
   } catch (error) {
@@ -156,6 +160,7 @@ export const toggleShareCollection = async (req, res) => {
       where: { id: collectionId },
       data: { shareId: newShareId },
     });
+    await invalidateDashboardBootstrapCache(req.user.id);
 
     res.status(200).json({
       message: newShareId ? "Sharing enabled." : "Sharing disabled.",

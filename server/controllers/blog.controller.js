@@ -1,5 +1,4 @@
 import { revalidatePath } from "next/cache";
-import redis from "../db/redis";
 import prisma from "../db/prismaClient";
 import { deleteImage } from "../services/r2.service.js";
 
@@ -7,19 +6,6 @@ import { deleteImage } from "../services/r2.service.js";
 
 const ENV = globalThis.process?.env || {};
 const PUBLIC_CACHE_CONTROL = "public, s-maxage=600, stale-while-revalidate=86400";
-
-const clearBlogCache = async () => {
-  if (!ENV.UPSTASH_REDIS_REST_URL || !redis) return;
-  try {
-    // We need to clear the list of posts
-    // Since our cache key is dynamic (cache:/api/blog), we can try to delete that specific key
-    // In a real app with pagination, we might need to delete 'cache:/api/blog*' using scan
-    await redis.del("cache:/api/blog");
-    console.log("Cleared blog cache");
-  } catch (err) {
-    console.error("Failed to clear blog cache:", err);
-  }
-};
 
 // Helper: Generate Unique Slug
 const generateUniqueSlug = async (title) => {
@@ -115,8 +101,6 @@ export const createPost = async (req, res) => {
       },
     });
 
-    // Invalidate cache
-    await clearBlogCache();
     // Revalidate Next.js cache
     revalidatePath("/blog");
 
@@ -173,16 +157,6 @@ export const updatePost = async (req, res) => {
       },
     });
 
-    // Invalidate cache
-    await clearBlogCache();
-    // Also invalidate individual post cache if we cached by slug (optional, if we add that later)
-    if (ENV.UPSTASH_REDIS_REST_URL && redis) {
-      await redis.del(`cache:/api/blog/${existing.slug}`);
-      if (slug !== existing.slug) {
-        await redis.del(`cache:/api/blog/${slug}`);
-      }
-    }
-
     // Revalidate Next.js cache
     revalidatePath("/blog");
     revalidatePath(`/blog/${existing.slug}`);
@@ -219,12 +193,6 @@ export const deletePost = async (req, res) => {
     await prisma.blogPost.delete({
       where: { id: postId },
     });
-
-    // Invalidate cache
-    await clearBlogCache();
-    if (ENV.UPSTASH_REDIS_REST_URL) {
-      await redis.del(`cache:/api/blog/${existing.slug}`);
-    }
 
     // Revalidate Next.js cache
     revalidatePath("/blog");
@@ -272,7 +240,6 @@ export const bulkUpdatePosts = async (req, res) => {
       data: data,
     });
 
-    await clearBlogCache();
     // Revalidate Next.js cache
     revalidatePath("/blog");
 

@@ -285,6 +285,109 @@ export const sendReviewNotificationEmail = async ({
   }
 };
 
+export const sendIssueReportEmail = async ({
+  name,
+  email,
+  title,
+  details,
+  steps = "",
+  pageUrl = "",
+  pagePath = "",
+  browser = "",
+  source = "dashboard dropdown",
+}) => {
+  try {
+    if (!resend) {
+      console.warn("Skipping issue report notification; RESEND_API_KEY is not set.");
+      return null;
+    }
+
+    const recipients = getAdminNotificationRecipients();
+    if (recipients.length === 0) {
+      console.warn("Skipping issue report notification; no admin recipients configured.");
+      return null;
+    }
+
+    const appUrl = ENV.FRONTEND_URL || ENV.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const safeName = escapeHtml(truncateText(name || email || "User", 80));
+    const safeEmail = escapeHtml(email || "Unknown email");
+    const safeTitle = escapeHtml(truncateText(title || "Issue report", 140));
+    const safeDetails = formatHtmlText(details || "", 4000);
+    const safeSteps = formatHtmlText(steps || "", 2000);
+    const safePageUrl = escapeHtml(truncateText(pageUrl, 300));
+    const safePagePath = escapeHtml(truncateText(pagePath, 200));
+    const safeBrowser = escapeHtml(truncateText(browser, 300));
+    const safeSource = escapeHtml(truncateText(source, 120));
+    const issueStepsText = steps ? truncateText(steps || "", 2000) : "";
+    const issueStepsHtml = steps
+      ? `
+        <div style="background-color:#151515; padding:18px; border-radius:8px; border:1px solid #2a2a2a; margin:0 0 16px;">
+          <p style="margin:0 0 8px; color:#bbb; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Steps to reproduce</p>
+          <div style="color:#fff; line-height:1.7; white-space:normal;">${safeSteps}</div>
+        </div>
+      `
+      : "";
+    const plainTextBody = [
+      "A user reported an issue",
+      "",
+      `Name: ${truncateText(name || email || "User", 80)}`,
+      `Email: ${email || "Unknown email"}`,
+      `Title: ${truncateText(title || "Issue report", 140)}`,
+      `Source: ${source}`,
+      "",
+      "Issue details:",
+      truncateText(details || "", 4000),
+      "",
+      steps ? "Steps to reproduce:" : null,
+      issueStepsText || null,
+      "",
+      pagePath ? `Page path: ${pagePath}` : null,
+      pageUrl ? `Page URL: ${pageUrl}` : null,
+      browser ? `Browser: ${browser}` : null,
+      "",
+      `${appUrl}/admin`,
+    ]
+      .filter((line) => line !== null)
+      .join("\n");
+
+    return await sendEmail({
+      to: recipients,
+      subject: `Markify issue report: ${truncateText(title || "New issue", 80)}`,
+      replyTo: email || undefined,
+      text: plainTextBody,
+      html: `
+        <div style="background-color:#111111; padding:40px; font-family:Arial, sans-serif; color:#fff;">
+          <div style="max-width:680px; margin:auto; background-color:#1a1a1a; padding:30px; border-radius:12px; border:1px solid #333;">
+            <p style="margin:0 0 12px; color:#ff4500; font-size:12px; letter-spacing:0.12em; text-transform:uppercase;">Issue report</p>
+            <h2 style="color:#fff; margin:0 0 16px;">A user reported an issue</h2>
+            <div style="background-color:#222; padding:18px; border-radius:8px; margin:20px 0; line-height:1.7;">
+              <p style="margin:0;"><strong>Name:</strong> ${safeName}</p>
+              <p style="margin:0;"><strong>Email:</strong> ${safeEmail}</p>
+              <p style="margin:0;"><strong>Title:</strong> ${safeTitle}</p>
+              <p style="margin:0;"><strong>Source:</strong> ${safeSource}</p>
+            </div>
+            <div style="background-color:#151515; padding:18px; border-radius:8px; border:1px solid #2a2a2a; margin:0 0 16px;">
+              <p style="margin:0 0 8px; color:#bbb; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Details</p>
+              <div style="color:#fff; line-height:1.7; white-space:normal;">${safeDetails}</div>
+            </div>
+            ${issueStepsHtml}
+            <div style="background-color:#151515; padding:18px; border-radius:8px; border:1px solid #2a2a2a; margin:0 0 16px;">
+              <p style="margin:0 0 8px; color:#bbb; font-size:12px; text-transform:uppercase; letter-spacing:0.08em;">Context</p>
+              <p style="margin:0;"><strong>Page path:</strong> ${safePagePath || "Unknown"}</p>
+              <p style="margin:0;"><strong>Page URL:</strong> ${safePageUrl || "Unknown"}</p>
+              <p style="margin:0;"><strong>Browser:</strong> ${safeBrowser || "Unknown"}</p>
+            </div>
+            <a href="${appUrl}/admin" style="display:inline-block; padding:12px 24px; background-color:#ff4500; color:#fff; text-decoration:none; font-weight:bold; border-radius:6px; margin:8px 0 0;">Open Admin Dashboard</a>
+          </div>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Error sending issue report email:", error);
+    throw error;
+  }
+};
+
 export const sendFeatureRequestEmail = async ({
   name,
   email,

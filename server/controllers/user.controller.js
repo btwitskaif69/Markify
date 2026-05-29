@@ -12,6 +12,7 @@ import { uploadImage, deleteImage } from "../services/r2.service";
 import admin from "../config/firebase";
 import { isAdminEmail } from "../utils/admin";
 import { runWithPrismaRetry } from "../db/prismaRetry";
+import { invalidateAuthUserCache } from "../cache/authCache";
 
 const ENV = globalThis?.process?.env || {};
 
@@ -367,12 +368,8 @@ export const updateUserProfile = async (req, res) => {
       // Check if it's a base64 image (new upload)
       if (avatar.startsWith("data:image")) {
         // Delete old avatar if exists
-        const currentUser = await prisma.user.findUnique({
-          where: { id: userId },
-          select: { avatar: true },
-        });
-        if (currentUser?.avatar) {
-          await deleteImage(currentUser.avatar);
+        if (req.user?.avatar) {
+          await deleteImage(req.user.avatar);
         }
 
         // Upload new avatar to R2
@@ -404,6 +401,7 @@ export const updateUserProfile = async (req, res) => {
         dodoSubscriptionId: true,
       },
     });
+    await invalidateAuthUserCache(userId);
 
     res.status(200).json({ message: "Profile updated successfully.", user: updatedUser });
   } catch (error) {
@@ -490,6 +488,7 @@ export const googleAuth = async (req, res) => {
     // Return User and Token
     const userResponse = { ...user, isAdmin: isAdminEmail(user.email) };
     delete userResponse.password;
+    await invalidateAuthUserCache(user.id);
 
     res.status(200).json({
       message: "Google Login successful",

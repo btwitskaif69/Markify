@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import prisma from "../db/prismaClient";
-import { isAdminEmail } from "../utils/admin";
-import { runWithPrismaRetry } from "../db/prismaRetry";
+import { getCachedAuthUser } from "../cache/authCache";
+
+const ENV = globalThis.process?.env || {};
 
 const getAuthToken = (headers = {}) => {
   const authHeader = headers.authorization || headers.Authorization;
@@ -21,26 +21,9 @@ export const requireAuth = async (req) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, ENV.JWT_SECRET);
 
-    const user = await runWithPrismaRetry(
-      () =>
-        prisma.user.findUnique({
-          where: { id: decoded.id },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            avatar: true,
-            geminiUsage: true,
-            isSubscribed: true,
-            subscriptionEnds: true,
-            dodoCustomerId: true,
-            dodoSubscriptionId: true,
-          },
-        }),
-      { label: "Auth user lookup" }
-    );
+    const user = await getCachedAuthUser(decoded.id);
 
     if (!user) {
       return NextResponse.json(
@@ -49,7 +32,7 @@ export const requireAuth = async (req) => {
       );
     }
 
-    req.user = { ...user, isAdmin: isAdminEmail(user.email) };
+    req.user = user;
     return null;
   } catch (error) {
     console.error("Auth middleware error:", error);
@@ -76,7 +59,7 @@ export const requireAuth = async (req) => {
 };
 
 export const requireAdmin = async (req) => {
-  if (!req.user || !isAdminEmail(req.user.email)) {
+  if (!req.user || !req.user.isAdmin) {
     return NextResponse.json(
       { message: "Admin access required" },
       { status: 403 }

@@ -169,7 +169,7 @@ export default function ImportExport({ onRefetch }) {
           id: 'enrichment-progress'
         });
         if (onRefetch) {
-          await onRefetch();
+          await onRefetch({ force: true });
         }
       })
       .catch((err) => {
@@ -212,7 +212,7 @@ export default function ImportExport({ onRefetch }) {
     }
 
     if (onRefetch) {
-      await onRefetch();
+      await onRefetch({ force: true });
     }
 
     if (data.createdIds?.length > 0) {

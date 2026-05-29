@@ -36,6 +36,7 @@ model User {
   geminiUsage        Int          @default(0)
   review             Review?
   featureRequests    FeatureRequest[]
+  issueReports       IssueReport[]
 }
 
 model PasswordResetToken {
@@ -172,5 +173,22 @@ model FeatureRequest {
   userId    String
 
   @@index([status, createdAt])
+  @@index([userId, createdAt])
+}
+
+model IssueReport {
+  id        String   @id @default(cuid())
+  title     String
+  details   String
+  steps     String?
+  pageUrl   String?
+  pagePath  String?
+  browser   String?
+  source    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
   @@index([userId, createdAt])
 }

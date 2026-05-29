@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { applyWaf } from "../middleware/wafMiddleware";
-import { applyRateLimit } from "../middleware/rateLimitMiddleware";
 import { requireAuth, requireAdmin } from "../middleware/auth.middleware";
 
 const parseQuery = (searchParams) => {
@@ -25,7 +24,7 @@ const parseBody = async (request) => {
   if (contentType.includes("application/json")) {
     try {
       return await request.json();
-    } catch (error) {
+    } catch {
       return {};
     }
   }
@@ -41,7 +40,7 @@ const parseBody = async (request) => {
         data[key] = value;
       }
       return data;
-    } catch (error) {
+    } catch {
       return {};
     }
   }
@@ -49,7 +48,7 @@ const parseBody = async (request) => {
   try {
     const text = await request.text();
     return text ? { raw: text } : {};
-  } catch (error) {
+  } catch {
     return {};
   }
 };
@@ -146,10 +145,6 @@ export const handleApiRequest = async (request, context, handler, options = {}) 
 
   const wafResponse = await applyWaf(req);
   if (wafResponse) return wafResponse;
-
-  const rateResult = await applyRateLimit(req);
-  if (rateResult?.response) return rateResult.response;
-  res.mergeHeaders(rateResult?.headers);
 
   if (options.requireAuth) {
     const authResponse = await requireAuth(req);
