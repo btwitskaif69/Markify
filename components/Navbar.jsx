@@ -65,7 +65,7 @@ const Navbar = () => {
             <Moon className="h-6 w-6 text-gray-500" />
           )}
         </button>
-        <NavbarButton as={Link} href={buttonHref}>
+        <NavbarButton as={Link} href={buttonHref} rel="nofollow">
           {buttonLabel}
         </NavbarButton>
       </NavBody>
@@ -104,7 +104,7 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          <NavbarButton as={Link} href={buttonHref} className="w-full mt-4">
+          <NavbarButton as={Link} href={buttonHref} className="w-full mt-4" rel="nofollow">
             {buttonLabel}
           </NavbarButton>
         </MobileNavMenu>
